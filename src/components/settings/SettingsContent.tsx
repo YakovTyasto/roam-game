@@ -1,0 +1,128 @@
+import type { Preferences } from '../../types';
+import { APP } from '../../config/app';
+import styles from './SettingsContent.module.css';
+
+interface SettingsContentProps {
+  preferences: Preferences;
+  bestScore: number;
+  onChange: (patch: Partial<Preferences>) => void;
+  onResetBest: () => void;
+}
+
+function Toggle({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      className={styles.switch}
+      onClick={() => onChange(!checked)}
+    >
+      <span className={styles.knob} aria-hidden />
+    </button>
+  );
+}
+
+export function SettingsContent({
+  preferences,
+  bestScore,
+  onChange,
+  onResetBest,
+}: SettingsContentProps) {
+  return (
+    <div>
+      <div className={styles.list}>
+        <div className={styles.row}>
+          <div className={styles.rowText}>
+            <span className={styles.rowLabel}>Round timer</span>
+            <span className={styles.rowHint}>
+              Show a countdown while you explore.
+            </span>
+          </div>
+          <Toggle
+            label="Round timer"
+            checked={preferences.timer}
+            onChange={(timer) => onChange({ timer })}
+          />
+        </div>
+
+        <div className={styles.row}>
+          <div className={styles.rowText}>
+            <span className={styles.rowLabel}>Distance units</span>
+            <span className={styles.rowHint}>Kilometres or miles.</span>
+          </div>
+          <div className={styles.segment} role="group" aria-label="Distance units">
+            <button
+              type="button"
+              className={styles.segmentButton}
+              aria-pressed={preferences.units === 'metric'}
+              onClick={() => onChange({ units: 'metric' })}
+            >
+              km
+            </button>
+            <button
+              type="button"
+              className={styles.segmentButton}
+              aria-pressed={preferences.units === 'imperial'}
+              onClick={() => onChange({ units: 'imperial' })}
+            >
+              mi
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.row}>
+          <div className={styles.rowText}>
+            <span className={styles.rowLabel}>Reduce motion</span>
+            <span className={styles.rowHint}>
+              Minimise animations and transitions.
+            </span>
+          </div>
+          <Toggle
+            label="Reduce motion"
+            checked={preferences.reduceMotion}
+            onChange={(reduceMotion) => onChange({ reduceMotion })}
+          />
+        </div>
+
+        <div className={styles.row}>
+          <div className={styles.rowText}>
+            <span className={styles.rowLabel}>Best score</span>
+            <span className={styles.rowHint}>
+              {bestScore > 0
+                ? `${bestScore.toLocaleString()} / ${(
+                    APP.maxRoundScore * APP.roundsPerGame
+                  ).toLocaleString()}`
+                : 'No games completed yet.'}
+            </span>
+          </div>
+          <button
+            type="button"
+            className={styles.segmentButton}
+            onClick={onResetBest}
+            disabled={bestScore <= 0}
+            style={{
+              border: '1px solid var(--panel-border)',
+              opacity: bestScore <= 0 ? 0.5 : 1,
+            }}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <p className={styles.footerNote}>
+        Preferences and your best score are stored only in this browser.
+      </p>
+    </div>
+  );
+}
