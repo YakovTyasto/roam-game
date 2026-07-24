@@ -1,4 +1,6 @@
 import type { TypedSupabaseClient } from './supabaseClient';
+import type { Difficulty } from '../config/difficulty';
+import { toDifficulty } from '../config/difficulty';
 import type { Database, Json } from './database.types';
 import type {
   ManifestRound,
@@ -31,6 +33,9 @@ function mapRoom(r: RoomRow): MpRoom {
     currentRound: r.current_round,
     totalRounds: r.total_rounds,
     roundDurationSeconds: r.round_duration_seconds,
+    // Old rooms created before the v2 migration may lack these; default safely.
+    difficulty: toDifficulty(r.difficulty),
+    maxPlayers: r.max_players ?? 2,
     rematchRoomId: r.rematch_room_id,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -185,11 +190,23 @@ export async function serverNow(supabase: TypedSupabaseClient): Promise<number> 
 
 // ── Mutations (all via transactional RPCs) ────────────────────────────────
 
+export interface CreateRoomOptions {
+  difficulty: Difficulty;
+  maxPlayers: number;
+  totalRounds?: number;
+}
+
 export async function createRoom(
   supabase: TypedSupabaseClient,
   name: string,
+  options: CreateRoomOptions,
 ): Promise<RoomRef> {
-  const { data, error } = await supabase.rpc('mp_create_room', { p_name: name });
+  const { data, error } = await supabase.rpc('mp_create_room', {
+    p_name: name,
+    p_difficulty: options.difficulty,
+    p_max_players: options.maxPlayers,
+    p_total_rounds: options.totalRounds ?? 5,
+  });
   if (error) fail(toUserMessage(error));
   return parseRoomRef(data);
 }

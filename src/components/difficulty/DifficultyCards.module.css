@@ -1,0 +1,91 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.compact {
+  gap: 8px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 12px;
+  text-align: left;
+  border-radius: var(--r-md);
+  border: 1px solid var(--panel-border);
+  background: var(--surface-1);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--panel-border-strong);
+}
+
+.card:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.name {
+  font-size: var(--fs-base);
+  font-weight: 650;
+}
+
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.desc {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.audience {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  margin-top: auto;
+}
+
+.compact .card {
+  padding: 10px 10px;
+}
+
+.compact .desc {
+  display: none;
+}
+
+/* Stack on narrow screens so eight-name lobbies and cards never overflow. */
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+  }
+  .audience {
+    margin-top: 0;
+  }
+}

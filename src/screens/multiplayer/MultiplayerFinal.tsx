@@ -1,9 +1,10 @@
-import { RotateCcw, Home, Trophy, Minus, AlertTriangle } from 'lucide-react';
+import { RotateCcw, Home, Trophy, Minus, AlertTriangle, LogOut } from 'lucide-react';
 import type { Preferences } from '../../types';
 import { formatDistance } from '../../utils/distance';
 import { Button } from '../../components/ui/Button';
 import type { RoomView } from '../../multiplayer/machine';
 import { summarizeMatch } from '../../multiplayer/summary';
+import { ordinal } from '../../multiplayer/ranking';
 import type { RoomSnapshot } from '../../multiplayer/types';
 import styles from './multiplayer.module.css';
 
@@ -27,18 +28,18 @@ export function MultiplayerFinal({
   onHome,
 }: MultiplayerFinalProps) {
   const meUserId = view.me?.userId ?? '';
-  const oppUserId = view.opponent?.userId ?? null;
-  const summary = summarizeMatch(snapshot, meUserId, oppUserId);
+  const summary = summarizeMatch(snapshot, meUserId);
 
-  const myName = view.me?.displayName ?? 'You';
-  const oppName = view.opponent?.displayName ?? 'Opponent';
-
-  const badge =
-    summary.result === 'win'
+  const iWon = summary.me?.isWinner ?? false;
+  const badge = summary.isTie
+    ? { text: iWon ? 'You tied for 1st' : 'It’s a tie', cls: styles.outcomeDraw, icon: <Minus size={16} aria-hidden /> }
+    : iWon
       ? { text: 'You win', cls: styles.outcomeWin, icon: <Trophy size={16} aria-hidden /> }
-      : summary.result === 'loss'
-        ? { text: 'You lost', cls: styles.outcomeLoss, icon: <AlertTriangle size={16} aria-hidden /> }
-        : { text: 'It’s a draw', cls: styles.outcomeDraw, icon: <Minus size={16} aria-hidden /> };
+      : {
+          text: `You finished ${ordinal(summary.me?.rank ?? summary.standings.length)}`,
+          cls: styles.outcomeLoss,
+          icon: <AlertTriangle size={16} aria-hidden />,
+        };
 
   return (
     <div className={styles.screen}>
@@ -57,52 +58,65 @@ export function MultiplayerFinal({
           </span>
         </div>
 
-        <div className={styles.finalScores}>
-          <div className={styles.finalScoreCol}>
-            <span className={styles.finalScoreName}>{myName} (you)</span>
-            <span className={styles.finalScoreValue} style={{ color: 'var(--accent)' }}>
-              {summary.myTotal.toLocaleString()}
-            </span>
-          </div>
-          <span className={styles.finalVs}>vs</span>
-          <div className={styles.finalScoreCol}>
-            <span className={styles.finalScoreName}>{oppName}</span>
-            <span className={styles.finalScoreValue}>{summary.oppTotal.toLocaleString()}</span>
-          </div>
-        </div>
-
-        <ul className={styles.breakdown} aria-label="Round-by-round breakdown">
-          <li className={styles.breakdownHead}>
-            <span>Round</span>
-            <span>You</span>
-            <span>{oppName}</span>
-          </li>
-          {summary.rounds.map((r) => (
-            <li className={styles.breakdownRow} key={r.roundNumber}>
-              <span className={styles.breakdownRoundNum}>
-                {r.roundNumber}
-                {r.result === 'win' && (
-                  <Trophy
-                    size={12}
-                    aria-label="You won this round"
-                    style={{ marginLeft: 4, color: 'var(--accent)', verticalAlign: '-1px' }}
-                  />
+        {/* ── Final standings (1..N) ─────────────────────────── */}
+        <ol className={styles.standings} aria-label="Final standings">
+          {summary.standings.map((s) => (
+            <li
+              key={s.userId}
+              className={`${styles.standingRow} ${s.isMe ? styles.standingMe : ''}`}
+            >
+              <span className={styles.standingRank}>
+                {s.rank}
+                {s.isWinner && (
+                  <Trophy size={13} aria-hidden style={{ marginLeft: 4, color: 'var(--accent)' }} />
                 )}
               </span>
-              <span className={`${styles.roundScoreCell} ${r.result === 'win' ? styles.cellWin : ''}`}>
-                {r.myScore.toLocaleString()}
-                <span className={styles.roundScoreDist}>
-                  {r.myDistanceKm !== null ? formatDistance(r.myDistanceKm, units) : 'No guess'}
-                </span>
+              <span className={styles.standingName}>
+                {s.displayName}
+                {s.isMe && ' (you)'}
+                {s.left && (
+                  <span className={styles.leftTag}>
+                    <LogOut size={11} aria-hidden style={{ verticalAlign: '-1px' }} /> left
+                  </span>
+                )}
               </span>
-              <span className={`${styles.roundScoreCell} ${r.result === 'loss' ? styles.cellWin : ''}`}>
-                {r.oppScore.toLocaleString()}
-                <span className={styles.roundScoreDist}>
-                  {r.oppDistanceKm !== null ? formatDistance(r.oppDistanceKm, units) : 'No guess'}
-                </span>
-              </span>
+              <span className={styles.standingScore}>{s.totalScore.toLocaleString()}</span>
             </li>
           ))}
+        </ol>
+
+        {/* ── Round-by-round breakdown ───────────────────────── */}
+        <ul className={styles.breakdown} aria-label="Round-by-round breakdown">
+          {summary.rounds.map((r) => {
+            const best = r.results[0];
+            const mine = r.results.find((p) => p.isMe);
+            return (
+              <li className={styles.roundBreak} key={r.roundNumber}>
+                <div className={styles.roundBreakHead}>
+                  <span className={styles.breakdownRoundNum}>Round {r.roundNumber}</span>
+                  <span className={styles.roundBreakLoc}>
+                    {r.label}
+                    {r.country ? ` · ${r.country}` : ''}
+                  </span>
+                </div>
+                <div className={styles.roundBreakBody}>
+                  <span>
+                    Top: <strong>{best.displayName}</strong> ·{' '}
+                    {best.score.toLocaleString()}
+                  </span>
+                  {mine && (
+                    <span className={mine.rank === 1 ? styles.cellWin : ''}>
+                      You: {mine.score.toLocaleString()}{' '}
+                      {mine.distanceKm !== null
+                        ? `(${formatDistance(mine.distanceKm, units)})`
+                        : '(no guess)'}{' '}
+                      · {ordinal(mine.rank)}
+                    </span>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
 
         {notice && (

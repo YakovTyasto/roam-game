@@ -1,10 +1,20 @@
+import { useEffect, useState } from 'react';
 import type { Preferences } from '../../types';
 import { APP } from '../../config/app';
+import { MAX_PLAYER_NAME_LENGTH } from '../../multiplayer/playerName';
+import { Button } from '../ui/Button';
 import styles from './SettingsContent.module.css';
 
 interface SettingsContentProps {
   preferences: Preferences;
   bestScore: number;
+  /** Current display name (null before onboarding). */
+  playerName: string | null;
+  /** Whether online services are reachable (affects the name-change hint). */
+  online: boolean;
+  savingName: boolean;
+  nameError: string | null;
+  onChangeName: (name: string) => void;
   onChange: (patch: Partial<Preferences>) => void;
   onResetBest: () => void;
 }
@@ -35,12 +45,64 @@ function Toggle({
 export function SettingsContent({
   preferences,
   bestScore,
+  playerName,
+  online,
+  savingName,
+  nameError,
+  onChangeName,
   onChange,
   onResetBest,
 }: SettingsContentProps) {
+  const [nameDraft, setNameDraft] = useState(playerName ?? '');
+  const [editingName, setEditingName] = useState(false);
+
+  // Keep the draft in sync when the confirmed name changes (e.g. after save).
+  useEffect(() => {
+    if (!editingName) setNameDraft(playerName ?? '');
+  }, [playerName, editingName]);
+
+  const dirty = nameDraft.trim().length > 0 && nameDraft.trim() !== playerName;
+
   return (
     <div>
       <div className={styles.list}>
+        {playerName !== null && (
+          <div className={styles.row}>
+            <div className={styles.rowText}>
+              <span className={styles.rowLabel}>Display name</span>
+              <span className={styles.rowHint}>
+                Shown on multiplayer scoreboards and the weekly leaderboard.
+                {!online && ' Online services are currently unavailable.'}
+              </span>
+              {nameError && (
+                <span className={styles.rowHint} role="alert" style={{ color: 'var(--danger)' }}>
+                  {nameError}
+                </span>
+              )}
+              <div className={styles.nameEdit}>
+                <input
+                  className={styles.nameInput}
+                  value={nameDraft}
+                  onFocus={() => setEditingName(true)}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  maxLength={MAX_PLAYER_NAME_LENGTH}
+                  aria-label="Display name"
+                  autoComplete="nickname"
+                />
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    onChangeName(nameDraft);
+                    setEditingName(false);
+                  }}
+                  disabled={!dirty || savingName}
+                >
+                  {savingName ? 'Saving…' : 'Save'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className={styles.row}>
           <div className={styles.rowText}>
             <span className={styles.rowLabel}>Round timer</span>

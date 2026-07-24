@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { Copy, Check, Share2, Play, LogOut, AlertTriangle, Crown } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { APP } from '../../config/app';
+import { difficultyLabel, difficultyRoundSeconds } from '../../config/difficulty';
 import { buildInviteUrl } from '../../multiplayer/inviteLink';
 import type { RoomView } from '../../multiplayer/machine';
 import type { MpRoom } from '../../multiplayer/types';
@@ -11,17 +12,21 @@ import styles from './multiplayer.module.css';
 interface LobbyProps {
   room: MpRoom;
   view: RoomView;
-  opponentOnline: boolean;
+  onlineUserIds: string[];
   busy: boolean;
   notice: string | null;
   onStart: () => void;
   onLeave: () => void;
 }
 
+function timerLabel(seconds: number): string {
+  return seconds % 60 === 0 ? `${seconds / 60} min` : `${seconds}s`;
+}
+
 export function Lobby({
   room,
   view,
-  opponentOnline,
+  onlineUserIds,
   busy,
   notice,
   onStart,
@@ -29,6 +34,7 @@ export function Lobby({
 }: LobbyProps) {
   const [copied, setCopied] = useState(false);
   const inviteUrl = buildInviteUrl(room.code);
+  const online = new Set(onlineUserIds);
 
   const copyCode = useCallback(async () => {
     try {
@@ -36,7 +42,7 @@ export function Lobby({
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
-      // Clipboard blocked (e.g. insecure context) — no-op; code is on screen.
+      /* Clipboard blocked — code is on screen. */
     }
   }, [room.code]);
 
@@ -51,7 +57,7 @@ export function Lobby({
         await navigator.share(shareData);
         return;
       } catch {
-        // User cancelled or share failed — fall through to clipboard.
+        /* fall through to clipboard */
       }
     }
     try {
@@ -62,6 +68,8 @@ export function Lobby({
       /* nothing else we can do */
     }
   }, [inviteUrl, room.code]);
+
+  const emptySlots = Math.max(0, room.maxPlayers - view.players.length);
 
   return (
     <div className={styles.screen}>
@@ -77,10 +85,17 @@ export function Lobby({
           </Button>
         </div>
 
-        <h1 className={styles.title}>Invite your opponent</h1>
-        <p className={styles.lede}>
-          Share the code or link. The match starts once both players are here.
-        </p>
+        <h1 className={styles.title}>Invite your friends</h1>
+
+        <div className={styles.settingsSummary} aria-label="Room settings">
+          <span className={styles.settingChip}>{difficultyLabel(room.difficulty)}</span>
+          <span className={styles.settingChip}>
+            {timerLabel(difficultyRoundSeconds(room.difficulty))} / round
+          </span>
+          <span className={styles.settingChip}>
+            {view.players.length} / {room.maxPlayers} players
+          </span>
+        </div>
 
         <div className={styles.codeBlock}>
           <span className={styles.label} style={{ textAlign: 'center' }}>
@@ -102,36 +117,36 @@ export function Lobby({
         </div>
 
         <div className={styles.players}>
-          {view.me && (
+          {view.players.map((p) => (
             <PlayerRow
-              name={view.me.displayName}
+              key={p.id}
+              name={p.displayName}
               score={null}
-              isMe
-              isHost={room.hostId === view.me.userId}
-              connection="online"
+              isMe={p.userId === view.me?.userId}
+              isHost={room.hostId === p.userId}
+              connection={
+                p.connectionStatus === 'left'
+                  ? 'left'
+                  : p.userId === view.me?.userId || online.has(p.userId)
+                    ? 'online'
+                    : 'offline'
+              }
             />
-          )}
-          {view.opponent ? (
-            <PlayerRow
-              name={view.opponent.displayName}
-              score={null}
-              isHost={room.hostId === view.opponent.userId}
-              connection={opponentOnline ? 'online' : 'offline'}
-            />
-          ) : (
-            <div className={styles.playerRow}>
+          ))}
+          {Array.from({ length: emptySlots }).map((_, i) => (
+            <div className={styles.playerRow} key={`empty-${i}`}>
               <span className={styles.avatar} aria-hidden>
                 ?
               </span>
               <div className={styles.playerMain}>
                 <div className={styles.playerName} style={{ color: 'var(--text-faint)' }}>
-                  Waiting for opponent…
+                  Open slot
                 </div>
-                <div className={styles.playerMeta}>They&apos;ll appear here on join</div>
+                <div className={styles.playerMeta}>Waiting for a player to join</div>
               </div>
               <span className={styles.spinnerDot} aria-hidden />
             </div>
-          )}
+          ))}
         </div>
 
         {notice && (
@@ -148,14 +163,14 @@ export function Lobby({
               size="lg"
               block
               onClick={onStart}
-              disabled={busy || !view.bothPlayersPresent}
+              disabled={busy || !view.canStart}
             >
               <Play size={20} aria-hidden />
               {busy ? 'Setting up…' : 'Start game'}
             </Button>
-            {!view.bothPlayersPresent && (
+            {!view.canStart && (
               <p className={styles.footNote}>
-                The Start button unlocks when your opponent joins.
+                The Start button unlocks once a second player joins.
               </p>
             )}
           </div>

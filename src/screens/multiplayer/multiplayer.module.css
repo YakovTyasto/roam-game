@@ -455,3 +455,137 @@
   font-size: var(--fs-xs);
   color: var(--text-faint);
 }
+
+/* ── v2: create form extras, settings summary, standings ────── */
+.playingAs {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 4px 0 12px;
+}
+.playingAs strong {
+  color: var(--text);
+}
+
+.capacityRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 14px 0 4px;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepperValue {
+  min-width: 2ch;
+  text-align: center;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.settingsSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 16px;
+}
+
+.settingChip {
+  padding: 4px 12px;
+  border-radius: var(--r-full);
+  background: var(--surface-1);
+  border: 1px solid var(--panel-border);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.standings {
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.standingRow {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-1);
+  border: 1px solid var(--panel-border);
+}
+
+.standingMe {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.standingRank {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+}
+
+.standingName {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.standingScore {
+  color: var(--accent);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.leftTag {
+  margin-left: 8px;
+  font-size: var(--fs-xs);
+  color: var(--danger);
+}
+
+.roundBreak {
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: var(--surface-1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.roundBreakHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.roundBreakLoc {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.roundBreakBody {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}

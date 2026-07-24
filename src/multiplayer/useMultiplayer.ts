@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { hasGoogleMapsKey, hasSupabaseConfig } from '../config/env';
+import type { Difficulty } from '../config/difficulty';
 import { locationProvider } from '../providers/LocationProvider';
+import { buildDifficultyPool } from '../utils/difficultyPool';
 import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
 import { getSupabase } from './supabaseClient';
 import { ensureAnonymousSession } from './auth';
@@ -14,6 +16,12 @@ import { isRoundExpired, remainingSeconds, toEpochMs } from './timer';
 import { validatePlayerName } from './playerName';
 import { isValidRoomCode, normalizeRoomCode } from './roomCode';
 import type { MpRoom, MultiplayerStatus, RoomSnapshot } from './types';
+
+/** Options chosen by the host when creating a private room. */
+export interface CreateRoomInput {
+  difficulty: Difficulty;
+  maxPlayers: number;
+}
 
 type PreRoomPhase = 'menu' | 'creating' | 'joining';
 type Connection = 'connecting' | 'connected' | 'disconnected';
@@ -33,10 +41,11 @@ export interface MultiplayerController {
   busy: boolean;
   secondsLeft: number | null;
   connection: Connection;
-  opponentOnline: boolean;
+  /** User ids currently present in the room via Realtime presence. */
+  onlineUserIds: string[];
   initialCode: string;
   actions: {
-    createRoom: (name: string) => Promise<void>;
+    createRoom: (name: string, options: CreateRoomInput) => Promise<void>;
     joinRoom: (code: string, name: string) => Promise<void>;
     startMatch: () => Promise<void>;
     submitGuess: (lat: number, lng: number) => Promise<void>;
@@ -99,7 +108,7 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
   const [connection, setConnection] = useState<Connection>('connecting');
-  const [opponentOnline, setOpponentOnline] = useState(false);
+  const [onlineUserIds, setOnlineUserIds] = useState<string[]>([]);
   const [menuError, setMenuError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -250,8 +259,8 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     const syncPresence = () => {
       if (disposed) return;
       const state = channel.presenceState();
-      const others = Object.keys(state).filter((k) => k !== userId);
-      setOpponentOnline(others.length > 0);
+      // Presence keys are user ids (see the channel config). Include ourselves.
+      setOnlineUserIds(Object.keys(state));
     };
     channel.on('presence', { event: 'sync' }, syncPresence);
     channel.on('presence', { event: 'join' }, syncPresence);
@@ -276,7 +285,7 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
 
     return () => {
       disposed = true;
-      setOpponentOnline(false);
+      setOnlineUserIds([]);
       void supabase.removeChannel(channel);
     };
   }, [supabase, roomId, userId, doRefetch, scheduleRefetch, measureOffset]);
@@ -330,7 +339,7 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
 
   // ── Actions ───────────────────────────────────────────────────────────
   const createRoom = useCallback(
-    async (name: string) => {
+    async (name: string, options: CreateRoomInput) => {
       if (!supabase || !userId) return;
       const valid = validatePlayerName(name);
       if (!valid.ok) {
@@ -341,7 +350,10 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
       setPhase('creating');
       setBusy(true);
       try {
-        const ref = await api.createRoom(supabase, valid.name);
+        const ref = await api.createRoom(supabase, valid.name, {
+          difficulty: options.difficulty,
+          maxPlayers: options.maxPlayers,
+        });
         enterRoom(ref.roomId);
       } catch (e) {
         setMenuError(errorMessage(e));
@@ -384,12 +396,19 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
 
   const startMatch = useCallback(async () => {
     if (!supabase || !roomId || !room) return;
-    if (!view?.isHost || !view.bothPlayersPresent) return;
+    if (!view?.isHost || !view.canStart) return;
     setNotice(null);
     setBusy(true);
     try {
       const google = await ensureGoogleMaps();
-      const pool = await locationProvider.getAll();
+      const all = await locationProvider.getAll();
+      // Shared difficulty-aware pool (with adjacent-tier fallback) so solo and
+      // multiplayer draw from the same place for a given difficulty.
+      const { locations: pool } = buildDifficultyPool(
+        all,
+        room.difficulty,
+        room.totalRounds,
+      );
       const manifest = await buildManifest(google, pool, room.totalRounds);
       await api.startMatch(supabase, roomId, manifest);
       await doRefetch(roomId);
@@ -494,7 +513,7 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     busy,
     secondsLeft,
     connection,
-    opponentOnline,
+    onlineUserIds,
     initialCode,
     actions: {
       createRoom,

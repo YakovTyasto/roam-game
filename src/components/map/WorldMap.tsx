@@ -4,12 +4,20 @@ import 'leaflet/dist/leaflet.css';
 import type { GameLocation, LatLng } from '../../types';
 import styles from './WorldMap.module.css';
 
+/** One other player's revealed guess in multiplayer result mode. */
+export interface OtherGuess extends LatLng {
+  label?: string;
+}
+
 interface WorldMapProps {
   mode: 'guess' | 'result';
   guess: LatLng | null;
   actual?: GameLocation | null;
-  /** Opponent's guess, shown alongside yours in multiplayer result mode. */
-  opponentGuess?: LatLng | null;
+  /**
+   * Other players' guesses, shown alongside yours in multiplayer result mode.
+   * Supports up to eight markers (a full party room).
+   */
+  otherGuesses?: OtherGuess[];
   interactive: boolean;
   onPlaceGuess: (latlng: LatLng) => void;
 }
@@ -45,7 +53,7 @@ export function WorldMap({
   mode,
   guess,
   actual,
-  opponentGuess,
+  otherGuesses,
   interactive,
   onPlaceGuess,
 }: WorldMapProps) {
@@ -54,8 +62,11 @@ export function WorldMap({
   const guessMarkerRef = useRef<L.Marker | null>(null);
   const actualMarkerRef = useRef<L.Marker | null>(null);
   const lineRef = useRef<L.Polyline | null>(null);
-  const opponentMarkerRef = useRef<L.Marker | null>(null);
-  const opponentLineRef = useRef<L.Polyline | null>(null);
+  const opponentLayersRef = useRef<L.Layer[]>([]);
+  // Serialise the other-guess list so the reconcile effect has a stable dep.
+  const othersKey = (otherGuesses ?? [])
+    .map((o) => `${o.lat.toFixed(4)},${o.lng.toFixed(4)}`)
+    .join('|');
 
   const onPlaceRef = useRef(onPlaceGuess);
   onPlaceRef.current = onPlaceGuess;
@@ -103,8 +114,7 @@ export function WorldMap({
       guessMarkerRef.current = null;
       actualMarkerRef.current = null;
       lineRef.current = null;
-      opponentMarkerRef.current = null;
-      opponentLineRef.current = null;
+      opponentLayersRef.current = [];
     };
   }, []);
 
@@ -153,10 +163,8 @@ export function WorldMap({
       actualMarkerRef.current = null;
       lineRef.current?.remove();
       lineRef.current = null;
-      opponentMarkerRef.current?.remove();
-      opponentMarkerRef.current = null;
-      opponentLineRef.current?.remove();
-      opponentLineRef.current = null;
+      for (const layer of opponentLayersRef.current) layer.remove();
+      opponentLayersRef.current = [];
     };
 
     if (mode !== 'result' || !actual) {
@@ -183,19 +191,20 @@ export function WorldMap({
       }).addTo(map);
     }
 
-    if (opponentGuess) {
-      const oppLatLng: L.LatLngExpression = [opponentGuess.lat, opponentGuess.lng];
+    for (const other of otherGuesses ?? []) {
+      const oppLatLng: L.LatLngExpression = [other.lat, other.lng];
       points.push(oppLatLng);
-      opponentMarkerRef.current = L.marker(oppLatLng, {
+      const marker = L.marker(oppLatLng, {
         icon: opponentIcon,
-        title: 'Opponent guess',
+        title: other.label ? `${other.label}'s guess` : 'Other guess',
       }).addTo(map);
-      opponentLineRef.current = L.polyline([oppLatLng, actualLatLng], {
+      const line = L.polyline([oppLatLng, actualLatLng], {
         color: '#ff9d3a',
         weight: 2,
         dashArray: '4 6',
-        opacity: 0.9,
+        opacity: 0.85,
       }).addTo(map);
+      opponentLayersRef.current.push(marker, line);
     }
 
     if (points.length >= 2) {
@@ -209,7 +218,9 @@ export function WorldMap({
     }
 
     return clearResult;
-  }, [mode, actual, guess, opponentGuess]);
+    // othersKey captures the otherGuesses contents for the dep array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, actual, guess, othersKey]);
 
   return (
     <div

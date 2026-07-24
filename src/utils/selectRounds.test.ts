@@ -9,6 +9,7 @@ const makePool = (size: number): GameLocation[] =>
     lng: i,
     label: `Location ${i}`,
     country: 'Nowhere',
+    difficulty: 'normal',
   }));
 
 describe('selectUniqueLocations', () => {
