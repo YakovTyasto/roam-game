@@ -2,8 +2,9 @@ import type { GameLocation } from '../types';
 import type { Difficulty } from '../config/difficulty';
 import { DEFAULT_DIFFICULTY } from '../config/difficulty';
 import { LOCATIONS } from '../data/locations';
-import { selectUniqueLocations } from '../utils/selectRounds';
+import { selectUniqueLocationsAvoidingHistory } from '../utils/selectRounds';
 import { buildDifficultyPool } from '../utils/difficultyPool';
+import { readLocationHistory, recordPlayedLocations } from '../utils/locationHistory';
 
 /**
  * Abstraction over "where locations come from". The game logic depends only on
@@ -41,12 +42,12 @@ export class StaticLocationProvider implements LocationProvider {
       difficulty,
       count,
     );
-    const shuffled = selectUniqueLocations(pool, pool.length);
-    return {
-      locations: shuffled.slice(0, count),
-      backups: shuffled.slice(count),
-      usedFallback,
-    };
+    const recentIds = readLocationHistory();
+    const shuffled = selectUniqueLocationsAvoidingHistory(pool, pool.length, recentIds);
+    const locations = shuffled.slice(0, count);
+    const backups = shuffled.slice(count);
+    recordPlayedLocations(locations.map((l) => l.id));
+    return { locations, backups, usedFallback };
   }
 }
 

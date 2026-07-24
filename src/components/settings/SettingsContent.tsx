@@ -17,6 +17,7 @@ interface SettingsContentProps {
   onChangeName: (name: string) => void;
   onChange: (patch: Partial<Preferences>) => void;
   onResetBest: () => void;
+  onResetLocationHistory: () => void;
 }
 
 function Toggle({
@@ -52,6 +53,7 @@ export function SettingsContent({
   onChangeName,
   onChange,
   onResetBest,
+  onResetLocationHistory,
 }: SettingsContentProps) {
   const [nameDraft, setNameDraft] = useState(playerName ?? '');
   const [editingName, setEditingName] = useState(false);
@@ -176,6 +178,24 @@ export function SettingsContent({
               border: '1px solid var(--panel-border)',
               opacity: bestScore <= 0 ? 0.5 : 1,
             }}
+          >
+            Reset
+          </button>
+        </div>
+
+        <div className={styles.row}>
+          <div className={styles.rowText}>
+            <span className={styles.rowLabel}>Recently played locations</span>
+            <span className={styles.rowHint}>
+              Clears the cooldown that keeps recently played spots from
+              repeating in new games.
+            </span>
+          </div>
+          <button
+            type="button"
+            className={styles.segmentButton}
+            onClick={onResetLocationHistory}
+            style={{ border: '1px solid var(--panel-border)' }}
           >
             Reset
           </button>
