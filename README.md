@@ -11,13 +11,19 @@ pin on the map to guess where you are. Five rounds, up to **25,000 points**.
   existing location-guessing product.
 - Google Street View is used **only** for the panorama. The guessing and result
   maps use **Leaflet + OpenStreetMap** (no key required).
+- **Optional private 1v1 multiplayer** (Supabase): play a friend in real time on
+  the same locations. Entirely optional — solo mode works with no backend. See
+  [`docs/MULTIPLAYER_SETUP.md`](docs/MULTIPLAYER_SETUP.md).
 
 ---
 
 ## Tech stack
 
 React 18 · TypeScript (strict) · Vite 6 · Leaflet · Lucide icons ·
-vite-plugin-pwa · Vitest · ESLint. No backend, no accounts, no database.
+vite-plugin-pwa · Vitest · ESLint. Solo play needs no backend, accounts, or
+database. Optional multiplayer adds **Supabase** (Postgres + Row Level Security +
+Realtime + anonymous auth), loaded on demand via a code-split chunk so the solo
+bundle stays lean.
 
 ## Requirements
 
@@ -114,6 +120,31 @@ Street View panorama loads are billable, so the app is built to minimise them:
   of fallback radii; if none is found the location is swapped for a spare and
   retried gracefully.
 
+## Private multiplayer (optional)
+
+Play a friend 1v1 in real time on the same five locations:
+
+- **Create or join** a private room with a six-character code or an invite link
+  (`/?room=ABC234`). Names are anonymous — no accounts.
+- **Same locations, same order.** The host generates a validated round manifest
+  (real resolved panoramas + a fixed heading) once; both clients load the
+  identical panorama.
+- **Guess independently.** You never see the opponent's guess before you submit;
+  results reveal after both submit or the server-authoritative timer expires.
+- **Trusted server.** Scores are computed in Postgres with the exact solo
+  formula, Row Level Security hides answers/opponent guesses until the reveal,
+  and all writes go through transactional RPCs. Reconnect after a refresh.
+
+This is a friends-only MVP, not an anti-cheat system — see the honest trust-model
+note in [`docs/MULTIPLAYER_SETUP.md`](docs/MULTIPLAYER_SETUP.md), which has the
+full Supabase + Vercel setup, the SQL migrations to apply, and troubleshooting.
+
+Architecture lives under `src/multiplayer/` (typed client, API/repository,
+domain types, state machine, and the `useMultiplayer` hook) and
+`src/screens/multiplayer/` (menu, lobby, game, final). The database schema, RLS
+policies, and RPCs are in `supabase/migrations/`, with a runnable verification
+script in `supabase/tests/`.
+
 ## Build & preview production
 
 ```bash
@@ -153,9 +184,14 @@ and skips gracefully to a spare if none exists.
 
 ## Known MVP limitations
 
-- Single-player only; scores/preferences are stored in `localStorage` (per
-  browser, not synced).
-- Location data is client-side and therefore inspectable (see above).
+- Solo scores/preferences are stored in `localStorage` (per browser, not synced).
+- Location data is client-side and therefore inspectable (see above). In
+  multiplayer the answer is withheld by RLS until the reveal, but the active
+  round's panorama id is necessarily on the client to render it — a
+  sophisticated player could resolve it back to coordinates. It's a friends-only
+  MVP, not anti-cheat (details in `docs/MULTIPLAYER_SETUP.md`).
+- Multiplayer anonymous identity lives in the browser; clearing site data or
+  switching devices creates a new identity that can't rejoin as the same player.
 - The PWA caches only the **app shell** — Street View and map tiles require a
   network connection and are intentionally **not** available offline.
 - No anti-cheat (e.g. against reading bundled coordinates or the browser
@@ -179,10 +215,19 @@ Unit tests (Vitest) cover the pure logic:
 - Exponential scoring (`src/utils/score.test.ts`)
 - Unique round selection (`src/utils/selectRounds.test.ts`)
 - Game reducer / state transitions (`src/game/reducer.test.ts`)
+- Multiplayer: room-code + name validation, invite-link parsing, timer-expiry
+  decisions, snapshot reconciliation (out-of-order), the room state machine,
+  winner/draw + round breakdown, manifest validation, missing-config handling,
+  and **TS↔SQL scoring parity** (`src/multiplayer/*.test.ts`)
 
 ```bash
 npm run test
 ```
+
+The database guarantees (max two players, host-only start, one guess per round,
+hidden targets/opponent guesses, no direct score edits, safe duplicate
+advancement, timer enforcement) have a runnable SQL verification script — see
+[`supabase/tests/README.md`](supabase/tests/README.md).
 
 ## License
 

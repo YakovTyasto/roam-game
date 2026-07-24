@@ -3,12 +3,27 @@ import type { GameLocation } from '../../types';
 import { useGoogleMaps } from '../../hooks/useGoogleMaps';
 import styles from './StreetView.module.css';
 
+/**
+ * A fixed panorama target used by multiplayer: both clients set the exact same
+ * pano id and orientation so they see an identical view. No search is performed
+ * and no target coordinates are needed on the client to render it.
+ */
+export interface PanoramaTarget {
+  panoId: string;
+  heading: number;
+  pitch?: number;
+  zoom?: number;
+}
+
 interface StreetViewProps {
-  location: GameLocation | null;
-  /** Called once a panorama has been positioned for the location. */
+  /** Solo mode: a curated location the component searches a panorama for. */
+  location?: GameLocation | null;
+  /** Multiplayer mode: an exact, pre-resolved panorama + orientation. */
+  panorama?: PanoramaTarget | null;
+  /** Called once a panorama has been positioned. */
   onReady: () => void;
-  /** Called when no usable panorama exists near the location. */
-  onNoPanorama: () => void;
+  /** Called when no usable panorama exists near a searched location (solo). */
+  onNoPanorama?: () => void;
   /** Called if Google Maps fails to load at all. */
   onLoadError: (message: string) => void;
 }
@@ -26,9 +41,15 @@ const SEARCH_RADII = [120, 1000, 6000];
  *     instance — the panorama is repositioned, never destroyed and rebuilt.
  *   • React Strict Mode's double-invoked effects are guarded so no second
  *     panorama (and no second billable load) is ever created.
+ *
+ * Two targeting modes share the single instance:
+ *   • `location` — solo mode searches for the nearest outdoor panorama.
+ *   • `panorama` — multiplayer mode sets an exact pano id + heading so both
+ *     players see the identical view without exposing target coordinates.
  */
 export function StreetView({
   location,
+  panorama,
   onReady,
   onNoPanorama,
   onLoadError,
@@ -73,9 +94,28 @@ export function StreetView({
     serviceRef.current = new google.maps.StreetViewService();
   }, [google]);
 
-  // Reposition the existing panorama whenever the location changes.
+  // Multiplayer: position the panorama at an exact pano id + heading. Keyed on
+  // the primitive fields (not the object) so a rerender never re-issues a
+  // billable setPano — it only fires when the round's panorama actually changes.
+  const panoId = panorama?.panoId;
+  const heading = panorama?.heading;
+  const pitch = panorama?.pitch;
+  const zoom = panorama?.zoom;
   useEffect(() => {
-    if (!google || !location) return;
+    if (!google || panoId == null) return;
+    const pano = panoRef.current;
+    if (!pano) return;
+
+    pano.setPano(panoId);
+    pano.setPov({ heading: heading ?? 0, pitch: pitch ?? 0 });
+    pano.setZoom(zoom ?? 0);
+    pano.setVisible(true);
+    onReadyRef.current();
+  }, [google, panoId, heading, pitch, zoom]);
+
+  // Solo: search for and reposition the panorama when the location changes.
+  useEffect(() => {
+    if (!google || panoId != null || !location) return;
     const pano = panoRef.current;
     const service = serviceRef.current;
     if (!pano || !service) return;
@@ -86,7 +126,7 @@ export function StreetView({
     const tryRadius = (index: number) => {
       if (cancelled) return;
       if (index >= SEARCH_RADII.length) {
-        onNoPanoRef.current();
+        onNoPanoRef.current?.();
         return;
       }
 
@@ -122,7 +162,7 @@ export function StreetView({
     return () => {
       cancelled = true;
     };
-  }, [google, location]);
+  }, [google, location, panoId]);
 
   return (
     <div className={`${styles.wrap} noselect`} aria-hidden={false}>
