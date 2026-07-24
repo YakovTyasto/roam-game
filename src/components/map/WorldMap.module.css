@@ -45,6 +45,10 @@
   background: var(--marker-actual);
 }
 
+.pinOpponent::before {
+  background: var(--marker-opponent);
+}
+
 .pinActual::after {
   background: rgba(12, 17, 3, 0.9);
 }

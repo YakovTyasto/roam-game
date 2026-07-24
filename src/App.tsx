@@ -1,10 +1,20 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import type { Preferences } from './types';
 import { APP, MAX_GAME_SCORE } from './config/app';
 import { hasGoogleMapsKey } from './config/env';
 import { gameReducer } from './game/reducer';
 import { initialGameState } from './game/state';
 import { locationProvider } from './providers/LocationProvider';
+import { parseRoomCodeFromUrl } from './multiplayer/inviteLink';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { usePrefersReducedMotion } from './hooks/useMediaQuery';
@@ -16,6 +26,17 @@ import { ErrorScreen } from './screens/ErrorScreen';
 import { Modal } from './components/ui/Modal';
 import { SettingsContent } from './components/settings/SettingsContent';
 import { OfflineBanner } from './components/ui/OfflineBanner';
+import { LoadingOverlay } from './components/ui/LoadingOverlay';
+
+// Multiplayer (and the Supabase SDK it pulls in) is code-split so the solo
+// experience stays lean and loads Supabase only when a player opens multiplayer.
+const MultiplayerApp = lazy(() =>
+  import('./screens/multiplayer/MultiplayerApp').then((m) => ({
+    default: m.MultiplayerApp,
+  })),
+);
+
+type AppMode = 'solo' | 'multiplayer';
 
 const DEFAULT_PREFERENCES: Preferences = {
   timer: false,
@@ -34,9 +55,20 @@ export default function App() {
     0,
   );
 
+  // Detect an invite link (?room=ABC234) once on load; jump straight into
+  // multiplayer with the code prefilled, without breaking normal navigation.
+  const initialRoomCode = useMemo(
+    () =>
+      typeof window !== 'undefined'
+        ? parseRoomCodeFromUrl(window.location.search)
+        : null,
+    [],
+  );
+
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
   const [isBest, setIsBest] = useState(false);
+  const [mode, setMode] = useState<AppMode>(initialRoomCode ? 'multiplayer' : 'solo');
 
   const online = useOnlineStatus();
   const systemReducedMotion = usePrefersReducedMotion();
@@ -87,6 +119,18 @@ export default function App() {
   const goHome = useCallback(() => dispatch({ type: 'RESET' }), []);
 
   const renderScreen = () => {
+    if (mode === 'multiplayer') {
+      return (
+        <Suspense fallback={<LoadingOverlay label="Loading multiplayer…" />}>
+          <MultiplayerApp
+            initialCode={initialRoomCode ?? ''}
+            units={preferences.units}
+            onExitHome={() => setMode('solo')}
+          />
+        </Suspense>
+      );
+    }
+
     if (showSetup) {
       return <SetupScreen onBack={() => setShowSetup(false)} />;
     }
@@ -98,6 +142,7 @@ export default function App() {
             bestScore={bestScore}
             hasKey={hasKey}
             onStart={startGame}
+            onStartMultiplayer={() => setMode('multiplayer')}
             onOpenSettings={() => setSettingsOpen(true)}
           />
         );

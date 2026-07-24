@@ -1,4 +1,4 @@
-import { Play, Settings, Trophy, AlertTriangle } from 'lucide-react';
+import { Play, Settings, Trophy, AlertTriangle, Users } from 'lucide-react';
 import { APP, MAX_GAME_SCORE } from '../config/app';
 import { Button } from '../components/ui/Button';
 import styles from './WelcomeScreen.module.css';
@@ -7,6 +7,7 @@ interface WelcomeScreenProps {
   bestScore: number;
   hasKey: boolean;
   onStart: () => void;
+  onStartMultiplayer: () => void;
   onOpenSettings: () => void;
 }
 
@@ -20,6 +21,7 @@ export function WelcomeScreen({
   bestScore,
   hasKey,
   onStart,
+  onStartMultiplayer,
   onOpenSettings,
 }: WelcomeScreenProps) {
   return (
@@ -64,7 +66,12 @@ export function WelcomeScreen({
         <div className={styles.actions}>
           <Button variant="primary" size="lg" onClick={onStart}>
             <Play size={20} aria-hidden />
-            Start game
+            Solo game
+          </Button>
+
+          <Button variant="ghost" size="lg" onClick={onStartMultiplayer}>
+            <Users size={20} aria-hidden />
+            Private multiplayer
           </Button>
 
           <span className={styles.best}>

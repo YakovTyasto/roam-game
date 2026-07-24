@@ -14,6 +14,16 @@ type GoogleNamespace = typeof google;
 
 let loaderPromise: Promise<GoogleNamespace> | null = null;
 
+/**
+ * Ensure the Google Maps API is loaded and resolve with the `google` namespace.
+ * Shares the same single-load promise as the `useGoogleMaps` hook, so callers
+ * outside React (e.g. the multiplayer host building a match manifest) never
+ * trigger a second billable script load.
+ */
+export function ensureGoogleMaps(): Promise<GoogleNamespace> {
+  return loadGoogleMaps();
+}
+
 function loadGoogleMaps(): Promise<GoogleNamespace> {
   if (loaderPromise) return loaderPromise;
 

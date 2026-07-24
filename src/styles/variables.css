@@ -32,6 +32,7 @@
   --danger-dim: rgba(255, 107, 94, 0.16);
   --marker-guess: #56b7ff;
   --marker-actual: #bff43a;
+  --marker-opponent: #ff9d3a;
 
   /* Radii */
   --r-sm: 8px;
