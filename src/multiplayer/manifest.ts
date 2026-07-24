@@ -1,5 +1,6 @@
 import type { GameLocation } from '../types';
-import { selectUniqueLocations } from '../utils/selectRounds';
+import { selectUniqueLocationsAvoidingHistory } from '../utils/selectRounds';
+import { readLocationHistory, recordPlayedLocations } from '../utils/locationHistory';
 import type { ManifestRound } from './types';
 import { resolvePanoId } from './resolvePanorama';
 
@@ -69,12 +70,19 @@ function isNonEmptyString(v: unknown): v is string {
 
 /**
  * Host-only: build a validated round manifest using the existing curated
- * location pool and the Google Street View service. Shuffles the pool, resolves
- * a concrete panorama for each candidate, and stops once `count` playable
- * rounds are found. Each round gets a fixed random heading so both clients open
- * facing the same direction.
+ * location pool and the Google Street View service. Orders the pool (preferring
+ * locations outside the persistent recent-location history — see
+ * `utils/locationHistory.ts`), resolves a concrete panorama for each candidate,
+ * and stops once `count` playable rounds are found. Each round gets a fixed
+ * random heading so both clients open facing the same direction.
  *
- * Throws if not enough panoramas can be resolved from the pool.
+ * On success, records the chosen locations in the shared history so this same
+ * shared implementation also drives solo's server-tracked path (see
+ * `solo/useSoloRun.ts`) and multiplayer's host-only match start (see
+ * `multiplayer/useMultiplayer.ts`) away from repeats in future matches.
+ *
+ * Throws if not enough panoramas can be resolved from the pool; history is not
+ * updated on failure.
  */
 export async function buildManifest(
   google: typeof window.google,
@@ -83,7 +91,8 @@ export async function buildManifest(
   options: { rng?: () => number } = {},
 ): Promise<ManifestRound[]> {
   const rng = options.rng ?? Math.random;
-  const candidates = selectUniqueLocations(pool, pool.length, rng);
+  const recentIds = readLocationHistory();
+  const candidates = selectUniqueLocationsAvoidingHistory(pool, pool.length, recentIds, rng);
 
   const rounds: ManifestRound[] = [];
   for (const loc of candidates) {
@@ -113,5 +122,7 @@ export async function buildManifest(
   if (!check.ok) {
     throw new Error(check.error);
   }
+
+  recordPlayedLocations(rounds.map((r) => r.location_id));
   return rounds;
 }

@@ -7,6 +7,7 @@ import { hasGoogleMapsKey } from './config/env';
 import { gameReducer } from './game/reducer';
 import { initialGameState } from './game/state';
 import { useSoloRun } from './solo/useSoloRun';
+import { resetLocationHistory } from './utils/locationHistory';
 import { useProfile } from './profile/useProfile';
 import { parseRoomCodeFromUrl } from './multiplayer/inviteLink';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -262,6 +263,7 @@ export default function App() {
             setBestScore(0);
             setIsBest(false);
           }}
+          onResetLocationHistory={resetLocationHistory}
         />
       </Modal>
 
