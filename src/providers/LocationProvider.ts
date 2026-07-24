@@ -1,6 +1,9 @@
 import type { GameLocation } from '../types';
+import type { Difficulty } from '../config/difficulty';
+import { DEFAULT_DIFFICULTY } from '../config/difficulty';
 import { LOCATIONS } from '../data/locations';
 import { selectUniqueLocations } from '../utils/selectRounds';
+import { buildDifficultyPool } from '../utils/difficultyPool';
 
 /**
  * Abstraction over "where locations come from". The game logic depends only on
@@ -11,12 +14,14 @@ export interface LocationProvider {
   /** All available locations (used for pooling / backups). */
   getAll(): Promise<GameLocation[]>;
   /**
-   * Return `count` unique locations plus a set of spare "backup" locations that
-   * can transparently replace any that lack a usable panorama.
+   * Return `count` unique locations for the given difficulty plus a set of
+   * spare "backup" locations (also difficulty-appropriate) that can
+   * transparently replace any that lack a usable panorama.
    */
   getGameLocations(
     count: number,
-  ): Promise<{ locations: GameLocation[]; backups: GameLocation[] }>;
+    difficulty?: Difficulty,
+  ): Promise<{ locations: GameLocation[]; backups: GameLocation[]; usedFallback: boolean }>;
 }
 
 /** Default provider backed by the bundled, in-memory dataset. */
@@ -27,13 +32,20 @@ export class StaticLocationProvider implements LocationProvider {
     return [...this.pool];
   }
 
-  async getGameLocations(count: number) {
-    // Shuffle the whole pool once; the first `count` are the rounds and the
-    // remainder act as ordered backups for graceful panorama-not-found skips.
-    const shuffled = selectUniqueLocations(this.pool, this.pool.length);
+  async getGameLocations(count: number, difficulty: Difficulty = DEFAULT_DIFFICULTY) {
+    // Build the difficulty-appropriate pool (with adjacent-tier fallback if the
+    // primary tier is too small), then shuffle: the first `count` are the
+    // rounds and the remainder act as ordered backups for graceful skips.
+    const { locations: pool, usedFallback } = buildDifficultyPool(
+      this.pool,
+      difficulty,
+      count,
+    );
+    const shuffled = selectUniqueLocations(pool, pool.length);
     return {
       locations: shuffled.slice(0, count),
       backups: shuffled.slice(count),
+      usedFallback,
     };
   }
 }

@@ -9,6 +9,8 @@ interface HUDProps {
   score: number;
   showTimer: boolean;
   secondsLeft: number | null;
+  /** Active difficulty label, shown as a small pill during play. */
+  difficultyLabel?: string;
   onOpenSettings: () => void;
 }
 
@@ -24,6 +26,7 @@ export function HUD({
   score,
   showTimer,
   secondsLeft,
+  difficultyLabel,
   onOpenSettings,
 }: HUDProps) {
   return (
@@ -39,6 +42,12 @@ export function HUD({
             {totalRounds}
           </span>
         </div>
+        {difficultyLabel && (
+          <div className={styles.pill}>
+            <span className={styles.label}>Mode</span>
+            <span className={styles.value}>{difficultyLabel}</span>
+          </div>
+        )}
         <div className={styles.pill}>
           <Compass size={16} className={styles.icon} aria-hidden />
           <span className={styles.label}>Score</span>

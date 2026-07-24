@@ -98,3 +98,27 @@
   font-size: var(--fs-xs);
   color: var(--text-faint);
 }
+
+.nameEdit {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.nameInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--panel-border);
+  background: var(--surface-1);
+  color: var(--text);
+  font-size: var(--fs-base);
+}
+
+.nameInput:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-color: var(--accent);
+}

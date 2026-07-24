@@ -1,4 +1,4 @@
-import { Play, Settings, Trophy, AlertTriangle, Users } from 'lucide-react';
+import { Play, Settings, Trophy, AlertTriangle, Users, BarChart3 } from 'lucide-react';
 import { APP, MAX_GAME_SCORE } from '../config/app';
 import { Button } from '../components/ui/Button';
 import styles from './WelcomeScreen.module.css';
@@ -6,8 +6,10 @@ import styles from './WelcomeScreen.module.css';
 interface WelcomeScreenProps {
   bestScore: number;
   hasKey: boolean;
+  playerName: string | null;
   onStart: () => void;
   onStartMultiplayer: () => void;
+  onOpenLeaderboard: () => void;
   onOpenSettings: () => void;
 }
 
@@ -20,8 +22,10 @@ const STEPS = [
 export function WelcomeScreen({
   bestScore,
   hasKey,
+  playerName,
   onStart,
   onStartMultiplayer,
+  onOpenLeaderboard,
   onOpenSettings,
 }: WelcomeScreenProps) {
   return (
@@ -73,6 +77,18 @@ export function WelcomeScreen({
             <Users size={20} aria-hidden />
             Private multiplayer
           </Button>
+
+          <Button variant="ghost" size="lg" onClick={onOpenLeaderboard}>
+            <BarChart3 size={20} aria-hidden />
+            Weekly leaderboard
+          </Button>
+
+          {playerName && (
+            <span className={styles.best}>
+              Playing as
+              <span className={styles.bestValue}>{playerName}</span>
+            </span>
+          )}
 
           <span className={styles.best}>
             <Trophy size={18} className={styles.bestIcon} aria-hidden />

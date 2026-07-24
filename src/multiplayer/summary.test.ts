@@ -9,10 +9,10 @@ import {
   makeSnapshot,
   makeTarget,
   twoPlayers,
+  party,
 } from './__fixtures__/rooms';
 
 function completedMatch(meScore: number, oppScore: number) {
-  // Two completed rounds; totals live on the players.
   const r1 = makeRound({ id: 'r1', roundNumber: 1, status: 'complete' });
   const r2 = makeRound({ id: 'r2', roundNumber: 2, status: 'complete' });
   return makeSnapshot({
@@ -32,37 +32,72 @@ function completedMatch(meScore: number, oppScore: number) {
   });
 }
 
-describe('summarizeMatch', () => {
-  it('builds a per-round breakdown from the current player perspective', () => {
-    const snap = completedMatch(5000, 3000);
-    const summary = summarizeMatch(snap, ME, OPP);
-
+describe('summarizeMatch (2 players)', () => {
+  it('builds a per-round breakdown ranking each player', () => {
+    const summary = summarizeMatch(completedMatch(5000, 3000), ME);
     expect(summary.rounds).toHaveLength(2);
-    expect(summary.rounds[0]).toMatchObject({
-      roundNumber: 1,
-      label: 'Paris',
-      myScore: 4000,
-      oppScore: 3000,
-      result: 'win',
-    });
-    expect(summary.rounds[1]).toMatchObject({
-      roundNumber: 2,
-      myScore: 1000,
-      oppScore: 0,
-      oppDistanceKm: null, // opponent missed the round
-      result: 'win',
-    });
+
+    const r1 = summary.rounds[0];
+    expect(r1.label).toBe('Paris');
+    const meR1 = r1.results.find((p) => p.isMe)!;
+    const oppR1 = r1.results.find((p) => !p.isMe)!;
+    expect(meR1.score).toBe(4000);
+    expect(meR1.rank).toBe(1);
+    expect(oppR1.rank).toBe(2);
+
+    const r2 = summary.rounds[1];
+    const oppR2 = r2.results.find((p) => !p.isMe)!;
+    expect(oppR2.missed).toBe(true);
+    expect(oppR2.distanceKm).toBeNull();
   });
 
-  it('reports the overall winner from the player totals', () => {
-    expect(summarizeMatch(completedMatch(5000, 3000), ME, OPP).result).toBe('win');
-    expect(summarizeMatch(completedMatch(2000, 9000), ME, OPP).result).toBe('loss');
-    expect(summarizeMatch(completedMatch(4000, 4000), ME, OPP).result).toBe('draw');
+  it('ranks the overall winner from the player totals', () => {
+    let s = summarizeMatch(completedMatch(5000, 3000), ME);
+    expect(s.me?.rank).toBe(1);
+    expect(s.me?.isWinner).toBe(true);
+    expect(s.isTie).toBe(false);
+
+    s = summarizeMatch(completedMatch(2000, 9000), ME);
+    expect(s.me?.rank).toBe(2);
+    expect(s.me?.isWinner).toBe(false);
+
+    s = summarizeMatch(completedMatch(4000, 4000), ME);
+    expect(s.isTie).toBe(true);
+    expect(s.winners).toHaveLength(2);
+  });
+});
+
+describe('summarizeMatch (party of 8)', () => {
+  it('produces a full 1..8 ranking with competition ties', () => {
+    // Scores: 5000, 4000, 4000, 3000, 2000, 1000, 500, 0.
+    const scores = [5000, 4000, 4000, 3000, 2000, 1000, 500, 0];
+    const snap = makeSnapshot({
+      room: makeRoom({ status: 'complete', maxPlayers: 8 }),
+      players: party(8, scores),
+    });
+    const summary = summarizeMatch(snap, ME);
+
+    expect(summary.standings).toHaveLength(8);
+    // Winner is me (5000), rank 1, not tied.
+    expect(summary.me?.rank).toBe(1);
+    expect(summary.me?.isWinner).toBe(true);
+
+    // The two 4000s share rank 2 (competition ranking: 1,2,2,4…).
+    const at4000 = summary.standings.filter((s) => s.totalScore === 4000);
+    expect(at4000).toHaveLength(2);
+    expect(at4000.every((s) => s.rank === 2 && s.tied)).toBe(true);
+    // Next distinct score (3000) is rank 4.
+    expect(summary.standings.find((s) => s.totalScore === 3000)?.rank).toBe(4);
   });
 
-  it('carries the player totals through', () => {
-    const summary = summarizeMatch(completedMatch(5000, 3000), ME, OPP);
-    expect(summary.myTotal).toBe(5000);
-    expect(summary.oppTotal).toBe(3000);
+  it('flags a tie at the top across multiple players', () => {
+    const snap = makeSnapshot({
+      room: makeRoom({ status: 'complete', maxPlayers: 3 }),
+      players: party(3, [4200, 4200, 1000]),
+    });
+    const summary = summarizeMatch(snap, ME);
+    expect(summary.isTie).toBe(true);
+    expect(summary.winners).toHaveLength(2);
+    expect(summary.winners.every((w) => w.rank === 1)).toBe(true);
   });
 });

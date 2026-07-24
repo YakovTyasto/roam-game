@@ -1,0 +1,216 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 20px) 16px
+    calc(env(safe-area-inset-bottom) + 20px);
+  overflow-y: auto;
+  background: radial-gradient(120% 80% at 50% 0%, #14181300 0%, var(--bg) 60%);
+}
+
+.card {
+  width: min(640px, 100%);
+  background: var(--panel-strong);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--r-lg);
+  padding: clamp(16px, 3vw, 26px);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(var(--blur));
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.weekBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin: 14px 0 12px;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  flex-wrap: wrap;
+}
+
+.countdown {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  flex: 1 1 auto;
+  min-width: 72px;
+  padding: 7px 10px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--panel-border);
+  background: var(--surface-1);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition:
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.filterBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.filterActive {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--text);
+}
+
+.colHead,
+.row {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr 3rem auto;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Multiplayer adds a wins column. */
+.withWins.colHead,
+.withWins.row {
+  grid-template-columns: 2.6rem 1fr 3rem 3rem auto;
+}
+
+.colHead {
+  padding: 8px 10px 4px;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.list {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.row {
+  padding: 10px;
+  border-radius: var(--r-sm);
+  background: var(--surface-1);
+  border: 1px solid transparent;
+  font-size: var(--fs-sm);
+}
+
+.rowSelf {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.rank {
+  font-weight: 700;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+}
+
+.name {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat {
+  color: var(--text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm);
+}
+
+.score {
+  color: var(--accent);
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.selfDivider {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 8px 0 4px;
+  text-align: center;
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.stateHint {
+  font-size: var(--fs-sm);
+  color: var(--text-faint);
+}
+
+.skeleton {
+  height: 40px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(
+    90deg,
+    var(--surface-1) 25%,
+    var(--surface-2) 37%,
+    var(--surface-1) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+:global(.reduce-motion) .skeleton {
+  animation: none;
+}

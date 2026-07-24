@@ -14,10 +14,16 @@ import statusStyles from '../../components/ui/StatusScreen.module.css';
 interface MultiplayerAppProps {
   initialCode: string;
   units: Preferences['units'];
+  playerName: string;
   onExitHome: () => void;
 }
 
-export function MultiplayerApp({ initialCode, units, onExitHome }: MultiplayerAppProps) {
+export function MultiplayerApp({
+  initialCode,
+  units,
+  playerName,
+  onExitHome,
+}: MultiplayerAppProps) {
   const mp = useMultiplayer(initialCode);
   const { status, view, room, snapshot } = mp;
 
@@ -124,10 +130,11 @@ export function MultiplayerApp({ initialCode, units, onExitHome }: MultiplayerAp
     return (
       <MultiplayerMenu
         initialCode={initialCode}
+        playerName={playerName}
         busy={mp.busy || status !== 'menu'}
         error={mp.menuError}
-        onCreate={mp.actions.createRoom}
-        onJoin={mp.actions.joinRoom}
+        onCreate={(options) => mp.actions.createRoom(playerName, options)}
+        onJoin={(code) => mp.actions.joinRoom(code, playerName)}
         onClearError={mp.actions.clearMenuError}
         onBack={onExitHome}
       />
@@ -148,7 +155,7 @@ export function MultiplayerApp({ initialCode, units, onExitHome }: MultiplayerAp
       <Lobby
         room={room}
         view={view}
-        opponentOnline={mp.opponentOnline}
+        onlineUserIds={mp.onlineUserIds}
         busy={mp.busy}
         notice={mp.notice}
         onStart={mp.actions.startMatch}
@@ -187,7 +194,7 @@ export function MultiplayerApp({ initialCode, units, onExitHome }: MultiplayerAp
       room={room}
       view={view}
       secondsLeft={mp.secondsLeft}
-      opponentOnline={mp.opponentOnline}
+      onlineUserIds={mp.onlineUserIds}
       connection={mp.connection}
       busy={mp.busy}
       units={units}

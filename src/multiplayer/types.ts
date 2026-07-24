@@ -15,8 +15,12 @@ export type RoundStatus = 'pending' | 'active' | 'complete';
 /** A player's live connection state (driven by Realtime presence + leave). */
 export type ConnectionStatus = 'online' | 'offline' | 'left';
 
-/** Player slot within a room. Exactly two are allowed. */
-export type PlayerSlot = 1 | 2;
+/** Player slot within a room. Party rooms allow slots 1..8. */
+export type PlayerSlot = number;
+
+/** Minimum and maximum players a private room can hold. */
+export const MIN_PLAYERS = 2;
+export const MAX_PLAYERS = 8;
 
 export interface MpRoom {
   id: string;
@@ -26,6 +30,10 @@ export interface MpRoom {
   currentRound: number;
   totalRounds: number;
   roundDurationSeconds: number;
+  /** Chosen difficulty (locked at start). Old rooms default to 'normal'. */
+  difficulty: import('../config/difficulty').Difficulty;
+  /** Room capacity (2..8). Old rooms default to 2. */
+  maxPlayers: number;
   rematchRoomId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -59,10 +67,11 @@ export interface MpRound {
   zoom: number;
   status: RoundStatus;
   /**
-   * How many of the two players have submitted a guess this round. Exposed on
-   * the round row (which is readable while active) so a client can show
-   * "opponent submitted" WITHOUT being able to read the opponent's guess
-   * coordinates (those stay hidden by RLS until the round is complete).
+   * How many players have submitted a guess this round. Exposed on the round
+   * row (readable while active) so a client can show "N of M submitted" WITHOUT
+   * being able to read anyone's guess coordinates (those stay hidden by RLS
+   * until the round is complete). Individual attribution is deliberately not
+   * available before the reveal.
    */
   submittedCount: number;
   startedAt: string | null;

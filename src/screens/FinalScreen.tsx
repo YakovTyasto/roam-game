@@ -10,6 +10,8 @@ interface FinalScreenProps {
   results: RoundResult[];
   isBest: boolean;
   units: Preferences['units'];
+  /** Active difficulty label, shown alongside the result badge. */
+  difficultyLabel?: string;
   onPlayAgain: () => void;
   onHome: () => void;
 }
@@ -18,6 +20,7 @@ export function FinalScreen({
   results,
   isBest,
   units,
+  difficultyLabel,
   onPlayAgain,
   onHome,
 }: FinalScreenProps) {
@@ -31,6 +34,7 @@ export function FinalScreen({
           <span className={styles.badge}>
             <Trophy size={14} aria-hidden />
             {isBest ? 'New best score' : 'Game complete'}
+            {difficultyLabel ? ` · ${difficultyLabel}` : ''}
           </span>
           <div className={styles.total}>
             {total.toLocaleString()}

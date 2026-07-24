@@ -1,23 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  ArrowRight,
-  Check,
-  Flag,
-  LogOut,
-  MapPin,
-  Timer,
-  Trophy,
-  Wifi,
-} from 'lucide-react';
+import { ArrowRight, Check, Flag, LogOut, MapPin, Timer, Trophy, Wifi } from 'lucide-react';
 import type { LatLng, Preferences } from '../../types';
 import { formatDistance } from '../../utils/distance';
 import { useIsDesktop, useIsTablet } from '../../hooks/useMediaQuery';
 import { StreetView } from '../../components/street/StreetView';
-import { WorldMap } from '../../components/map/WorldMap';
+import { WorldMap, type OtherGuess } from '../../components/map/WorldMap';
 import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
 import { Button } from '../../components/ui/Button';
 import type { RoomView } from '../../multiplayer/machine';
-import type { MpRoom } from '../../multiplayer/types';
+import { rankByScore } from '../../multiplayer/ranking';
+import type { MpPlayer, MpRoom } from '../../multiplayer/types';
 import mapStyles from '../../components/map/MapPanel.module.css';
 import styles from './game.module.css';
 
@@ -25,7 +17,7 @@ interface MultiplayerGameProps {
   room: MpRoom;
   view: RoomView;
   secondsLeft: number | null;
-  opponentOnline: boolean;
+  onlineUserIds: string[];
   connection: 'connecting' | 'connected' | 'disconnected';
   busy: boolean;
   units: Preferences['units'];
@@ -40,16 +32,11 @@ function formatClock(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-interface PlayerStatus {
-  label: string;
-  dotClass: string;
-}
-
 export function MultiplayerGame({
   room,
   view,
   secondsLeft,
-  opponentOnline,
+  onlineUserIds,
   connection,
   busy,
   units,
@@ -69,12 +56,9 @@ export function MultiplayerGame({
 
   const [pendingGuess, setPendingGuess] = useState<LatLng | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
-  // Track which pano id has finished positioning. Comparing against the current
-  // round's pano id (rather than a boolean we reset on round change) avoids a
-  // race between the child's onReady and a parent reset effect.
   const [readyPanoId, setReadyPanoId] = useState<string | null>(null);
+  const online = new Set(onlineUserIds);
 
-  // Reset per-round local state whenever the round changes.
   useEffect(() => {
     setPendingGuess(null);
     setMapExpanded(false);
@@ -101,15 +85,20 @@ export function MultiplayerGame({
     );
   }
 
-  // Guess shown on the map: submitted guess if present, else the pending pin.
   const myGuessLatLng: LatLng | null = view.myGuess
     ? { lat: view.myGuess.lat, lng: view.myGuess.lng }
     : pendingGuess;
 
-  const opponentGuessLatLng: LatLng | null =
-    isResult && view.opponentGuess
-      ? { lat: view.opponentGuess.lat, lng: view.opponentGuess.lng }
-      : null;
+  // On reveal, all other players' guesses (up to 7) are shown alongside the answer.
+  const otherGuesses: OtherGuess[] = isResult
+    ? view.roundGuesses
+        .filter((g) => g.userId !== view.me?.userId)
+        .map((g) => ({
+          lat: g.lat,
+          lng: g.lng,
+          label: view.players.find((p) => p.userId === g.userId)?.displayName,
+        }))
+    : [];
 
   const actualLocation =
     isResult && view.currentTarget
@@ -119,25 +108,23 @@ export function MultiplayerGame({
           lng: view.currentTarget.lng,
           label: view.currentTarget.label,
           country: view.currentTarget.country,
+          difficulty: room.difficulty,
         }
       : null;
 
-  const myScore = view.myGuess?.score ?? 0;
-  const oppScore = view.opponentGuess?.score ?? 0;
   const isLastRound = room.currentRound >= room.totalRounds;
 
-  const meStatus = playerStatus({
-    exploring: !view.myGuess,
-    submitted: view.myGuess != null,
-    online: true,
-    isResult,
-  });
-  const oppStatus = playerStatus({
-    exploring: !view.opponentSubmitted,
-    submitted: view.opponentSubmitted,
-    online: opponentOnline,
-    isResult,
-  });
+  // Scoreboard: sort by running total (desc), tie-break by slot.
+  const scoreboard = [...view.players].sort(
+    (a, b) => b.totalScore - a.totalScore || a.slot - b.slot,
+  );
+
+  // Round result ranking across every player (missing guess = 0).
+  const roundScoreOf = (p: MpPlayer) =>
+    view.roundGuesses.find((g) => g.userId === p.userId)?.score ?? 0;
+  const rankedRound = isResult
+    ? rankByScore(view.players, roundScoreOf, (a, b) => a.slot - b.slot)
+    : [];
 
   const isOpen = isResult || mapExpanded;
   const panelClasses = [
@@ -171,12 +158,19 @@ export function MultiplayerGame({
                 {room.totalRounds}
               </span>
             </div>
+            {!isResult && (
+              <div className={styles.pill}>
+                <Check size={16} className={styles.icon} aria-hidden />
+                <span className={styles.value}>
+                  {view.submittedCount}/{view.eligibleCount}
+                </span>
+                <span className={styles.label}>in</span>
+              </div>
+            )}
             {secondsLeft !== null && (
               <div className={styles.pill} role="timer" aria-live="off">
                 <Timer size={16} className={styles.icon} aria-hidden />
-                <span
-                  className={`${styles.value} ${secondsLeft <= 10 ? styles.timerLow : ''}`}
-                >
+                <span className={`${styles.value} ${secondsLeft <= 10 ? styles.timerLow : ''}`}>
                   {formatClock(secondsLeft)}
                 </span>
               </div>
@@ -187,19 +181,39 @@ export function MultiplayerGame({
           </Button>
         </div>
 
-        <div className={styles.scoreboard}>
-          <ScorePill
-            me
-            name={view.me?.displayName ?? 'You'}
-            score={view.me?.totalScore ?? 0}
-            status={meStatus}
-          />
-          <ScorePill
-            me={false}
-            name={view.opponent?.displayName ?? 'Opponent'}
-            score={view.opponent?.totalScore ?? 0}
-            status={oppStatus}
-          />
+        {/* Dynamic scoreboard for 2–8 players. */}
+        <div className={styles.partyScoreboard}>
+          {scoreboard.map((p) => {
+            const isMe = p.userId === view.me?.userId;
+            const submitted = isMe && view.myGuess != null;
+            const isOnline = isMe || online.has(p.userId);
+            const left = p.connectionStatus === 'left';
+            return (
+              <div
+                key={p.id}
+                className={`${styles.sbChip} ${isMe ? styles.sbChipMe : ''} ${left ? styles.sbChipLeft : ''}`}
+              >
+                <span
+                  className={`${styles.sbChipDot} ${
+                    left
+                      ? styles.sbDotOffline
+                      : submitted
+                        ? styles.sbDotSubmitted
+                        : isOnline
+                          ? styles.sbDotExploring
+                          : styles.sbDotOffline
+                  }`}
+                  aria-hidden
+                />
+                <span className={styles.sbChipName}>
+                  {p.displayName}
+                  {isMe && ' (you)'}
+                  {left && <span className="sr-only"> (left)</span>}
+                </span>
+                <span className={styles.sbChipScore}>{p.totalScore.toLocaleString()}</span>
+              </div>
+            );
+          })}
         </div>
 
         {connection === 'disconnected' && (
@@ -211,13 +225,8 @@ export function MultiplayerGame({
         )}
       </div>
 
-      {/* Mobile entry point when the sheet is closed. */}
       {isMobileLike && !isOpen && (
-        <button
-          className={mapStyles.fab}
-          onClick={() => setMapExpanded(true)}
-          type="button"
-        >
+        <button className={mapStyles.fab} onClick={() => setMapExpanded(true)} type="button">
           <span className={mapStyles.fabDot} aria-hidden />
           {locked ? 'View map' : 'Make your guess'}
         </button>
@@ -249,7 +258,7 @@ export function MultiplayerGame({
             mode={isResult ? 'result' : 'guess'}
             guess={myGuessLatLng}
             actual={actualLocation}
-            opponentGuess={opponentGuessLatLng}
+            otherGuesses={otherGuesses}
             interactive={!locked}
             onPlaceGuess={handlePlaceGuess}
           />
@@ -258,7 +267,6 @@ export function MultiplayerGame({
         {isResult ? (
           <div className={mapStyles.footer}>
             <div className={styles.resultFooter}>
-              <RoundOutcome myScore={myScore} oppScore={oppScore} />
               {actualLocation && (
                 <div className={styles.locationName}>
                   <Flag size={16} className={styles.flag} aria-hidden />
@@ -267,22 +275,34 @@ export function MultiplayerGame({
                   </span>
                 </div>
               )}
-              <div className={styles.resultGrid}>
-                <ResultColumn
-                  me
-                  name={view.me?.displayName ?? 'You'}
-                  distanceKm={view.myGuess?.distanceKm ?? null}
-                  score={myScore}
-                  units={units}
-                />
-                <ResultColumn
-                  me={false}
-                  name={view.opponent?.displayName ?? 'Opponent'}
-                  distanceKm={view.opponentGuess?.distanceKm ?? null}
-                  score={oppScore}
-                  units={units}
-                />
-              </div>
+              <ol className={styles.roundRanking} aria-label="Round ranking">
+                {rankedRound.map((entry) => {
+                  const p = entry.item;
+                  const guess = view.roundGuesses.find((g) => g.userId === p.userId);
+                  const isMe = p.userId === view.me?.userId;
+                  return (
+                    <li
+                      key={p.id}
+                      className={`${styles.rankRow} ${isMe ? styles.rankRowMe : ''}`}
+                    >
+                      <span className={styles.rankPos}>
+                        {entry.rank}
+                        {entry.isWinner && (
+                          <Trophy size={11} aria-label="Round winner" style={{ marginLeft: 3, color: 'var(--accent)' }} />
+                        )}
+                      </span>
+                      <span className={styles.rankName}>
+                        {p.displayName}
+                        {isMe && ' (you)'}
+                      </span>
+                      <span className={styles.rankDist}>
+                        {guess ? formatDistance(guess.distanceKm, units) : 'No guess'}
+                      </span>
+                      <span className={styles.rankScore}>{entry.score.toLocaleString()}</span>
+                    </li>
+                  );
+                })}
+              </ol>
               <Button variant="primary" size="lg" block onClick={onAdvance} disabled={busy}>
                 {isLastRound ? (
                   <>
@@ -302,7 +322,7 @@ export function MultiplayerGame({
           <div className={mapStyles.footer}>
             <span className={mapStyles.hint}>
               {locked
-                ? 'Guess locked in — waiting for your opponent…'
+                ? `Guess locked in — ${view.submittedCount}/${view.eligibleCount} players in…`
                 : myGuessLatLng
                   ? 'Tap again or drag to adjust, then submit.'
                   : 'Tap the map to drop your guess.'}
@@ -323,114 +343,4 @@ export function MultiplayerGame({
       {readyPanoId !== round.panoId && <LoadingOverlay label="Loading panorama…" />}
     </div>
   );
-}
-
-// ── Small presentational helpers ───────────────────────────────────────────
-
-function ScorePill({
-  me,
-  name,
-  score,
-  status,
-}: {
-  me: boolean;
-  name: string;
-  score: number;
-  status: PlayerStatus;
-}) {
-  return (
-    <div className={`${styles.sbPlayer} ${me ? styles.sbPlayerMe : ''}`}>
-      <div className={styles.sbTop}>
-        <span className={styles.sbName}>
-          {name}
-          {me && ' (you)'}
-        </span>
-        <span className={styles.sbScore}>{score.toLocaleString()}</span>
-      </div>
-      <span className={styles.sbStatus}>
-        <span className={`${styles.sbDot} ${status.dotClass}`} aria-hidden />
-        {status.label}
-      </span>
-    </div>
-  );
-}
-
-function ResultColumn({
-  me,
-  name,
-  distanceKm,
-  score,
-  units,
-}: {
-  me: boolean;
-  name: string;
-  distanceKm: number | null;
-  score: number;
-  units: Preferences['units'];
-}) {
-  return (
-    <div className={`${styles.resultCol} ${me ? styles.resultColMe : ''}`}>
-      <span className={styles.resultColHead}>
-        <span
-          className={`${styles.resultSwatch} ${me ? styles.swatchMe : styles.swatchOpp}`}
-          aria-hidden
-        />
-        {name}
-        {me && ' (you)'}
-      </span>
-      {distanceKm !== null ? (
-        <span className={styles.resultDistance}>{formatDistance(distanceKm, units)}</span>
-      ) : (
-        <span className={styles.missText}>No guess</span>
-      )}
-      <span className={styles.resultScore}>{score.toLocaleString()}</span>
-    </div>
-  );
-}
-
-function RoundOutcome({ myScore, oppScore }: { myScore: number; oppScore: number }) {
-  let text: string;
-  let cls: string;
-  if (myScore > oppScore) {
-    text = 'You won the round';
-    cls = styles.roundOutcomeWin;
-  } else if (oppScore > myScore) {
-    text = 'Opponent won the round';
-    cls = styles.roundOutcomeLoss;
-  } else {
-    text = 'Round tied';
-    cls = styles.roundOutcomeDraw;
-  }
-  return (
-    <div className={`${styles.roundOutcome} ${cls}`}>
-      <Trophy size={16} aria-hidden />
-      {text}
-    </div>
-  );
-}
-
-function playerStatus({
-  exploring,
-  submitted,
-  online,
-  isResult,
-}: {
-  exploring: boolean;
-  submitted: boolean;
-  online: boolean;
-  isResult: boolean;
-}): PlayerStatus {
-  if (!online) {
-    return { label: 'Disconnected', dotClass: styles.sbDotOffline };
-  }
-  if (isResult) {
-    return { label: 'Round complete', dotClass: styles.sbDotSubmitted };
-  }
-  if (submitted) {
-    return { label: 'Guess submitted', dotClass: styles.sbDotSubmitted };
-  }
-  if (exploring) {
-    return { label: 'Exploring', dotClass: styles.sbDotExploring };
-  }
-  return { label: 'Waiting', dotClass: styles.sbDot };
 }

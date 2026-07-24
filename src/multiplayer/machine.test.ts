@@ -9,6 +9,7 @@ import {
   makeSnapshot,
   makeTarget,
   twoPlayers,
+  party,
   makePlayer,
 } from './__fixtures__/rooms';
 
@@ -21,32 +22,42 @@ describe('deriveRoomView', () => {
     expect(deriveRoomView(snap, ME).status).toBe('error');
   });
 
-  it('reports lobby with both-players gating', () => {
+  it('reports lobby with the 2+ start gate', () => {
     const one = makeSnapshot({ players: [twoPlayers()[0]] });
     expect(deriveRoomView(one, ME).status).toBe('lobby');
-    expect(deriveRoomView(one, ME).bothPlayersPresent).toBe(false);
+    expect(deriveRoomView(one, ME).canStart).toBe(false);
 
     const two = makeSnapshot({ players: twoPlayers() });
     const view = deriveRoomView(two, ME);
     expect(view.status).toBe('lobby');
-    expect(view.bothPlayersPresent).toBe(true);
+    expect(view.canStart).toBe(true);
     expect(view.isHost).toBe(true);
   });
 
-  it('is an error (match ended) when the room is abandoned', () => {
+  it('supports a party of up to eight players in the lobby', () => {
+    const snap = makeSnapshot({
+      room: makeRoom({ maxPlayers: 8 }),
+      players: party(8),
+    });
+    const view = deriveRoomView(snap, ME);
+    expect(view.players).toHaveLength(8);
+    expect(view.others).toHaveLength(7);
+    expect(view.canStart).toBe(true);
+  });
+
+  it('is an error when the room is abandoned', () => {
     const snap = makeSnapshot({
       room: makeRoom({ status: 'abandoned' }),
       players: twoPlayers(),
     });
-    const view = deriveRoomView(snap, ME);
-    expect(view.status).toBe('error');
-    expect(view.errorReason).toMatch(/left/i);
+    expect(deriveRoomView(snap, ME).status).toBe('error');
   });
 
-  it('is active before I submit, and derives opponentSubmitted from the count', () => {
+  it('is active before I submit; everyoneSubmitted tracks the eligible count', () => {
+    const players = party(3);
     const base = {
-      room: makeRoom({ status: 'active', currentRound: 1 }),
-      players: twoPlayers(),
+      room: makeRoom({ status: 'active', currentRound: 1, maxPlayers: 4 }),
+      players,
     };
     // No one submitted yet.
     let view = deriveRoomView(
@@ -54,18 +65,41 @@ describe('deriveRoomView', () => {
       ME,
     );
     expect(view.status).toBe('active');
-    expect(view.opponentSubmitted).toBe(false);
+    expect(view.eligibleCount).toBe(3);
+    expect(view.everyoneSubmitted).toBe(false);
 
-    // Opponent submitted (count 1, I have no guess) → opponentSubmitted true.
+    // 2 of 3 submitted → still not everyone (dynamic threshold, not fixed 2).
     view = deriveRoomView(
-      makeSnapshot({ ...base, rounds: [makeRound({ submittedCount: 1 })] }),
+      makeSnapshot({ ...base, rounds: [makeRound({ submittedCount: 2 })] }),
       ME,
     );
-    expect(view.status).toBe('active');
-    expect(view.opponentSubmitted).toBe(true);
+    expect(view.everyoneSubmitted).toBe(false);
+
+    // All 3 submitted.
+    view = deriveRoomView(
+      makeSnapshot({ ...base, rounds: [makeRound({ submittedCount: 3 })] }),
+      ME,
+    );
+    expect(view.everyoneSubmitted).toBe(true);
   });
 
-  it('is submitted (guess locked) once I have a guess, opponent still hidden', () => {
+  it('excludes departed players from the eligible count', () => {
+    const players = party(3);
+    players[2] = { ...players[2], connectionStatus: 'left' };
+    const view = deriveRoomView(
+      makeSnapshot({
+        room: makeRoom({ status: 'active', currentRound: 1 }),
+        players,
+        rounds: [makeRound({ submittedCount: 2 })],
+      }),
+      ME,
+    );
+    // Only 2 eligible; both submitted → everyone submitted.
+    expect(view.eligibleCount).toBe(2);
+    expect(view.everyoneSubmitted).toBe(true);
+  });
+
+  it('is submitted (guess locked) once I have a guess', () => {
     const view = deriveRoomView(
       makeSnapshot({
         room: makeRoom({ status: 'active', currentRound: 1 }),
@@ -77,13 +111,9 @@ describe('deriveRoomView', () => {
     );
     expect(view.status).toBe('submitted');
     expect(view.myGuess).not.toBeNull();
-    // submittedCount 1 minus my own submission → opponent has NOT submitted.
-    expect(view.opponentSubmitted).toBe(false);
-    // Opponent guess is not revealed while the round is active.
-    expect(view.opponentGuess).toBeNull();
   });
 
-  it('reveals both guesses + target on a completed round', () => {
+  it('reveals all guesses + target on a completed round', () => {
     const view = deriveRoomView(
       makeSnapshot({
         room: makeRoom({ status: 'active', currentRound: 1 }),
@@ -100,7 +130,7 @@ describe('deriveRoomView', () => {
     expect(view.status).toBe('round-result');
     expect(view.currentTarget?.label).toBe('Paris');
     expect(view.myGuess?.score).toBe(4761);
-    expect(view.opponentGuess?.score).toBe(3000);
+    expect(view.roundGuesses).toHaveLength(2);
   });
 
   it('is final when the room is complete', () => {

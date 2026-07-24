@@ -4,6 +4,8 @@ import type { LatLng, Preferences } from '../types';
 import type { GameAction, GameState } from '../game/state';
 import { currentLocation } from '../game/state';
 import { APP } from '../config/app';
+import type { Difficulty } from '../config/difficulty';
+import { DEFAULT_DIFFICULTY, difficultyLabel, difficultyRoundSeconds } from '../config/difficulty';
 import { haversineDistanceKm } from '../utils/distance';
 import { calculateScore } from '../utils/score';
 import { useIsDesktop, useIsTablet } from '../hooks/useMediaQuery';
@@ -16,17 +18,25 @@ interface GameScreenProps {
   state: GameState;
   dispatch: Dispatch<GameAction>;
   preferences: Preferences;
+  /** Active difficulty (drives the round timer + HUD label). */
+  difficulty?: Difficulty;
+  /**
+   * Called after each guess is submitted, so a server-authoritative solo run
+   * can record it. `roundIndex` is 0-based; guess is the placed coordinate.
+   */
+  onGuessSubmitted?: (roundIndex: number, guess: LatLng) => void;
   onOpenSettings: () => void;
 }
-
-const ROUND_SECONDS = 120;
 
 export function GameScreen({
   state,
   dispatch,
   preferences,
+  difficulty = DEFAULT_DIFFICULTY,
+  onGuessSubmitted,
   onOpenSettings,
 }: GameScreenProps) {
+  const ROUND_SECONDS = difficultyRoundSeconds(difficulty);
   const isDesktop = useIsDesktop();
   const isTablet = useIsTablet();
   const device: Device = isDesktop ? 'desktop' : isTablet ? 'tablet' : 'phone';
@@ -74,8 +84,12 @@ export function GameScreen({
         type: 'SUBMIT_GUESS',
         result: { location: loc, guess: effectiveGuess, distanceKm, score },
       });
+      // Mirror the guess to the server-authoritative solo run (if any). The
+      // server re-scores it from the same coordinates; the client score is only
+      // for display. `roundIndex` is 0-based here.
+      onGuessSubmitted?.(state.roundIndex, effectiveGuess);
     },
-    [dispatch, state],
+    [dispatch, state, onGuessSubmitted],
   );
 
   const handleConfirm = useCallback(() => {
@@ -111,7 +125,7 @@ export function GameScreen({
   // Reset the timer whenever a fresh round begins exploring.
   useEffect(() => {
     if (state.status === 'exploring') setSecondsLeft(ROUND_SECONDS);
-  }, [state.roundIndex, state.status]);
+  }, [state.roundIndex, state.status, ROUND_SECONDS]);
 
   const timerActive =
     preferences.timer &&
@@ -157,6 +171,7 @@ export function GameScreen({
         score={totalScore}
         showTimer={preferences.timer}
         secondsLeft={preferences.timer ? secondsLeft : null}
+        difficultyLabel={difficultyLabel(difficulty)}
         onOpenSettings={onOpenSettings}
       />
 

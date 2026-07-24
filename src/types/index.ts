@@ -14,6 +14,12 @@ export interface GameLocation {
   label: string;
   country: string;
   /**
+   * Difficulty tier this location belongs to. Drives difficulty-aware round
+   * selection (see utils/difficultyPool.ts). Iconic, high-clue spots are
+   * `easy`; balanced ones `normal`; remote/ambiguous ones `hard`.
+   */
+  difficulty: import('../config/difficulty').Difficulty;
+  /**
    * Optional radius (metres) for the Street View service to search for the
    * nearest available panorama. Defaults are applied by the Street View hook.
    */

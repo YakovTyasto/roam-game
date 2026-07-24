@@ -38,6 +38,41 @@ A `NOTICE: OK: …` line is printed for every passing assertion; any failure
 raises `ASSERT FAILED: …` and aborts. The script ends with
 `ALL PART 1 TESTS PASSED` / `ALL PART 2 TESTS PASSED`.
 
+## Roam v2 verification (`02_v2_verify.sql`)
+
+`02_v2_verify.sql` exercises the v2 features after applying migrations
+`0001`→`0005`:
+
+- **Difficulty + party rooms** — create-room stores difficulty/capacity and
+  derives the per-difficulty timer; players join up to capacity; a 9th join is
+  rejected; a non-host `mp_start_match` is rejected; the host can start with 2+
+  players even when the room isn't full.
+- **Dynamic round completion** — a round completes only once *every eligible*
+  player has submitted (never a fixed threshold of 2); duplicate submit is
+  idempotent.
+- **Leave / host transfer** — one player leaving does not destroy a party; a
+  departure that leaves everyone else already submitted completes the round; the
+  host leaving the lobby transfers host to the earliest remaining player; an
+  empty room is abandoned.
+- **Multiplayer results** — one `game_results` row per participant, idempotent,
+  with competition placement + win flags.
+- **Server-authoritative solo** — the answer is hidden for un-guessed rounds;
+  each guess is scored server-side; finalize uses the server-summed total (the
+  client cannot pass a score) and is idempotent; 5-round runs are eligible.
+- **Leaderboard** — sanitized output contains no auth UUIDs; the caller's own
+  entry is returned.
+- **UTC weeks** — Monday 00:00 UTC boundaries and rollover.
+
+```bash
+# after the 0001→0005 apply loop above:
+psql -d roam_mp_test -f supabase/migrations/0003_difficulty_and_party_rooms.sql
+psql -d roam_mp_test -f supabase/migrations/0004_player_profiles_and_leaderboard.sql
+psql -d roam_mp_test -f supabase/migrations/0005_v2_rpc_functions.sql
+psql -d roam_mp_test -f supabase/tests/02_v2_verify.sql
+```
+
+Ends with `ALL V2 TESTS PASSED` and `ALL V2 HOST/WEEK TESTS PASSED`.
+
 The stub file defines `auth.uid()` to read a `test.uid` GUC so the harness can
 impersonate players with `select set_config('test.uid', '<uuid>', false)`; on
 real Supabase, `auth.uid()` comes from the signed-in session instead.

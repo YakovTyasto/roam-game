@@ -19,6 +19,8 @@ export function makeRoom(overrides: Partial<MpRoom> = {}): MpRoom {
     currentRound: 0,
     totalRounds: 5,
     roundDurationSeconds: 120,
+    difficulty: 'normal',
+    maxPlayers: 2,
     rematchRoomId: null,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
@@ -113,4 +115,24 @@ export function twoPlayers(
       totalScore: oppScore,
     }),
   ];
+}
+
+/**
+ * A party of `count` players (2–8): me (slot 1, host) plus generated guests.
+ * `scores[i]` sets each player's total score if provided.
+ */
+export function party(count: number, scores: number[] = []): MpPlayer[] {
+  const players: MpPlayer[] = [];
+  for (let i = 0; i < count; i++) {
+    players.push(
+      makePlayer({
+        id: `player-${i + 1}`,
+        userId: i === 0 ? ME : `user-${i + 1}`,
+        displayName: i === 0 ? 'Me' : `Guest ${i + 1}`,
+        slot: i + 1,
+        totalScore: scores[i] ?? 0,
+      }),
+    );
+  }
+  return players;
 }

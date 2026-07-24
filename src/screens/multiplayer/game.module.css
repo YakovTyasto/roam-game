@@ -279,3 +279,110 @@
     display: none;
   }
 }
+
+/* ── Party scoreboard (2–8 players) ─────────────────────────── */
+.partyScoreboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.sbChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--r-full);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(var(--blur));
+  font-size: var(--fs-xs);
+  max-width: 100%;
+}
+
+.sbChipMe {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.sbChipLeft {
+  opacity: 0.55;
+}
+
+.sbChipDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.sbChipName {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12ch;
+}
+
+.sbChipScore {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* ── Round ranking list on the result panel ─────────────────── */
+.roundRanking {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 34vh;
+  overflow-y: auto;
+}
+
+.rankRow {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--r-sm);
+  background: var(--surface-1);
+  font-size: var(--fs-sm);
+}
+
+.rankRowMe {
+  border: 1px solid var(--accent);
+  background: var(--accent-dim);
+}
+
+.rankPos {
+  font-weight: 700;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+}
+
+.rankName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+
+.rankDist {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.rankScore {
+  color: var(--accent);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

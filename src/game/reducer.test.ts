@@ -9,6 +9,7 @@ const loc = (id: string): GameLocation => ({
   lng: 0,
   label: `Label ${id}`,
   country: 'Testland',
+  difficulty: 'normal',
 });
 
 const fiveLocations = ['a', 'b', 'c', 'd', 'e'].map(loc);
