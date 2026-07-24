@@ -1,0 +1,26 @@
+.banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 14px);
+  transform: translateX(-50%);
+  z-index: 1200;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  border-radius: var(--r-full);
+  background: var(--panel-strong);
+  border: 1px solid rgba(255, 107, 94, 0.4);
+  color: var(--text);
+  font-size: var(--fs-xs);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  animation: roam-rise var(--dur) var(--ease);
+}
+
+.icon {
+  color: var(--danger);
+  flex: none;
+}

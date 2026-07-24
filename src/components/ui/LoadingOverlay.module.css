@@ -1,0 +1,42 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  gap: 18px;
+  background:
+    radial-gradient(70% 50% at 50% 45%, rgba(191, 244, 58, 0.06), transparent),
+    #070807;
+  animation: roam-fade-in var(--dur) var(--ease);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--accent);
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.label {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}

@@ -1,0 +1,230 @@
+/* Scrim behind the mobile/tablet sheet */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: rgba(4, 6, 4, 0.5);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: roam-fade-in var(--dur) var(--ease);
+  border: 0;
+  cursor: default;
+}
+
+/* Floating action button to open the sheet (phone / tablet) */
+.fab {
+  position: fixed;
+  z-index: 24;
+  right: calc(var(--safe-right) + 16px);
+  bottom: calc(var(--safe-bottom) + 18px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 20px 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  box-shadow: 0 10px 30px rgba(191, 244, 58, 0.28);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: roam-rise var(--dur) var(--ease);
+}
+
+.fab:active {
+  transform: translateY(1px);
+}
+
+.fabDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--marker-guess);
+  box-shadow: 0 0 0 3px rgba(86, 183, 255, 0.3);
+}
+
+/* ── The panel shell ─────────────────────────────────── */
+.panel {
+  position: fixed;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--panel-strong);
+  border: 1px solid var(--panel-border-strong);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  transition:
+    width var(--dur) var(--ease),
+    height var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
+}
+
+.mapArea {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.footer {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px calc(12px + var(--safe-right)) calc(12px + var(--safe-bottom))
+    calc(12px + var(--safe-left));
+  background: linear-gradient(
+    to top,
+    var(--panel-strong),
+    rgba(10, 12, 10, 0.55)
+  );
+  border-top: 1px solid var(--panel-border);
+}
+
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  flex: 1 1 auto;
+}
+
+/* Card expand/collapse toggle (desktop) */
+.cardToggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+}
+
+.handle {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+  cursor: grab;
+}
+
+.handleBar {
+  width: 40px;
+  height: 4px;
+  border-radius: var(--r-full);
+  background: var(--panel-border-strong);
+}
+
+/* ── Desktop: floating expandable card, bottom-right ─── */
+.desktop {
+  right: calc(var(--safe-right) + 18px);
+  bottom: calc(var(--safe-bottom) + 18px);
+  border-radius: var(--r-lg);
+  width: 320px;
+  height: 240px;
+}
+
+.desktop.expanded {
+  width: min(560px, 46vw);
+  height: min(520px, 68vh);
+}
+
+.desktop.result {
+  width: min(720px, 62vw);
+  height: min(600px, 78vh);
+}
+
+/* ── Phone: bottom sheet ─────────────────────────────── */
+.phone {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: min(82dvh, 720px);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.phone.expanded,
+.phone.result {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.phone.result {
+  height: min(88dvh, 860px);
+}
+
+/* ── Tablet: spacious centred overlay panel ──────────── */
+.tablet {
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 20px);
+  transform: translateX(-50%) translateY(110%);
+  width: min(680px, 92vw);
+  height: min(70dvh, 760px);
+  border-radius: var(--r-lg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tablet.expanded,
+.tablet.result {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Result info bar ─────────────────────────────────── */
+.result .footer {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  padding-top: 16px;
+}
+
+.resultStats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.resultBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resultLabel {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.resultValue {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.resultScore {
+  color: var(--accent);
+}
+
+.locationName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-base);
+  font-weight: 600;
+}
+
+.flag {
+  color: var(--accent);
+  flex: none;
+}
