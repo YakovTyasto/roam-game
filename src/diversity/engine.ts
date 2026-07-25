@@ -33,6 +33,7 @@ import { buildDifficultyPool } from '../utils/difficultyPool';
 import { getGroupIndex, groupIdFor } from '../utils/canonicalGroup';
 import type { BagState } from './shuffleBag';
 import { EMPTY_BAG, drawFromBag } from './shuffleBag';
+import { spreadGeography } from './geoSpread';
 
 export interface SelectionRequest {
   /** The full catalog. */
@@ -54,7 +55,13 @@ export interface SelectionRequest {
    * disfavoured) — e.g. groups already used earlier in an Endless session.
    */
   excludeGroupIds?: readonly string[];
-  /** Optional soft re-ordering hook; see `drawFromBag`. */
+  /**
+   * Apply the soft in-match geographic spread rules (default `true`). Turning
+   * it off is for tests and for callers that genuinely want the raw novelty
+   * order; it never changes which places are *eligible*, only their order.
+   */
+  spread?: boolean;
+  /** Custom soft re-ordering hook, replacing the default spread. */
   arrange?: (ranked: GameLocation[], count: number) => GameLocation[];
 }
 
@@ -91,6 +98,7 @@ export function selectRounds(request: SelectionRequest): SelectionResult {
     rng = Math.random,
     backupCount = 0,
     excludeGroupIds = [],
+    spread = true,
     arrange,
   } = request;
 
@@ -118,7 +126,7 @@ export function selectRounds(request: SelectionRequest): SelectionResult {
     recentKeys: recentGroupIds,
     rng,
     backupCount,
-    arrange,
+    arrange: arrange ?? (spread ? (ranked, n) => spreadGeography(ranked, n) : undefined),
   });
 
   const poolGroups = new Set(eligible.map(keyOf)).size;

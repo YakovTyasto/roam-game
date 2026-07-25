@@ -165,6 +165,32 @@ solo, and from the round's reveal in multiplayer (which is also the first
 moment RLS lets a client see the location at all). Selection itself has no
 side effects.
 
+## In-match geographic spread
+
+`geoSpread.ts` reorders — never re-selects — the candidates the engine has
+already approved, so a five-round game feels like it circled the world.
+
+Rules, strongest first:
+
+1. no two consecutive rounds in the same country;
+2. no two rounds in the same small geographic cluster (25 km);
+3. no continent beyond `maxPerContinent(count)` — two for a 3- or 5-round game,
+   scaling to seven at 20 rounds.
+
+They are applied by **progressive relaxation**: for each slot, walk the ranked
+candidates and take the freshest one satisfying every active rule; if none does,
+drop the weakest rule and retry. The final level accepts anything, so each slot
+is always filled — exactly `count` picks, no loop, guaranteed termination.
+
+Because the walk always follows the novelty ranking, spread never overrides
+freshness; it only breaks ties among candidates the bag was equally happy with.
+Uniqueness and the requested difficulty are untouched — the hook may only
+permute, and `drawFromBag` discards any arrangement that isn't a permutation.
+
+A themed collection that cannot spread continents (Europe, Islands) simply
+relaxes rule 3 and keeps the collection intact, which is the intended
+precedence.
+
 ## Freshness targets
 
 Defined once in `src/config/diversity.ts`:
