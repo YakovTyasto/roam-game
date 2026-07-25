@@ -1,19 +1,9 @@
 import { useEffect, useRef } from 'react';
-import type { GameLocation } from '../../types';
+import type { GameLocation, PanoramaTarget } from '../../types';
 import { useGoogleMaps } from '../../hooks/useGoogleMaps';
 import styles from './StreetView.module.css';
 
-/**
- * A fixed panorama target used by multiplayer: both clients set the exact same
- * pano id and orientation so they see an identical view. No search is performed
- * and no target coordinates are needed on the client to render it.
- */
-export interface PanoramaTarget {
-  panoId: string;
-  heading: number;
-  pitch?: number;
-  zoom?: number;
-}
+export type { PanoramaTarget };
 
 interface StreetViewProps {
   /** Solo mode: a curated location the component searches a panorama for. */
