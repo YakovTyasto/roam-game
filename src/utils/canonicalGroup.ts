@@ -242,6 +242,26 @@ export function buildGroupIndex(
 }
 
 /**
+ * Memoised `buildGroupIndex`, keyed on the identity of the catalog array.
+ *
+ * Grouping is an O(n²) distance scan. That is trivial for one call, but Endless
+ * mode selects a location every single round and multiplayer re-selects per
+ * match — recomputing the whole catalog's grouping each time would be pure
+ * waste. The catalog array is a module-level constant in practice, so identity
+ * caching hits essentially always, and a `WeakMap` means a transient array
+ * (tests, a future backend page) is collected normally.
+ */
+const groupIndexCache = new WeakMap<readonly GameLocation[], Map<string, string>>();
+
+export function getGroupIndex(locations: readonly GameLocation[]): ReadonlyMap<string, string> {
+  const cached = groupIndexCache.get(locations);
+  if (cached) return cached;
+  const index = buildGroupIndex(locations);
+  groupIndexCache.set(locations, index);
+  return index;
+}
+
+/**
  * Canonical group id for a single location, given a prebuilt index. Falls back
  * to the location's own id when it isn't in the index (e.g. a legacy stored
  * run whose location has since left the catalog) so callers never crash on

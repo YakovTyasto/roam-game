@@ -1,6 +1,4 @@
 import type { GameLocation } from '../types';
-import { selectUniqueLocationsAvoidingHistory } from '../utils/selectRounds';
-import { readLocationHistory, recordPlayedLocations } from '../utils/locationHistory';
 import type { ManifestRound } from './types';
 import { resolvePanoId } from './resolvePanorama';
 
@@ -69,30 +67,31 @@ function isNonEmptyString(v: unknown): v is string {
 }
 
 /**
- * Host-only: build a validated round manifest using the existing curated
- * location pool and the Google Street View service. Orders the pool (preferring
- * locations outside the persistent recent-location history — see
- * `utils/locationHistory.ts`), resolves a concrete panorama for each candidate,
- * and stops once `count` playable rounds are found. Each round gets a fixed
- * random heading so both clients open facing the same direction.
+ * Host-only: build a validated round manifest from an **already-ordered**
+ * candidate list, resolving a concrete panorama for each candidate and stopping
+ * once `count` playable rounds are found. Each round gets a fixed random
+ * heading so every client opens facing the same direction.
  *
- * On success, records the chosen locations in the shared history so this same
- * shared implementation also drives solo's server-tracked path (see
- * `solo/useSoloRun.ts`) and multiplayer's host-only match start (see
- * `multiplayer/useMultiplayer.ts`) away from repeats in future matches.
+ * Ordering is the Diversity Engine's job, not this function's: callers pass
+ * `candidates` straight from `diversity/engine.ts#selectRounds`, which has
+ * already applied the collection filter, the difficulty pool, canonical
+ * grouping, shuffle-bag cycling and the room's combined novelty ranking. Any
+ * candidate whose panorama cannot be resolved is skipped and the next one is
+ * tried, so the list should be longer than `count`.
  *
- * Throws if not enough panoramas can be resolved from the pool; history is not
- * updated on failure.
+ * Records nothing. History and bag state advance only when a round actually
+ * starts (`diversity/store.ts#commitRoundStarted`) — building a manifest that
+ * is then rejected by the start RPC must not cost the player any freshness.
+ *
+ * Throws if not enough panoramas can be resolved from the candidates.
  */
 export async function buildManifest(
   google: typeof window.google,
-  pool: GameLocation[],
+  candidates: readonly GameLocation[],
   count: number,
   options: { rng?: () => number } = {},
 ): Promise<ManifestRound[]> {
   const rng = options.rng ?? Math.random;
-  const recentIds = readLocationHistory();
-  const candidates = selectUniqueLocationsAvoidingHistory(pool, pool.length, recentIds, rng);
 
   const rounds: ManifestRound[] = [];
   for (const loc of candidates) {
@@ -123,6 +122,5 @@ export async function buildManifest(
     throw new Error(check.error);
   }
 
-  recordPlayedLocations(rounds.map((r) => r.location_id));
   return rounds;
 }

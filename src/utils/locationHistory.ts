@@ -1,14 +1,28 @@
 /**
- * Persistent, versioned record of recently played location ids — a
+ * Persistent, versioned record of recently played **canonical group ids** — a
  * cross-match cooldown shared by solo and multiplayer selection so the same
- * spot doesn't resurface right away. This module only stores/reads ids; the
- * actual preference logic lives in `selectRounds.ts`.
+ * place doesn't resurface right away. This module only stores/reads ids; the
+ * selection logic lives in `diversity/`.
+ *
+ * V4 note: entries are canonical *group* ids (see `utils/canonicalGroup.ts`),
+ * not raw location ids, so two catalog rows for one place consume one slot.
+ * The storage format and key are unchanged because a group id defaults to the
+ * location's own id — every value written by V3 is still a valid group id, so
+ * existing installs keep their cooldown instead of resetting to zero.
+ *
+ * This is the *local* cache. From V4 it is backed by an authenticated
+ * server-side history (see `diversity/historyApi.ts`) so novelty survives a
+ * reinstall or a second device; the local copy remains the offline and
+ * not-configured source of truth, and is always readable without a network
+ * round-trip so it can never block first paint.
  */
+
+import { HISTORY_LIMIT_GROUPS } from '../config/diversity';
 
 export const LOCATION_HISTORY_KEY = 'roam.locationHistory.v1';
 
-/** Maximum number of unique location ids retained, newest-first. */
-export const LOCATION_HISTORY_LIMIT = 100;
+/** Maximum number of unique canonical group ids retained, newest-first. */
+export const LOCATION_HISTORY_LIMIT = HISTORY_LIMIT_GROUPS;
 
 interface StoredLocationHistory {
   version: 1;

@@ -110,6 +110,61 @@ groups or affects uniqueness.
 | `nearDuplicateKm` | 1 km | Canonical group merging |
 | `clusterKm` | 25 km | Soft in-match spread only |
 
+## The selector: shuffle-bag cycling
+
+`src/diversity/` replaces "draw randomly, then suppress repeats" with "deal
+every place once, then reshuffle".
+
+```
+catalog
+  → collection filter        (hard constraint)
+  → difficulty pool          (adjacent-tier fallback only when necessary)
+  → canonical grouping       (one slot per place)
+  → shuffle bag              (every group dealt once per cycle)
+  → novelty tie-break        (history, bucketed by recency)
+  → soft arrangement         (in-match geographic spread)
+```
+
+| Module | Responsibility |
+| --- | --- |
+| `shuffleBag.ts` | Pure bag mechanics: Fisher–Yates, novelty ranking, cycle bookkeeping |
+| `bagStorage.ts` | Bounded, malformed-safe local persistence |
+| `engine.ts` | The pipeline above, as one pure function every mode calls |
+| `store.ts` | Reads state synchronously; commits it when a round starts |
+
+### Guarantees
+
+1. **No duplicate place within a match** — the bag deals one item per canonical
+   group, so two catalog rows for one place can never both appear.
+2. **Full coverage before repetition** — every eligible group is dealt before
+   any group is dealt twice, whenever the pool can supply the round count.
+3. **Reshuffled cycles** — a new cycle is a fresh shuffle, not a continuation.
+4. **Unpredictable order** — every ordering comes from Fisher–Yates over an
+   injectable RNG. Nothing sorts by id, so selection cannot be predicted from
+   public sequential identifiers. `sort(() => Math.random() - 0.5)` is banned
+   and unused.
+5. **Bounded state** — a bag stores only the current cycle's dealt ids, clears
+   itself on completion, and is capped per bag and per install.
+
+### Two decisions worth recording
+
+**Recency is bucketed, not total-ordered.** Ordering seen places by their exact
+history position is a total order — and a total order is deterministic. On a
+small catalog that reproduces the original bug *inside* the new engine: once
+history covers the pool, every "reshuffled" cycle deals the same sequence. The
+`RECENCY_BUCKET_SIZE` blocks (one game's worth of history) keep the meaningful
+preference — a place from ten games ago beats one from last game — while
+leaving order inside a bucket genuinely random. A regression test asserts two
+consecutive full cycles differ.
+
+**Recording happens when a round starts, not when it is selected.** V3 recorded
+at selection time, so a five-round game charged the player for five places even
+if they quit after two, and a manifest rejected by the start RPC still burned
+freshness. `commitRoundStarted` is now called per round: from `exploring` in
+solo, and from the round's reveal in multiplayer (which is also the first
+moment RLS lets a client see the location at all). Selection itself has no
+side effects.
+
 ## Freshness targets
 
 Defined once in `src/config/diversity.ts`:

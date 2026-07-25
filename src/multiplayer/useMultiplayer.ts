@@ -3,7 +3,8 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { hasGoogleMapsKey, hasSupabaseConfig } from '../config/env';
 import type { Difficulty } from '../config/difficulty';
 import { locationProvider } from '../providers/LocationProvider';
-import { buildDifficultyPool } from '../utils/difficultyPool';
+import { selectRounds } from '../diversity/engine';
+import { commitRoundStarted, groupIdOf, readDiversityState } from '../diversity/store';
 import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
 import { getSupabase, getSupabaseConfigError } from './supabaseClient';
 import { ensureAnonymousSession } from './auth';
@@ -127,6 +128,32 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     [snapshot, userId],
   );
   const room = snapshot?.room ?? null;
+
+  // ── Diversity: record what this player actually played ────────────────
+  // Every player keeps their own history, not just the host, so a guest's
+  // future solo games avoid the places they saw in someone else's room.
+  //
+  // The trigger is the round's *reveal*: `currentTarget` is null until the
+  // round completes (RLS hides it), which is precisely the "round has
+  // successfully started/completed" point the recording rule requires. It also
+  // means a room that is created and abandoned before any round completes
+  // costs nobody any freshness.
+  const committedRoundsRef = useRef(new Set<string>());
+  const revealedTarget = view?.currentTarget ?? null;
+  useEffect(() => {
+    if (!revealedTarget || !room) return;
+    if (committedRoundsRef.current.has(revealedTarget.roundId)) return;
+    committedRoundsRef.current.add(revealedTarget.roundId);
+    void (async () => {
+      const all = await locationProvider.getAll();
+      commitRoundStarted({
+        all,
+        groupId: groupIdOf(all, revealedTarget.locationId),
+        count: room.totalRounds,
+        difficulty: room.difficulty,
+      });
+    })();
+  }, [revealedTarget, room]);
 
   // Refs mirror derived state so the 1s interval can read them without needing
   // to re-subscribe every render.
@@ -413,14 +440,23 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     try {
       const google = await ensureGoogleMaps();
       const all = await locationProvider.getAll();
-      // Shared difficulty-aware pool (with adjacent-tier fallback) so solo and
-      // multiplayer draw from the same place for a given difficulty.
-      const { locations: pool } = buildDifficultyPool(
+      // One shared selection path with solo (diversity/engine.ts), so the two
+      // modes cannot drift: same collection filter, same difficulty pool with
+      // adjacent-tier fallback, same canonical grouping and shuffle-bag
+      // cycling. The picks come first and the ranked spares follow, so
+      // buildManifest can skip any candidate whose panorama won't resolve.
+      const selection = selectRounds({
         all,
-        room.difficulty,
+        count: room.totalRounds,
+        difficulty: room.difficulty,
+        ...readDiversityState(room.difficulty),
+        backupCount: all.length,
+      });
+      const manifest = await buildManifest(
+        google,
+        [...selection.locations, ...selection.backups],
         room.totalRounds,
       );
-      const manifest = await buildManifest(google, pool, room.totalRounds);
       await api.startMatch(supabase, roomId, manifest);
       await doRefetch(roomId);
     } catch (e) {

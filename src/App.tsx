@@ -20,7 +20,12 @@ import {
 import { locationProvider } from './providers/LocationProvider';
 import { pickNextEndlessLocation, shouldWarnEndlessUsage } from './utils/endlessSelection';
 import { computeEndlessStats } from './utils/endlessStats';
-import { readLocationHistory, resetLocationHistory } from './utils/locationHistory';
+import {
+  commitRoundStarted,
+  groupIdOf,
+  readDiversityState,
+  resetDiversityState,
+} from './diversity/store';
 import { withTimeout } from './utils/withTimeout';
 import { useProfile } from './profile/useProfile';
 import { parseRoomCodeFromUrl } from './multiplayer/inviteLink';
@@ -313,6 +318,7 @@ export default function App() {
       setSoloDifficulty(config.difficulty);
       setEndlessNotice(null);
       endlessAllLocationsRef.current = null;
+      committedRoundsRef.current.clear();
       clearLocalRunSnapshot();
       try {
         const { locations, backups } = await soloRun.begin(config);
@@ -337,6 +343,32 @@ export default function App() {
     [soloRun],
   );
 
+  // ── Diversity: record a place only once its round genuinely starts ──────
+  // Not at selection time. A five-round game selects all five up front, but a
+  // player who quits after round two never saw rounds three to five — charging
+  // them against the shuffle bag and the cooldown would burn freshness the
+  // player never spent. `exploring` is the first status where the panorama is
+  // live in front of the player.
+  const committedRoundsRef = useRef(new Set<string>());
+  useEffect(() => {
+    if (state.status !== 'exploring') return;
+    const location = state.locations[state.roundIndex];
+    if (!location) return;
+    const key = `${state.roundIndex}:${location.id}`;
+    if (committedRoundsRef.current.has(key)) return;
+    committedRoundsRef.current.add(key);
+    void (async () => {
+      const all = await locationProvider.getAll();
+      commitRoundStarted({
+        all,
+        groupId: groupIdOf(all, location.id),
+        // Endless has no fixed length; its pool is sized for a single round.
+        count: state.roundCount ?? 1,
+        difficulty: activeConfig.difficulty,
+      });
+    })();
+  }, [state.status, state.roundIndex, state.locations, state.roundCount, activeConfig.difficulty]);
+
   // ── Endless: generate one round at a time (never a preallocated manifest) ──
   const endlessAllLocationsRef = useRef<GameLocation[] | null>(null);
   const endlessGeneratingRef = useRef(false);
@@ -354,13 +386,18 @@ export default function App() {
         if (!endlessAllLocationsRef.current) {
           endlessAllLocationsRef.current = await locationProvider.getAll();
         }
-        const excludeIds = new Set(state.locations.map((l) => l.id));
-        const recentIds = readLocationHistory();
+        const all = endlessAllLocationsRef.current;
+        // Exclude by canonical group, not location id: two catalog rows for one
+        // place must not both appear in a session.
+        const excludeGroupIds = new Set(state.locations.map((l) => groupIdOf(all, l.id)));
+        const { bag, recentGroupIds } = readDiversityState(activeConfig.difficulty);
         const next = pickNextEndlessLocation(
-          endlessAllLocationsRef.current,
+          all,
           activeConfig.difficulty,
-          excludeIds,
-          recentIds,
+          excludeGroupIds,
+          recentGroupIds,
+          undefined,
+          { bag },
         );
         if (!next) {
           dispatch({ type: 'SET_ERROR', message: 'No more locations are available right now.' });
@@ -592,7 +629,7 @@ export default function App() {
             setBestScore(0);
             setIsBest(false);
           }}
-          onResetLocationHistory={resetLocationHistory}
+          onResetLocationHistory={resetDiversityState}
         />
       </Modal>
 
