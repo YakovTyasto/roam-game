@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { hasSupabaseConfig } from '../config/env';
 import { validatePlayerName } from '../multiplayer/playerName';
-import { friendlyRateLimitMessage, isRateLimitedError } from '../utils/rateLimit';
 import {
   clearCachedProfile,
   readCachedProfile,
@@ -35,14 +34,6 @@ export interface ProfileController {
   error: string | null;
   /** Create or change the display name. Resolves true on success. */
   setName: (raw: string) => Promise<boolean>;
-  /**
-   * Server-synced theme/locale preferences, once known. `undefined` while
-   * still loading (or unreachable/unconfigured); `null` fields mean the
-   * player has never synced that preference.
-   */
-  serverPreferences?: { theme: string | null; locale: string | null };
-  /** Best-effort, non-blocking push of a local preference to the server. */
-  pushPreferences: (patch: { theme?: string; locale?: string }) => void;
 }
 
 export function useProfile(): ProfileController {
@@ -59,9 +50,6 @@ export function useProfile(): ProfileController {
   const [confirming, setConfirming] = useState(supabaseConfigured);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [serverPreferences, setServerPreferences] = useState<
-    { theme: string | null; locale: string | null } | undefined
-  >(undefined);
 
   // Reconcile against the server once, on mount, when configured.
   useEffect(() => {
@@ -76,10 +64,6 @@ export function useProfile(): ProfileController {
         const profile = await fetchProfile();
         if (cancelled) return;
         setOnline(true);
-        setServerPreferences({
-          theme: profile.themePreference,
-          locale: profile.localePreference,
-        });
         if (profile.exists && profile.displayName) {
           writeCachedProfile(profile.displayName);
           setNameState(profile.displayName);
@@ -135,35 +119,14 @@ export function useProfile(): ProfileController {
           writeCachedProfile(saved);
           setNameState(saved);
           setOnline(true);
-        } catch (err) {
-          const message = err instanceof Error ? err.message : '';
-          if (isRateLimitedError(message)) {
-            // Still saved locally — only the server sync was rejected.
-            setError(friendlyRateLimitMessage());
-          } else {
-            // Saved locally; the server will catch up on the next successful call.
-            setOnline(false);
-            setError('Saved locally — online services are currently unavailable.');
-          }
+        } catch {
+          // Saved locally; the server will catch up on the next successful call.
+          setOnline(false);
+          setError('Saved locally — online services are currently unavailable.');
         }
       }
       setSaving(false);
       return true;
-    },
-    [supabaseConfigured],
-  );
-
-  const pushPreferences = useCallback(
-    (patch: { theme?: string; locale?: string }) => {
-      if (!supabaseConfigured) return;
-      void (async () => {
-        try {
-          const { syncPreferences } = await import('./profileApi');
-          await syncPreferences(patch);
-        } catch {
-          // Best-effort — local storage already holds the authoritative value.
-        }
-      })();
     },
     [supabaseConfigured],
   );
@@ -177,8 +140,6 @@ export function useProfile(): ProfileController {
     saving,
     error,
     setName,
-    serverPreferences,
-    pushPreferences,
   };
 }
 

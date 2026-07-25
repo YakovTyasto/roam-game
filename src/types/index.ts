@@ -34,19 +34,6 @@ export interface RoundResult {
   score: number;
 }
 
-/**
- * A fixed panorama target — a pre-resolved pano id + orientation rendered
- * without any lat/lng, so the answer stays hidden until guessed. Used by
- * multiplayer (both players see the identical view) and by solo run resume
- * (the current round's answer is never sent to the client until guessed).
- */
-export interface PanoramaTarget {
-  panoId: string;
-  heading: number;
-  pitch?: number;
-  zoom?: number;
-}
-
 /** User-adjustable preferences persisted in localStorage. */
 export interface Preferences {
   /** Show the optional per-round timer. */

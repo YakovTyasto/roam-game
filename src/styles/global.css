@@ -129,7 +129,7 @@ h3 {
 
 /* ── Leaflet tweaks to match the dark theme ────────────── */
 .leaflet-container {
-  background: var(--map-bg);
+  background: #0a0c0a;
   font-family: var(--font-sans);
   outline: none;
 }

@@ -12,15 +12,8 @@ import { getSupabase } from './supabaseClient';
  * Documented limitation: an anonymous identity lives only in this browser's
  * storage. Clearing site data, using a private window, or switching devices
  * creates a brand-new identity that cannot rejoin a room as the same player.
- *
- * `captchaToken` is optional and only meaningful once CAPTCHA protection is
- * enabled for anonymous sign-ins in the Supabase Dashboard (see
- * docs/CAPTCHA_SETUP.md) — passed straight through to gotrue-js exactly as
- * its API expects. When CAPTCHA isn't configured (the default), omitting it
- * is a normal, fully supported anonymous sign-in; Supabase does not require
- * a token unless the project has CAPTCHA protection turned on.
  */
-export async function ensureAnonymousSession(captchaToken?: string): Promise<string> {
+export async function ensureAnonymousSession(): Promise<string> {
   const supabase = getSupabase();
   if (!supabase) {
     throw new Error('Multiplayer is not configured.');
@@ -30,9 +23,7 @@ export async function ensureAnonymousSession(captchaToken?: string): Promise<str
   const existing = sessionData.session?.user?.id;
   if (existing) return existing;
 
-  const { data, error } = await supabase.auth.signInAnonymously(
-    captchaToken ? { options: { captchaToken } } : undefined,
-  );
+  const { data, error } = await supabase.auth.signInAnonymously();
   if (error) {
     // Surface a friendly, non-sensitive message. The most common cause is that
     // anonymous sign-ins are disabled in the Supabase dashboard.

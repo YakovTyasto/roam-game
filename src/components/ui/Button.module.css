@@ -61,7 +61,7 @@
 }
 
 .ghost:hover:not(:disabled) {
-  background: var(--hover-overlay);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .subtle {

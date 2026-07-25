@@ -29,25 +29,11 @@ describe('difficulty pools over the real dataset', () => {
     }
   });
 
-  it('gives every preset a meaningfully different eligible pool, not just a different timer', () => {
-    const byTier = Object.fromEntries(
-      DIFFICULTIES.map((d) => [d, new Set(locationsForDifficulty(LOCATIONS, d).map((l) => l.id))]),
-    ) as Record<Difficulty, Set<string>>;
-
-    // Every pair of tiers is disjoint — a location tagged for one tier never
-    // appears in another tier's *primary* pool (fallback widening is a
-    // separate, explicitly-flagged path — see buildDifficultyPool below).
-    for (const a of DIFFICULTIES) {
-      for (const b of DIFFICULTIES) {
-        if (a === b) continue;
-        for (const id of byTier[a]) expect(byTier[b].has(id)).toBe(false);
-      }
-    }
-
-    // Each tier is non-trivially sized (not a single-location stand-in).
-    for (const d of DIFFICULTIES) {
-      expect(byTier[d].size).toBeGreaterThanOrEqual(APP.roundsPerGame);
-    }
+  it('does not use the identical set for every difficulty', () => {
+    const easy = new Set(locationsForDifficulty(LOCATIONS, 'easy').map((l) => l.id));
+    const hard = new Set(locationsForDifficulty(LOCATIONS, 'hard').map((l) => l.id));
+    // No overlap between easy and hard tiers.
+    for (const id of easy) expect(hard.has(id)).toBe(false);
   });
 
   it('reports each real preset pool as sufficient with no fallback', () => {

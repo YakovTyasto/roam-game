@@ -11,10 +11,6 @@ import { ensureAnonymousSession } from '../multiplayer/auth';
 export interface ServerProfile {
   exists: boolean;
   displayName: string | null;
-  /** Nullable — the player has never synced a theme preference to the server. */
-  themePreference: string | null;
-  /** Nullable — the player has never synced a locale preference to the server. */
-  localePreference: string | null;
 }
 
 function parse(data: unknown): ServerProfile {
@@ -22,16 +18,9 @@ function parse(data: unknown): ServerProfile {
     const obj = data as Record<string, unknown>;
     const exists = obj.exists === true;
     const name = typeof obj.display_name === 'string' ? obj.display_name : null;
-    const theme = typeof obj.theme_preference === 'string' ? obj.theme_preference : null;
-    const locale = typeof obj.locale_preference === 'string' ? obj.locale_preference : null;
-    return {
-      exists,
-      displayName: exists ? name : null,
-      themePreference: exists ? theme : null,
-      localePreference: exists ? locale : null,
-    };
+    return { exists, displayName: exists ? name : null };
   }
-  return { exists: false, displayName: null, themePreference: null, localePreference: null };
+  return { exists: false, displayName: null };
 }
 
 /** Ensure an anonymous session exists and return the user id. */
@@ -58,23 +47,4 @@ export async function saveProfile(name: string): Promise<string> {
   if (error) throw new Error(error.message);
   const obj = (data ?? {}) as Record<string, unknown>;
   return typeof obj.display_name === 'string' ? obj.display_name : name;
-}
-
-/**
- * Best-effort, non-blocking sync of theme/locale preferences to the server
- * profile (a no-op if no profile row exists yet). Either argument may be
- * omitted to leave that preference untouched server-side.
- */
-export async function syncPreferences(patch: {
-  theme?: string;
-  locale?: string;
-}): Promise<void> {
-  const supabase = getSupabase();
-  if (!supabase) return;
-  await ensureAnonymousSession();
-  const { error } = await supabase.rpc('roam_set_preferences', {
-    p_theme: patch.theme ?? null,
-    p_locale: patch.locale ?? null,
-  });
-  if (error) throw new Error(error.message);
 }

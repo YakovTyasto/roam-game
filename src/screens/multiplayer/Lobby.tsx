@@ -7,7 +7,6 @@ import { buildInviteUrl } from '../../multiplayer/inviteLink';
 import type { RoomView } from '../../multiplayer/machine';
 import type { MpRoom } from '../../multiplayer/types';
 import { PlayerRow } from './PlayerRow';
-import { ExitConfirmDialog } from '../../components/ui/ExitConfirmDialog';
 import styles from './multiplayer.module.css';
 
 interface LobbyProps {
@@ -34,7 +33,6 @@ export function Lobby({
   onLeave,
 }: LobbyProps) {
   const [copied, setCopied] = useState(false);
-  const [exitOpen, setExitOpen] = useState(false);
   const inviteUrl = buildInviteUrl(room.code);
   const online = new Set(onlineUserIds);
 
@@ -81,7 +79,7 @@ export function Lobby({
             <span className={styles.dot} aria-hidden />
             Lobby
           </span>
-          <Button variant="subtle" onClick={() => setExitOpen(true)} aria-label="Leave room">
+          <Button variant="subtle" onClick={onLeave} aria-label="Leave room">
             <LogOut size={18} aria-hidden />
             Leave
           </Button>
@@ -183,16 +181,6 @@ export function Lobby({
           </div>
         )}
       </div>
-
-      <ExitConfirmDialog
-        open={exitOpen}
-        variant="multiplayer"
-        onContinue={() => setExitOpen(false)}
-        onAbandon={() => {
-          setExitOpen(false);
-          onLeave();
-        }}
-      />
     </div>
   );
 }

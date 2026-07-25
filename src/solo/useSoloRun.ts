@@ -1,49 +1,28 @@
 import { useCallback, useRef } from 'react';
 import type { GameLocation, LatLng } from '../types';
 import type { Difficulty } from '../config/difficulty';
-import type { GameConfig } from '../config/gameConfig';
 import { hasGoogleMapsKey, hasSupabaseConfig } from '../config/env';
 import { locationProvider } from '../providers/LocationProvider';
 import { buildDifficultyPool } from '../utils/difficultyPool';
 import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
 import { buildManifest } from '../multiplayer/manifest';
 import type { ManifestRound } from '../multiplayer/types';
-import type { ServerGuessResult } from './soloRunApi';
 
 export interface SoloRunController {
   /**
-   * Begin a solo game for `config`. When Supabase + Maps are available AND
-   * the game is fixed-length (not Endless), this also starts a
-   * server-tracked run (for the leaderboard and resume); otherwise — or for
-   * Endless, which is always local-only in this phase — it falls back to a
-   * purely local game. Always returns locations to play locally; Endless
-   * only returns the first round (see utils/endlessSelection.ts for how
-   * subsequent rounds are generated one at a time).
+   * Begin a solo game for `difficulty`. When Supabase + Maps are available this
+   * also starts a server-tracked run (for the leaderboard); otherwise it falls
+   * back to a purely local game. Always returns locations to play locally.
    */
   begin: (
-    config: GameConfig,
+    difficulty: Difficulty,
   ) => Promise<{ locations: GameLocation[]; backups: GameLocation[] }>;
-  /**
-   * Record a guess against the active server run (no-op, resolves null,
-   * when not server-tracked). Callers that only need the local/instant score
-   * can ignore the resolved value; a resumed round awaits it as the
-   * authoritative result (see solo/resume.ts).
-   */
-  recordGuess: (roundIndex: number, guess: LatLng) => Promise<ServerGuessResult | null>;
+  /** Record a guess against the active server run (no-op locally). */
+  recordGuess: (roundIndex: number, guess: LatLng) => void;
   /** Finalize the server run once all rounds are in (no-op locally). */
   finalize: () => Promise<void>;
-  /**
-   * Explicitly abandon the active run (exit flow's "Abandon game"). Idempotent
-   * and a no-op when not server-tracked. Never creates a leaderboard result.
-   */
-  abandon: () => Promise<void>;
   /** Whether the current game is being recorded to the leaderboard. */
   isServerTracked: () => boolean;
-  /**
-   * Adopt an already-active server run (from solo/resume.ts) so subsequent
-   * recordGuess/finalize calls target it correctly.
-   */
-  adoptResumedRun: (runId: string, totalRounds: number, roundsAlreadyComplete: number) => void;
 }
 
 function manifestToLocations(manifest: ManifestRound[]): GameLocation[] {
@@ -69,32 +48,23 @@ export function useSoloRun(): SoloRunController {
   const roundsRef = useRef(0);
   const submittedRef = useRef(0);
 
-  const begin = useCallback(async (config: GameConfig) => {
+  const begin = useCallback(async (difficulty: Difficulty) => {
     runIdRef.current = null;
     roundsRef.current = 0;
     submittedRef.current = 0;
 
-    const { difficulty, roundCount, timerSeconds } = config;
+    const rounds = 5;
 
-    // Endless has no fixed total_rounds and is always local-only/unranked in
-    // this phase — only the first round is needed up front.
-    if (roundCount === null) {
-      const { locations, backups } = await locationProvider.getGameLocations(1, difficulty);
-      return { locations, backups };
-    }
-
-    // Try the server-tracked path first when everything is configured. Any
-    // round count (including a non-5 custom count) can be server-tracked —
-    // the server itself decides leaderboard eligibility (exactly 5 rounds).
+    // Try the server-tracked path first when everything is configured.
     if (hasSupabaseConfig() && hasGoogleMapsKey()) {
       try {
         const google = await ensureGoogleMaps();
         const all = await locationProvider.getAll();
-        const { locations: pool } = buildDifficultyPool(all, difficulty, roundCount);
-        const manifest = await buildManifest(google, pool, roundCount);
+        const { locations: pool } = buildDifficultyPool(all, difficulty, rounds);
+        const manifest = await buildManifest(google, pool, rounds);
         const { createSoloRun } = await import('./soloRunApi');
-        runIdRef.current = await createSoloRun(difficulty, manifest, timerSeconds);
-        roundsRef.current = roundCount;
+        runIdRef.current = await createSoloRun(difficulty, manifest);
+        roundsRef.current = rounds;
         return { locations: manifestToLocations(manifest), backups: [] };
       } catch {
         // Fall through to the local-only game; leaderboard simply won't record.
@@ -103,24 +73,25 @@ export function useSoloRun(): SoloRunController {
     }
 
     const { locations, backups } = await locationProvider.getGameLocations(
-      roundCount,
+      rounds,
       difficulty,
     );
     return { locations, backups };
   }, []);
 
-  const recordGuess = useCallback(async (roundIndex: number, guess: LatLng) => {
+  const recordGuess = useCallback((roundIndex: number, guess: LatLng) => {
     const runId = runIdRef.current;
-    if (!runId) return null;
+    if (!runId) return;
     submittedRef.current = Math.max(submittedRef.current, roundIndex + 1);
-    try {
-      const { submitSoloGuess } = await import('./soloRunApi');
-      return await submitSoloGuess(runId, roundIndex + 1, guess.lat, guess.lng);
-    } catch {
-      // A dropped guess submission means the run can't be finalized cleanly;
-      // that game just won't reach the leaderboard. Solo play is unaffected.
-      return null;
-    }
+    void (async () => {
+      try {
+        const { submitSoloGuess } = await import('./soloRunApi');
+        await submitSoloGuess(runId, roundIndex + 1, guess.lat, guess.lng);
+      } catch {
+        // A dropped guess submission means the run can't be finalized cleanly;
+        // that game just won't reach the leaderboard. Solo play is unaffected.
+      }
+    })();
   }, []);
 
   const finalize = useCallback(async () => {
@@ -138,28 +109,7 @@ export function useSoloRun(): SoloRunController {
     }
   }, []);
 
-  const abandon = useCallback(async () => {
-    const runId = runIdRef.current;
-    runIdRef.current = null;
-    if (!runId) return;
-    try {
-      const { abandonSoloRun } = await import('./soloRunApi');
-      await abandonSoloRun(runId);
-    } catch {
-      /* best-effort — the 12h run expiry is the fallback */
-    }
-  }, []);
-
   const isServerTracked = useCallback(() => runIdRef.current !== null, []);
 
-  const adoptResumedRun = useCallback(
-    (runId: string, totalRounds: number, roundsAlreadyComplete: number) => {
-      runIdRef.current = runId;
-      roundsRef.current = totalRounds;
-      submittedRef.current = roundsAlreadyComplete;
-    },
-    [],
-  );
-
-  return { begin, recordGuess, finalize, abandon, isServerTracked, adoptResumedRun };
+  return { begin, recordGuess, finalize, isServerTracked };
 }

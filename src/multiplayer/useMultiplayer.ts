@@ -16,7 +16,6 @@ import { isRoundExpired, remainingSeconds, toEpochMs } from './timer';
 import { validatePlayerName } from './playerName';
 import { isValidRoomCode, normalizeRoomCode } from './roomCode';
 import type { MpRoom, MultiplayerStatus, RoomSnapshot } from './types';
-import { toFriendlyErrorMessage } from '../utils/rateLimit';
 
 /** Options chosen by the host when creating a private room. */
 export interface CreateRoomInput {
@@ -60,8 +59,8 @@ export interface MultiplayerController {
 }
 
 function errorMessage(e: unknown): string {
-  if (e instanceof MultiplayerError) return toFriendlyErrorMessage(e.message);
-  if (e instanceof Error) return toFriendlyErrorMessage(e.message);
+  if (e instanceof MultiplayerError) return e.message;
+  if (e instanceof Error) return e.message;
   return 'Something went wrong. Please try again.';
 }
 
