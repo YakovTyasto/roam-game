@@ -43,16 +43,25 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
       return { ...state, guess: action.guess };
 
-    case 'SUBMIT_GUESS':
+    case 'SUBMIT_GUESS': {
       if (state.status !== 'exploring' && state.status !== 'selectingGuess') {
         return state;
       }
       if (!state.guess) return state;
+      // Keep locations[roundIndex] in sync with the authoritative location
+      // the result carries — a no-op for a normal round (same object), but
+      // corrects a resumed round's hidden-answer placeholder to the real,
+      // server-revealed location now that it's been guessed.
+      const locations = [...state.locations];
+      locations[state.roundIndex] = action.result.location;
       return {
         ...state,
         status: 'roundResult',
+        locations,
         results: [...state.results, action.result],
+        resumePanorama: null,
       };
+    }
 
     case 'NEXT_ROUND': {
       if (state.status !== 'roundResult') return state;
@@ -81,6 +90,19 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return state;
       }
       return { ...state, status: 'finalResult' };
+
+    case 'RESUME_GAME':
+      return {
+        ...initialGameState,
+        status: 'loadingRound',
+        locations: action.locations,
+        backups: [],
+        results: action.results,
+        roundIndex: action.roundIndex,
+        roundCount: action.roundCount,
+        timerSeconds: action.timerSeconds,
+        resumePanorama: action.resumePanorama,
+      };
 
     case 'REPLACE_CURRENT_LOCATION': {
       // Swap in a spare location when the current one has no panorama.

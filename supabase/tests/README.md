@@ -122,3 +122,26 @@ psql -d roam_mp_test -f supabase/tests/04_exit_flow_verify.sql
 ```
 
 Ends with `ALL EXIT FLOW TESTS PASSED`.
+
+## Resume verification (`05_resume_verify.sql`)
+
+`05_resume_verify.sql` exercises migration `0009` after `0001`→`0009`:
+
+- `roam_get_active_solo_run` now returns `server_now` and each round's
+  `started_at`/`location_id` (needed to restore the timer/panorama on the
+  client — see `src/solo/resume.ts`).
+- The pre-existing hidden-answer guarantee is unchanged: an active/pending
+  round still withholds `lat`/`lng`/`label`/`country` — only `pano_id` (and
+  now `location_id`, already no more revealing than `pano_id`) are visible
+  before it's guessed.
+- Completing a round reveals its answer and starts the next round's own
+  `started_at`, so a later resume computes remaining time from the server's
+  clock, not the client's.
+
+```bash
+# after the 0001→0009 apply loop:
+psql -d roam_mp_test -f supabase/migrations/0009_solo_run_resume.sql
+psql -d roam_mp_test -f supabase/tests/05_resume_verify.sql
+```
+
+Ends with `ALL RESUME TESTS PASSED`.

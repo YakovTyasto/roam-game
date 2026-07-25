@@ -8,6 +8,7 @@ import { DEFAULT_DIFFICULTY, difficultyLabel } from '../config/difficulty';
 import { haversineDistanceKm } from '../utils/distance';
 import { calculateScore } from '../utils/score';
 import { useIsDesktop, useIsTablet } from '../hooks/useMediaQuery';
+import type { ServerGuessResult } from '../solo/soloRunApi';
 import { StreetView } from '../components/street/StreetView';
 import { HUD } from '../components/hud/HUD';
 import { MapPanel, type Device } from '../components/map/MapPanel';
@@ -24,13 +25,22 @@ interface GameScreenProps {
   /**
    * Called after each guess is submitted, so a server-authoritative solo run
    * can record it. `roundIndex` is 0-based; guess is the placed coordinate.
+   * A resumed round (state.resumePanorama set) has no locally-known answer,
+   * so it awaits this and trusts the server's score/distance instead of
+   * computing them locally.
    */
-  onGuessSubmitted?: (roundIndex: number, guess: LatLng) => void;
+  onGuessSubmitted?: (roundIndex: number, guess: LatLng) => Promise<ServerGuessResult | null>;
   onOpenSettings: () => void;
   /** Exit flow: persist resumable state (fixed games only), then leave. */
   onSaveAndExit: () => void;
   /** Exit flow: discard the run without saving, then leave. */
   onAbandon: () => void;
+  /**
+   * Resume only: seconds actually left in the resumed round, computed from
+   * server time (see solo/resume.ts). Used once, only while
+   * state.resumePanorama is set for the current round.
+   */
+  resumeRemainingSeconds?: number;
 }
 
 export function GameScreen({
@@ -42,6 +52,7 @@ export function GameScreen({
   onOpenSettings,
   onSaveAndExit,
   onAbandon,
+  resumeRemainingSeconds,
 }: GameScreenProps) {
   // null means the configured game has No Timer — the round-timer feature is
   // entirely inactive regardless of the "show timer" display preference.
@@ -85,6 +96,33 @@ export function GameScreen({
       const loc = currentLocation(state);
       if (!loc) return;
       const effectiveGuess = guess ?? { lat: 0, lng: 0 };
+
+      if (state.resumePanorama) {
+        // A resumed, not-yet-guessed round: the answer was never sent to
+        // this client, so the server's response is the only source of truth
+        // for scoring — there is nothing correct to compute locally.
+        void (async () => {
+          const server = await onGuessSubmitted?.(state.roundIndex, effectiveGuess);
+          if (!server) {
+            dispatch({
+              type: 'SET_ERROR',
+              message: 'Could not score this round — please check your connection and try again.',
+            });
+            return;
+          }
+          dispatch({
+            type: 'SUBMIT_GUESS',
+            result: {
+              location: { id: server.locationId, lat: server.lat, lng: server.lng, label: server.label, country: server.country, difficulty },
+              guess: effectiveGuess,
+              distanceKm: server.distanceKm,
+              score: server.score,
+            },
+          });
+        })();
+        return;
+      }
+
       const distanceKm = haversineDistanceKm(effectiveGuess, {
         lat: loc.lat,
         lng: loc.lng,
@@ -96,10 +134,10 @@ export function GameScreen({
       });
       // Mirror the guess to the server-authoritative solo run (if any). The
       // server re-scores it from the same coordinates; the client score is only
-      // for display. `roundIndex` is 0-based here.
-      onGuessSubmitted?.(state.roundIndex, effectiveGuess);
+      // for display, fire-and-forget here since it doesn't block the UI.
+      void onGuessSubmitted?.(state.roundIndex, effectiveGuess);
     },
-    [dispatch, state, onGuessSubmitted],
+    [dispatch, state, onGuessSubmitted, difficulty],
   );
 
   const handleConfirm = useCallback(() => {
@@ -132,10 +170,17 @@ export function GameScreen({
   const guessRef = useRef(state.guess);
   guessRef.current = state.guess;
 
-  // Reset the timer whenever a fresh round begins exploring.
+  // Reset the timer whenever a fresh round begins exploring. A resumed round
+  // starts from its actual server-computed remaining time, not a fresh full
+  // duration — never restoring an expired timer as if time remains.
   useEffect(() => {
-    if (state.status === 'exploring' && ROUND_SECONDS !== null) setSecondsLeft(ROUND_SECONDS);
-  }, [state.roundIndex, state.status, ROUND_SECONDS]);
+    if (state.status !== 'exploring' || ROUND_SECONDS === null) return;
+    setSecondsLeft(
+      state.resumePanorama && resumeRemainingSeconds !== undefined
+        ? resumeRemainingSeconds
+        : ROUND_SECONDS,
+    );
+  }, [state.roundIndex, state.status, ROUND_SECONDS, state.resumePanorama, resumeRemainingSeconds]);
 
   const timerActive =
     ROUND_SECONDS !== null &&
@@ -177,6 +222,7 @@ export function GameScreen({
     <div className="noselect" style={{ position: 'absolute', inset: 0 }}>
       <StreetView
         location={location}
+        panorama={state.resumePanorama ?? undefined}
         onReady={handleReady}
         onNoPanorama={handleNoPanorama}
         onLoadError={handleLoadError}

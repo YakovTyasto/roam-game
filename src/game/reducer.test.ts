@@ -202,7 +202,7 @@ describe('gameReducer', () => {
 
       s = gameReducer(s, { type: 'ROUND_READY' });
       s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
-      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('r0') });
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('e1') });
       s = gameReducer(s, { type: 'NEXT_ROUND' }); // roundIndex -> 1, status loadingRound
       s = gameReducer(s, { type: 'ADD_ROUND', location: loc('e2') });
       expect(s.locations.map((l) => l.id)).toEqual(['e1', 'e2']);
@@ -212,7 +212,7 @@ describe('gameReducer', () => {
       let s = startedEndless();
       s = gameReducer(s, { type: 'ROUND_READY' });
       s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
-      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('r0') });
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('e1') });
       s = gameReducer(s, { type: 'FINISH_ENDLESS' });
       expect(s.status).toBe('finalResult');
       expect(s.results).toHaveLength(1);
@@ -222,6 +222,57 @@ describe('gameReducer', () => {
       let s = gameReducer(startedGame(), { type: 'ROUND_READY' });
       s = gameReducer(s, { type: 'FINISH_ENDLESS' });
       expect(s.status).toBe('exploring');
+    });
+  });
+
+  describe('resume', () => {
+    it('RESUME_GAME restores completed results and a pending round by panorama only', () => {
+      const s = gameReducer(initialGameState, {
+        type: 'RESUME_GAME',
+        locations: [loc('a')],
+        results: [result('a')],
+        roundIndex: 1,
+        roundCount: 5,
+        timerSeconds: 120,
+        resumePanorama: { locationId: 'b', panoId: 'pano-b', heading: 90, pitch: 0, zoom: 0 },
+      });
+      expect(s.status).toBe('loadingRound');
+      expect(s.results).toHaveLength(1);
+      expect(s.roundIndex).toBe(1);
+      expect(s.resumePanorama).toEqual({
+        locationId: 'b',
+        panoId: 'pano-b',
+        heading: 90,
+        pitch: 0,
+        zoom: 0,
+      });
+    });
+
+    it('SUBMIT_GUESS clears resumePanorama and replaces the placeholder with the revealed location', () => {
+      let s = gameReducer(initialGameState, {
+        type: 'RESUME_GAME',
+        locations: [{ id: 'b', lat: NaN, lng: NaN, label: '', country: '', difficulty: 'normal' }],
+        results: [],
+        roundIndex: 0,
+        roundCount: 5,
+        timerSeconds: 120,
+        resumePanorama: { locationId: 'b', panoId: 'pano-b', heading: 90, pitch: 0, zoom: 0 },
+      });
+      s = gameReducer(s, { type: 'ROUND_READY' });
+      s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+      const revealed = result('b');
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: revealed });
+      expect(s.resumePanorama).toBeNull();
+      expect(s.locations[0]).toEqual(revealed.location);
+      expect(s.results).toEqual([revealed]);
+    });
+
+    it('a normal (non-resumed) SUBMIT_GUESS leaves locations unchanged in effect', () => {
+      let s = gameReducer(startedGame(), { type: 'ROUND_READY' });
+      s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+      const before = s.locations[0];
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('a') });
+      expect(s.locations[0]).toEqual(before);
     });
   });
 });

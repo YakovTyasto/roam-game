@@ -8,6 +8,7 @@ import { buildDifficultyPool } from '../utils/difficultyPool';
 import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
 import { buildManifest } from '../multiplayer/manifest';
 import type { ManifestRound } from '../multiplayer/types';
+import type { ServerGuessResult } from './soloRunApi';
 
 export interface SoloRunController {
   /**
@@ -22,8 +23,13 @@ export interface SoloRunController {
   begin: (
     config: GameConfig,
   ) => Promise<{ locations: GameLocation[]; backups: GameLocation[] }>;
-  /** Record a guess against the active server run (no-op locally). */
-  recordGuess: (roundIndex: number, guess: LatLng) => void;
+  /**
+   * Record a guess against the active server run (no-op, resolves null,
+   * when not server-tracked). Callers that only need the local/instant score
+   * can ignore the resolved value; a resumed round awaits it as the
+   * authoritative result (see solo/resume.ts).
+   */
+  recordGuess: (roundIndex: number, guess: LatLng) => Promise<ServerGuessResult | null>;
   /** Finalize the server run once all rounds are in (no-op locally). */
   finalize: () => Promise<void>;
   /**
@@ -33,6 +39,11 @@ export interface SoloRunController {
   abandon: () => Promise<void>;
   /** Whether the current game is being recorded to the leaderboard. */
   isServerTracked: () => boolean;
+  /**
+   * Adopt an already-active server run (from solo/resume.ts) so subsequent
+   * recordGuess/finalize calls target it correctly.
+   */
+  adoptResumedRun: (runId: string, totalRounds: number, roundsAlreadyComplete: number) => void;
 }
 
 function manifestToLocations(manifest: ManifestRound[]): GameLocation[] {
@@ -98,19 +109,18 @@ export function useSoloRun(): SoloRunController {
     return { locations, backups };
   }, []);
 
-  const recordGuess = useCallback((roundIndex: number, guess: LatLng) => {
+  const recordGuess = useCallback(async (roundIndex: number, guess: LatLng) => {
     const runId = runIdRef.current;
-    if (!runId) return;
+    if (!runId) return null;
     submittedRef.current = Math.max(submittedRef.current, roundIndex + 1);
-    void (async () => {
-      try {
-        const { submitSoloGuess } = await import('./soloRunApi');
-        await submitSoloGuess(runId, roundIndex + 1, guess.lat, guess.lng);
-      } catch {
-        // A dropped guess submission means the run can't be finalized cleanly;
-        // that game just won't reach the leaderboard. Solo play is unaffected.
-      }
-    })();
+    try {
+      const { submitSoloGuess } = await import('./soloRunApi');
+      return await submitSoloGuess(runId, roundIndex + 1, guess.lat, guess.lng);
+    } catch {
+      // A dropped guess submission means the run can't be finalized cleanly;
+      // that game just won't reach the leaderboard. Solo play is unaffected.
+      return null;
+    }
   }, []);
 
   const finalize = useCallback(async () => {
@@ -142,5 +152,14 @@ export function useSoloRun(): SoloRunController {
 
   const isServerTracked = useCallback(() => runIdRef.current !== null, []);
 
-  return { begin, recordGuess, finalize, abandon, isServerTracked };
+  const adoptResumedRun = useCallback(
+    (runId: string, totalRounds: number, roundsAlreadyComplete: number) => {
+      runIdRef.current = runId;
+      roundsRef.current = totalRounds;
+      submittedRef.current = roundsAlreadyComplete;
+    },
+    [],
+  );
+
+  return { begin, recordGuess, finalize, abandon, isServerTracked, adoptResumedRun };
 }

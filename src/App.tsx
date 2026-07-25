@@ -5,10 +5,18 @@ import type { Difficulty } from './config/difficulty';
 import { DEFAULT_DIFFICULTY, difficultyLabel, toDifficulty } from './config/difficulty';
 import type { GameConfig } from './config/gameConfig';
 import { quickConfig } from './config/gameConfig';
-import { hasGoogleMapsKey } from './config/env';
+import { hasGoogleMapsKey, hasSupabaseConfig } from './config/env';
 import { gameReducer } from './game/reducer';
 import { initialGameState } from './game/state';
 import { useSoloRun } from './solo/useSoloRun';
+import type { SoloResumeData } from './solo/resume';
+import { buildResumeData, parseActiveSoloRun } from './solo/resume';
+import type { LocalRunSnapshot } from './solo/localRunSnapshot';
+import {
+  clearLocalRunSnapshot,
+  readLocalRunSnapshot,
+  writeLocalRunSnapshot,
+} from './solo/localRunSnapshot';
 import { locationProvider } from './providers/LocationProvider';
 import { pickNextEndlessLocation, shouldWarnEndlessUsage } from './utils/endlessSelection';
 import { computeEndlessStats } from './utils/endlessStats';
@@ -22,6 +30,7 @@ import { useTheme } from './hooks/useTheme';
 import { decideThemeSync } from './config/theme';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { NameScreen } from './screens/NameScreen';
+import { ResumePromptScreen } from './screens/ResumePromptScreen';
 import { SoloSetupScreen } from './screens/SoloSetupScreen';
 import { LeaderboardScreen } from './screens/LeaderboardScreen';
 import { GameScreen } from './screens/GameScreen';
@@ -124,6 +133,143 @@ export default function App() {
 
   const hasKey = hasGoogleMapsKey();
 
+  // ── Solo run resume (server-tracked runs only — see solo/resume.ts) ────
+  const [resumeCandidate, setResumeCandidate] = useState<SoloResumeData | null>(null);
+  const [resumeBusy, setResumeBusy] = useState(false);
+  const resumeRemainingRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (profile.status !== 'ready' || !hasSupabaseConfig() || !hasKey) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const { fetchActiveSoloRun, finalizeSoloRun } = await import('./solo/soloRunApi');
+        const raw = await fetchActiveSoloRun();
+        const parsed = parseActiveSoloRun(raw);
+        if (cancelled || !parsed) return;
+        const data = buildResumeData(parsed);
+        if (data.awaitingFinalize) {
+          // Every round was already guessed but the app closed before
+          // finalize ran — finish it silently rather than re-prompting for
+          // a round that's already fully scored (never scored twice).
+          await finalizeSoloRun(data.runId).catch(() => {});
+          return;
+        }
+        setResumeCandidate(data);
+      } catch {
+        // No reachable active run — a normal cold start, not an error to surface.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [profile.status, hasKey]);
+
+  const resumeGame = useCallback(() => {
+    if (!resumeCandidate) return;
+    setResumeBusy(true);
+    soloRun.adoptResumedRun(resumeCandidate.runId, resumeCandidate.roundCount, resumeCandidate.results.length);
+    setActiveConfig({
+      difficulty: resumeCandidate.difficulty,
+      roundCount: resumeCandidate.roundCount,
+      timerSeconds: resumeCandidate.timerSeconds,
+      movementRule: 'default',
+    });
+    setSoloDifficulty(resumeCandidate.difficulty);
+    resumeRemainingRef.current = resumeCandidate.remainingSeconds;
+
+    const locations: GameLocation[] = resumeCandidate.results.map((r) => r.location);
+    if (resumeCandidate.currentPanorama) {
+      locations.push({
+        id: resumeCandidate.currentPanorama.locationId,
+        lat: NaN,
+        lng: NaN,
+        label: '',
+        country: '',
+        difficulty: resumeCandidate.difficulty,
+      });
+    }
+    dispatch({
+      type: 'RESUME_GAME',
+      locations,
+      results: resumeCandidate.results,
+      roundIndex: resumeCandidate.roundIndex,
+      roundCount: resumeCandidate.roundCount,
+      timerSeconds: resumeCandidate.timerSeconds,
+      resumePanorama: resumeCandidate.currentPanorama,
+    });
+    setResumeCandidate(null);
+    setScreen('home');
+    setResumeBusy(false);
+  }, [resumeCandidate, soloRun, setSoloDifficulty]);
+
+  const abandonResume = useCallback(async () => {
+    if (!resumeCandidate) return;
+    setResumeBusy(true);
+    try {
+      const { abandonSoloRun } = await import('./solo/soloRunApi');
+      await abandonSoloRun(resumeCandidate.runId);
+    } catch {
+      /* best-effort — the 12h run expiry is the fallback */
+    } finally {
+      setResumeCandidate(null);
+      setResumeBusy(false);
+    }
+  }, [resumeCandidate]);
+
+  // ── Local-only resume (Endless, or fixed games with no Supabase) ───────
+  const [localResumeCandidate, setLocalResumeCandidate] = useState<LocalRunSnapshot | null>(null);
+
+  useEffect(() => {
+    const snap = readLocalRunSnapshot();
+    if (snap) setLocalResumeCandidate(snap);
+  }, []);
+
+  const resumeLocalGame = useCallback(() => {
+    if (!localResumeCandidate) return;
+    setActiveConfig({
+      difficulty: localResumeCandidate.difficulty,
+      roundCount: localResumeCandidate.roundCount,
+      timerSeconds: localResumeCandidate.timerSeconds,
+      movementRule: 'default',
+    });
+    setSoloDifficulty(localResumeCandidate.difficulty);
+    dispatch({
+      type: 'RESUME_GAME',
+      locations: localResumeCandidate.locations,
+      results: localResumeCandidate.results,
+      roundIndex: localResumeCandidate.roundIndex,
+      roundCount: localResumeCandidate.roundCount,
+      timerSeconds: localResumeCandidate.timerSeconds,
+      resumePanorama: null,
+    });
+    setLocalResumeCandidate(null);
+    setScreen('home');
+  }, [localResumeCandidate, setSoloDifficulty]);
+
+  // Snapshot a local-only game's progress after every round, so a refresh
+  // can resume it — server-tracked games rely on the server instead (see
+  // above), so this only runs while soloRun isn't tracking this game.
+  useEffect(() => {
+    if (state.status !== 'roundResult') return;
+    if (soloRun.isServerTracked()) return;
+    writeLocalRunSnapshot({
+      difficulty: activeConfig.difficulty,
+      roundCount: state.roundCount,
+      timerSeconds: state.timerSeconds,
+      roundIndex: state.roundIndex,
+      locations: state.locations,
+      results: state.results,
+    });
+  }, [state.status, state.roundIndex, state.results, state.locations, state.roundCount, state.timerSeconds, activeConfig.difficulty, soloRun]);
+
+  // Clear the local snapshot once a local-only game actually finishes.
+  useEffect(() => {
+    if (state.status === 'finalResult' && !soloRun.isServerTracked()) {
+      clearLocalRunSnapshot();
+    }
+  }, [state.status, soloRun]);
+
   const startSolo = useCallback(
     async (config: GameConfig) => {
       if (!hasKey) {
@@ -136,6 +282,7 @@ export default function App() {
       setSoloDifficulty(config.difficulty);
       setEndlessNotice(null);
       endlessAllLocationsRef.current = null;
+      clearLocalRunSnapshot();
       try {
         const { locations, backups } = await soloRun.begin(config);
         dispatch({
@@ -250,6 +397,7 @@ export default function App() {
   // history untouched.
   const abandonGame = useCallback(() => {
     void soloRun.abandon();
+    clearLocalRunSnapshot();
     goHome();
   }, [soloRun, goHome]);
 
@@ -268,6 +416,35 @@ export default function App() {
         error={profile.error}
         online={profile.online || !profile.supabaseConfigured}
         onSubmit={(name) => void profile.setName(name)}
+      />
+    );
+  }
+  if (resumeCandidate && state.status === 'welcome') {
+    return (
+      <ResumePromptScreen
+        difficulty={resumeCandidate.difficulty}
+        roundIndex={resumeCandidate.roundIndex}
+        roundCount={resumeCandidate.roundCount}
+        roundsPlayed={resumeCandidate.results.length}
+        busy={resumeBusy}
+        onResume={resumeGame}
+        onAbandon={() => void abandonResume()}
+      />
+    );
+  }
+  if (localResumeCandidate && state.status === 'welcome') {
+    return (
+      <ResumePromptScreen
+        difficulty={localResumeCandidate.difficulty}
+        roundIndex={localResumeCandidate.roundIndex}
+        roundCount={localResumeCandidate.roundCount}
+        roundsPlayed={localResumeCandidate.results.length}
+        busy={resumeBusy}
+        onResume={resumeLocalGame}
+        onAbandon={() => {
+          clearLocalRunSnapshot();
+          setLocalResumeCandidate(null);
+        }}
       />
     );
   }
@@ -318,6 +495,7 @@ export default function App() {
           onOpenSettings={() => setSettingsOpen(true)}
           onSaveAndExit={saveAndExit}
           onAbandon={abandonGame}
+          resumeRemainingSeconds={resumeRemainingRef.current}
         />
       );
     }
