@@ -28,6 +28,8 @@ import type { BagState } from './shuffleBag';
 import { markDrawn } from './shuffleBag';
 import { bagKey, readBag, resetBags, writeBag } from './bagStorage';
 import { poolGroupKeys } from './engine';
+import type { HistoryMode } from './historyApi';
+import { clearOutbox, isServerHistoryAvailable, queueRoundForSync } from './historySync';
 
 export interface DiversityState {
   /** Bag for the requested (difficulty, collection). */
@@ -59,13 +61,18 @@ export interface CommitParams {
   count: number;
   difficulty?: Difficulty;
   collection?: CollectionId;
+  /** Which mode this round belongs to. Recorded for per-mode statistics. */
+  mode?: HistoryMode;
 }
 
 /**
- * Record that a round has started: advance the shuffle bag and push the group
- * to the front of the local history. Idempotent in effect — replaying the same
- * group simply wraps the bag into a new cycle, which is the correct meaning of
- * "this place came round again".
+ * Record that a round has started: advance the shuffle bag, push the group to
+ * the front of the local history, and queue it for the durable server history.
+ * Idempotent in effect — replaying the same group simply wraps the bag into a
+ * new cycle, which is the correct meaning of "this place came round again".
+ *
+ * Synchronous and side-effect-local: the server push is fire-and-forget and can
+ * never delay, block or fail the round it is recording.
  */
 export function commitRoundStarted({
   all,
@@ -73,12 +80,14 @@ export function commitRoundStarted({
   count,
   difficulty = DEFAULT_DIFFICULTY,
   collection = DEFAULT_COLLECTION,
+  mode = 'solo',
 }: CommitParams): void {
   if (!groupId) return;
   const key = bagKey(difficulty, collection);
   const pool = poolGroupKeys(all, count, difficulty, collection);
   writeBag(key, markDrawn(readBag(key), [groupId], pool));
   recordPlayedLocations([groupId]);
+  queueRoundForSync(groupId, { difficulty, collection, mode });
 }
 
 /** Canonical group id for a location id, using the memoised catalog index. */
@@ -87,11 +96,31 @@ export function groupIdOf(all: readonly GameLocation[], locationId: string): str
 }
 
 /**
- * Clear every bag and the local history — the "Reset recently played
- * locations" action. Server-side history is cleared separately and explicitly;
- * a local reset must not silently delete durable data.
+ * Clear every bag and the *local* history only. Durable server history is
+ * untouched — clearing a cache must never silently delete durable data.
  */
 export function resetDiversityState(): void {
   resetBags();
   resetLocationHistory();
+  clearOutbox();
+}
+
+/**
+ * The user-facing "Reset recently played locations" action: clears local state
+ * and the durable server history too, because that is unambiguously what the
+ * player asked for. Local state is cleared first and synchronously, so the
+ * reset is immediately visible even if the network call never lands.
+ */
+export function resetAllHistory(): void {
+  resetDiversityState();
+  if (!isServerHistoryAvailable()) return;
+  void (async () => {
+    try {
+      const { resetServerLocationHistory } = await import('./historyApi');
+      await resetServerLocationHistory();
+    } catch {
+      // The durable copy will re-seed the local cache on a later sync. Not
+      // worth interrupting the player over.
+    }
+  })();
 }

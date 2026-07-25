@@ -24,8 +24,9 @@ import {
   commitRoundStarted,
   groupIdOf,
   readDiversityState,
-  resetDiversityState,
+  resetAllHistory,
 } from './diversity/store';
+import { syncLocationHistory } from './diversity/historySync';
 import { withTimeout } from './utils/withTimeout';
 import { useProfile } from './profile/useProfile';
 import { parseRoomCodeFromUrl } from './multiplayer/inviteLink';
@@ -166,6 +167,20 @@ export default function App() {
   useEffect(() => {
     document.documentElement.lang = locale.locale;
   }, [locale.locale]);
+
+  // Reconcile the durable location history in the background, once.
+  //
+  // Deliberately gated on nothing and awaited by nobody: selection reads the
+  // local cache synchronously, so this can only ever *improve* variety. It is
+  // bounded internally and swallows every failure, which is what keeps a slow
+  // or hung backend from becoming an inert home screen — the V3 incident this
+  // whole release is careful about.
+  const historySyncedRef = useRef(false);
+  useEffect(() => {
+    if (historySyncedRef.current) return;
+    historySyncedRef.current = true;
+    void syncLocationHistory();
+  }, []);
 
   const hasKey = hasGoogleMapsKey();
 
@@ -629,7 +644,7 @@ export default function App() {
             setBestScore(0);
             setIsBest(false);
           }}
-          onResetLocationHistory={resetDiversityState}
+          onResetLocationHistory={resetAllHistory}
         />
       </Modal>
 

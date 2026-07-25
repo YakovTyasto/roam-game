@@ -191,6 +191,45 @@ A themed collection that cannot spread continents (Europe, Islands) simply
 relaxes rule 3 and keeps the collection intact, which is the intended
 precedence.
 
+## Durable history (migration 0011)
+
+The V3 cooldown lived only in `localStorage`, so novelty reset to zero on a
+reinstall, on a second device, or whenever a browser cleared site data.
+`0011_location_history.sql` adds a per-player table of canonical **group ids**
+— opaque catalog identifiers, never coordinates, never an answer.
+
+| Property | How |
+| --- | --- |
+| Private | RLS owner-only policy **and** zero direct table grants to `anon`/`authenticated`; the three RPCs are the only door |
+| Identity | Always `auth.uid()`; no caller-supplied user id anywhere |
+| Bounded | One row per (player, place); trimmed to 250 newest per player; opportunistic, `LIMIT`-bounded cleanup of year-old rows |
+| Indexed | `(user_id, played_at desc)` for reads and the trim, `(played_at)` for cleanup |
+| Rate limited | Reuses the 0010 counter on all three RPCs |
+| Validated | Difficulty, mode, collection and batch size checked explicitly; malformed entries are skipped, not fatal |
+
+### Sync design
+
+Local storage stays the authority for **reads**. `readDiversityState()` is
+synchronous, network-free and cannot fail, which is what keeps selection off
+the first-paint critical path — the specific failure mode the V3 production
+incident was about.
+
+- **Push** is fire-and-forget per round. A failure lands in a bounded outbox
+  (60 entries, newest kept) and is retried on the next sync; it never surfaces
+  an error or delays a round.
+- **Pull** happens once per app start, bounded by an 8 s timeout, awaited by
+  nobody. Server entries are merged *behind* local ones, because local entries
+  are what this device just played and must stay newest in the recency ranking.
+- **Every failure is invisible.** A hung or broken backend leaves the local
+  cache untouched and selection behaves exactly as it does offline.
+- **A malformed response cannot poison the cache** — payloads are filtered to
+  non-empty strings before anything is written.
+
+Offline and unconfigured deployments never call any of it: `queueRoundForSync`
+and `syncLocationHistory` short-circuit on `hasSupabaseConfig()`, and the
+Supabase SDK stays behind a dynamic import so the solo bundle does not pay for
+it.
+
 ## Freshness targets
 
 Defined once in `src/config/diversity.ts`:
