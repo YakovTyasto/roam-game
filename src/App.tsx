@@ -21,6 +21,7 @@ import { locationProvider } from './providers/LocationProvider';
 import { pickNextEndlessLocation, shouldWarnEndlessUsage } from './utils/endlessSelection';
 import { computeEndlessStats } from './utils/endlessStats';
 import { readLocationHistory, resetLocationHistory } from './utils/locationHistory';
+import { withTimeout } from './utils/withTimeout';
 import { useProfile } from './profile/useProfile';
 import { parseRoomCodeFromUrl } from './multiplayer/inviteLink';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -57,6 +58,9 @@ const MultiplayerApp = lazy(() =>
 );
 
 type AppScreen = 'home' | 'solo-setup' | 'leaderboard' | 'multiplayer';
+
+/** The resume check never blocks rendering, but must still fail bounded. */
+const RESUME_CHECK_TIMEOUT_MS = 8000;
 
 const DEFAULT_PREFERENCES: Preferences = {
   timer: false,
@@ -171,7 +175,7 @@ export default function App() {
     void (async () => {
       try {
         const { fetchActiveSoloRun, finalizeSoloRun } = await import('./solo/soloRunApi');
-        const raw = await fetchActiveSoloRun();
+        const raw = await withTimeout(fetchActiveSoloRun(), RESUME_CHECK_TIMEOUT_MS);
         const parsed = parseActiveSoloRun(raw);
         if (cancelled || !parsed) return;
         const data = buildResumeData(parsed);
