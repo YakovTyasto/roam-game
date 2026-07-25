@@ -236,6 +236,22 @@ export async function startMatch(
   if (error) fail(toUserMessage(error));
 }
 
+/**
+ * Room-wide recent locations, for weighting host-side selection (migration
+ * 0012). Anonymous by construction — see multiplayer/roomDiversity.ts.
+ *
+ * Never throws: a failure here must not be able to block a match start, so it
+ * resolves to "not applied" and the host falls back to their own history.
+ */
+export async function getRoomRecentGroups(
+  supabase: TypedSupabaseClient,
+  roomId: string,
+): Promise<unknown> {
+  const { data, error } = await supabase.rpc('roam_room_recent_groups', { p_room_id: roomId });
+  if (error) return null;
+  return data;
+}
+
 export async function submitGuess(
   supabase: TypedSupabaseClient,
   roomId: string,

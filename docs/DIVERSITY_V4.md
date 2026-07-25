@@ -230,6 +230,52 @@ and `syncLocationHistory` short-circuit on `hasSupabaseConfig()`, and the
 Supabase SDK stays behind a dynamic import so the solo bundle does not pay for
 it.
 
+## Multiplayer: room-wide novelty (migration 0012)
+
+Selection stays host-authoritative, so a V3 match avoided only the *host's*
+recent places — every guest could be shown somewhere they had just played solo.
+`roam_room_recent_groups` gives the host an anonymised view of what the room has
+collectively played, which feeds the same `orderByNovelty` ranking solo uses.
+
+### Privacy model — the part worth arguing with
+
+A participant can always diff a room-wide aggregate against their own knowledge,
+so the design makes **attribution** impossible rather than pretending no
+information flows:
+
+1. **The caller's own rows are excluded.** They already know their own history,
+   and including it would let them subtract it back out.
+2. **Below three participants the RPC is a no-op**, returning
+   `applied: false, reason: 'too_few_participants'`. With one other player,
+   every entry would be attributable to that person. Two-player rooms therefore
+   fall back to host-only history — a real, documented limitation rather than a
+   silent one.
+3. **No user id is ever returned.** `seen_by` counts range over the other
+   participants, so the finest granularity reachable is "k of the others",
+   never "this player".
+
+Nothing in the response is a coordinate, a label or a future target: group ids
+are opaque, and the rows come from places already played.
+
+### Scored fallback, never failure
+
+A room of eight will often have collectively seen most of the pool. Refusing to
+start would be absurd, so candidates are ranked and the best available tier
+wins:
+
+1. places nobody in the room played recently;
+2. places fresh for most of the room (low `seen_by`);
+3. otherwise least-recently-played first;
+4. adjacent difficulty, only if the pool cannot fill the game.
+
+Tiers 1–3 collapse into one ordered "recent keys" list, because that is exactly
+what `orderByNovelty` consumes — which keeps solo and multiplayer on the same
+tested ranking code instead of a bespoke multiplayer scorer.
+
+The lookup is bounded at 2.5 s and every failure falls back to host-only
+history. Nothing about starting a match can sit behind a call that never
+answers.
+
 ## Freshness targets
 
 Defined once in `src/config/diversity.ts`:

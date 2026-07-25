@@ -16,6 +16,12 @@ import { buildManifest } from './manifest';
 import { isRoundExpired, remainingSeconds, toEpochMs } from './timer';
 import { validatePlayerName } from './playerName';
 import { isValidRoomCode, normalizeRoomCode } from './roomCode';
+import {
+  EMPTY_ROOM_RECENT,
+  buildRoomRecentKeys,
+  parseRoomRecentGroups,
+} from './roomDiversity';
+import { withTimeout } from '../utils/withTimeout';
 import type { MpRoom, MultiplayerStatus, RoomSnapshot } from './types';
 import { toFriendlyErrorMessage } from '../utils/rateLimit';
 
@@ -68,6 +74,14 @@ function errorMessage(e: unknown): string {
 
 // Persist the active room id so a page refresh can resume the same match.
 const SAVED_ROOM_KEY = 'roam-mp-room';
+
+/**
+ * How long the host waits for the room-wide novelty aggregate before starting
+ * the match without it. Short on purpose: this is a *nice-to-have* ranking
+ * input, and nothing about starting a game may sit behind a network call that
+ * might never answer.
+ */
+const ROOM_DIVERSITY_TIMEOUT_MS = 2500;
 
 function readSavedRoomId(): string | null {
   try {
@@ -440,6 +454,22 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     try {
       const google = await ensureGoogleMaps();
       const all = await locationProvider.getAll();
+
+      // Weight selection by what the whole room has played recently, not just
+      // the host. Strictly best-effort and bounded: a slow or failing lookup
+      // must never delay or block a match start, so on any problem we fall
+      // straight back to the host's own history. The aggregate carries no
+      // identities — see multiplayer/roomDiversity.ts.
+      const { bag, recentGroupIds } = readDiversityState(room.difficulty);
+      let roomRecent = EMPTY_ROOM_RECENT;
+      try {
+        roomRecent = parseRoomRecentGroups(
+          await withTimeout(api.getRoomRecentGroups(supabase, roomId), ROOM_DIVERSITY_TIMEOUT_MS),
+        );
+      } catch {
+        /* host-only history is a perfectly good fallback */
+      }
+
       // One shared selection path with solo (diversity/engine.ts), so the two
       // modes cannot drift: same collection filter, same difficulty pool with
       // adjacent-tier fallback, same canonical grouping and shuffle-bag
@@ -449,7 +479,8 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
         all,
         count: room.totalRounds,
         difficulty: room.difficulty,
-        ...readDiversityState(room.difficulty),
+        bag,
+        recentGroupIds: buildRoomRecentKeys(roomRecent, recentGroupIds),
         backupCount: all.length,
       });
       const manifest = await buildManifest(

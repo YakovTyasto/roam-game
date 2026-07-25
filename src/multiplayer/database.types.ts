@@ -175,6 +175,8 @@ export type Database = {
       };
       roam_get_location_history: { Args: { p_limit?: number | null }; Returns: Json };
       roam_reset_location_history: { Args: Record<PropertyKey, never>; Returns: Json };
+      // ── Room-wide novelty for host-side selection (migration 0012) ──────
+      roam_room_recent_groups: { Args: { p_room_id: string }; Returns: Json };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

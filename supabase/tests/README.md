@@ -20,17 +20,19 @@ apply once, in order, per environment.
 | 9 | `0009_solo_run_resume.sql` | Extends the (already-existing) active-run RPC with server-time resume data |
 | 10 | `0010_rate_limiting.sql` | Server-side rate limiting (generic counter + 4 wired RPCs) |
 | 11 | `0011_location_history.sql` | Durable per-player location history (Diversity Engine V2) |
+| 12 | `0012_room_diversity.sql` | Anonymised room-wide recent locations for host-side selection |
 
-All of 6-11 are additive/backward-compatible: new nullable columns, widened
+All of 6-12 are additive/backward-compatible: new nullable columns, widened
 check constraints, one new table, and new or same-signature functions —
 verified against a database seeded with pre-V3 (0001-0005-only) data and
 against one seeded through 0010, see "Upgrade-path verification" below. Never
 edit an applied migration file; a fix always ships as a new incremental
 migration.
 
-`0011` touches nothing that already exists: it adds one table, two indexes,
-four functions and one RLS policy, and modifies no existing table, function,
-policy or grant. Applying it cannot affect an active room, run or leaderboard.
+`0011` and `0012` touch nothing that already exists. `0011` adds one table, two
+indexes, four functions and one RLS policy; `0012` adds a single read-only RPC.
+Neither modifies an existing table, function, policy or grant, so applying them
+cannot affect an active room, run or leaderboard.
 
 ## Upgrade-path verification
 
@@ -46,8 +48,8 @@ Three upgrade paths were verified against a real local Postgres instance
   requiring a backfill.
 - **0010→0011 (deployed V3 production schema):** apply 0001-0010, seed a
   profile row and a rate-limit row (simulating real V3 production data), then
-  apply `0011` on top and run all seven suites — 122 assertions, all passing,
-  with the pre-existing rows intact.
+  apply `0011` and `0012` on top and run all eight suites — 151 assertions, all
+  passing, with the pre-existing rows intact.
 
 > The verification scripts are **not idempotent across repeated runs on the
 > same database** (e.g. `03_theme_locale_verify.sql` asserts that a profile
@@ -234,3 +236,35 @@ psql -d roam_mp_test -f supabase/tests/07_location_history_verify.sql
 ```
 
 Ends with `=== 07_location_history_verify.sql: ALL ASSERTIONS PASSED ===`.
+
+## Room-wide novelty (`08_room_diversity_verify.sql`)
+
+Verifies migration `0012` after applying `0001`→`0012`:
+
+- **Membership** — a non-participant is rejected and learns nothing, not even
+  that the room exists; signed-out callers are rejected.
+- **k-anonymity floor** — a 2-player room returns nothing at all, with an
+  explicit `too_few_participants` reason, because any entry would be
+  attributable to the single other player. Three or more participants apply the
+  aggregate.
+- **Caller exclusion** — the caller's own places never appear, so they cannot
+  subtract themselves out to isolate somebody else. This holds for a guest
+  exactly as it does for the host.
+- **No identities** — the payload contains no user id in any form, and
+  `seen_by` counts range only over the *other* participants.
+- **Scope** — only current participants contribute; a player who left neither
+  counts toward the floor nor contributes rows.
+- **Ordering** — newest-first, so the client can rank by recency.
+- **Idempotent start** — a second `mp_start_match` on a started room is
+  rejected and cannot create a second manifest.
+- **Rate limiting and grants** — limited via the 0010 counter with the stable
+  `RATE_LIMITED:` prefix; `anon` cannot execute it, `authenticated` can;
+  `search_path` is pinned.
+
+```bash
+# after the 0001→0011 apply loop above:
+psql -d roam_mp_test -f supabase/migrations/0012_room_diversity.sql
+psql -d roam_mp_test -f supabase/tests/08_room_diversity_verify.sql
+```
+
+Ends with `=== 08_room_diversity_verify.sql: ALL ASSERTIONS PASSED ===`.
