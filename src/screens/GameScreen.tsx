@@ -5,6 +5,7 @@ import type { GameAction, GameState } from '../game/state';
 import { currentLocation } from '../game/state';
 import type { Difficulty } from '../config/difficulty';
 import { DEFAULT_DIFFICULTY, difficultyLabel } from '../config/difficulty';
+import type { Locale } from '../i18n/locale';
 import { haversineDistanceKm } from '../utils/distance';
 import { calculateScore } from '../utils/score';
 import { useIsDesktop, useIsTablet } from '../hooks/useMediaQuery';
@@ -41,6 +42,7 @@ interface GameScreenProps {
    * state.resumePanorama is set for the current round.
    */
   resumeRemainingSeconds?: number;
+  locale?: Locale;
 }
 
 export function GameScreen({
@@ -53,6 +55,7 @@ export function GameScreen({
   onSaveAndExit,
   onAbandon,
   resumeRemainingSeconds,
+  locale,
 }: GameScreenProps) {
   // null means the configured game has No Timer — the round-timer feature is
   // entirely inactive regardless of the "show timer" display preference.
@@ -262,6 +265,7 @@ export function GameScreen({
       <ExitConfirmDialog
         open={exitOpen}
         variant={isEndless ? 'endless' : 'solo'}
+        locale={locale}
         onContinue={() => setExitOpen(false)}
         onSaveAndExit={
           isEndless

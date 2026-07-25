@@ -1,4 +1,6 @@
 import { DoorOpen, Flag, LogOut, Save } from 'lucide-react';
+import { DEFAULT_LOCALE, type Locale } from '../../i18n/locale';
+import { t } from '../../i18n/t';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import styles from './ExitConfirmDialog.module.css';
@@ -17,22 +19,13 @@ interface ExitConfirmDialogProps {
   /** Solo/Endless: abandon without saving. Multiplayer: leave the room. */
   onAbandon: () => void;
   busy?: boolean;
+  /**
+   * Defaults to English — the multiplayer call sites don't yet thread the
+   * player's locale preference through (see docs on remaining i18n
+   * coverage); the solo call site (GameScreen) does.
+   */
+  locale?: Locale;
 }
-
-const COPY: Record<ExitDialogVariant, { title: string; body: string }> = {
-  solo: {
-    title: 'Exit this game?',
-    body: 'Your progress is only saved if you choose "Save and exit". Abandoning discards this run — it will not be recorded.',
-  },
-  endless: {
-    title: 'Exit Endless session?',
-    body: 'You can finish now to see your session summary, or abandon without saving.',
-  },
-  multiplayer: {
-    title: 'Leave this room?',
-    body: 'You will leave the room. Other players are notified and the match continues without you.',
-  },
-};
 
 /**
  * Shared, accessible exit-confirmation dialog for every active gameplay
@@ -47,37 +40,42 @@ export function ExitConfirmDialog({
   onFinishAndSummary,
   onAbandon,
   busy = false,
+  locale = DEFAULT_LOCALE,
 }: ExitConfirmDialogProps) {
-  const copy = COPY[variant];
   return (
-    <Modal open={open} title={copy.title} onClose={onContinue}>
-      <p className={styles.body}>{copy.body}</p>
+    <Modal open={open} title={t(locale, `exit.${variant}.title`)} onClose={onContinue}>
+      <p className={styles.body}>{t(locale, `exit.${variant}.body`)}</p>
       <div className={styles.actions}>
         <Button variant="primary" block onClick={onContinue} disabled={busy}>
-          Continue playing
+          {t(locale, 'common.continue')}
         </Button>
         {variant === 'solo' && onSaveAndExit && (
           <Button variant="subtle" block onClick={onSaveAndExit} disabled={busy}>
             <Save size={18} aria-hidden />
-            Save and exit
+            {t(locale, 'exit.solo.save_and_exit')}
           </Button>
         )}
         {variant === 'endless' && onFinishAndSummary && (
           <Button variant="subtle" block onClick={onFinishAndSummary} disabled={busy}>
             <Flag size={18} aria-hidden />
-            Finish and view summary
+            {t(locale, 'exit.endless.finish')}
           </Button>
         )}
         <Button variant="ghost" block onClick={onAbandon} disabled={busy}>
           {variant === 'multiplayer' ? (
             <>
               <LogOut size={18} aria-hidden />
-              Leave room
+              {t(locale, 'exit.multiplayer.leave')}
+            </>
+          ) : variant === 'endless' ? (
+            <>
+              <DoorOpen size={18} aria-hidden />
+              {t(locale, 'exit.endless.abandon')}
             </>
           ) : (
             <>
               <DoorOpen size={18} aria-hidden />
-              Abandon {variant === 'endless' ? 'session' : 'game'}
+              {t(locale, 'exit.solo.abandon')}
             </>
           )}
         </Button>

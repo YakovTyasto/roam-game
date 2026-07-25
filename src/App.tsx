@@ -28,6 +28,9 @@ import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { usePrefersReducedMotion } from './hooks/useMediaQuery';
 import { useTheme } from './hooks/useTheme';
 import { decideThemeSync } from './config/theme';
+import { useLocale } from './hooks/useLocale';
+import { isLocale } from './i18n/locale';
+import { t } from './i18n/t';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { NameScreen } from './screens/NameScreen';
 import { ResumePromptScreen } from './screens/ResumePromptScreen';
@@ -66,6 +69,7 @@ export default function App() {
   const profile = useProfile();
   const soloRun = useSoloRun();
   const theme = useTheme();
+  const locale = useLocale();
 
   const [preferences, setPreferences] = useLocalStorage<Preferences>(
     `${APP.storagePrefix}:preferences`,
@@ -133,6 +137,26 @@ export default function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.serverPreferences]);
+
+  // Same reconciliation shape as theme, for the locale preference.
+  const localeSyncedRef = useRef(false);
+  useEffect(() => {
+    if (localeSyncedRef.current) return;
+    if (profile.serverPreferences === undefined) return;
+    localeSyncedRef.current = true;
+    const serverLocale = profile.serverPreferences.locale;
+    if (!locale.hadStoredLocale && isLocale(serverLocale)) {
+      locale.setLocale(serverLocale);
+    } else {
+      profile.pushPreferences({ locale: locale.locale });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.serverPreferences]);
+
+  // Accessibility: keep the document's declared language in sync.
+  useEffect(() => {
+    document.documentElement.lang = locale.locale;
+  }, [locale.locale]);
 
   const hasKey = hasGoogleMapsKey();
 
@@ -499,6 +523,7 @@ export default function App() {
           onSaveAndExit={saveAndExit}
           onAbandon={abandonGame}
           resumeRemainingSeconds={resumeRemainingRef.current}
+          locale={locale.locale}
         />
       );
     }
@@ -537,7 +562,7 @@ export default function App() {
 
       <Modal
         open={settingsOpen}
-        title={`${APP.name} settings`}
+        title={t(locale.locale, 'settings.title', { name: APP.name })}
         onClose={() => setSettingsOpen(false)}
       >
         <SettingsContent
@@ -551,6 +576,11 @@ export default function App() {
           onChangeTheme={(next) => {
             theme.setPreference(next);
             profile.pushPreferences({ theme: next });
+          }}
+          locale={locale.locale}
+          onChangeLocale={(next) => {
+            locale.setLocale(next);
+            profile.pushPreferences({ locale: next });
           }}
           onChangeName={(name) => void profile.setName(name)}
           onChange={updatePreferences}
