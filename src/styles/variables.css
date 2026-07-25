@@ -34,6 +34,10 @@
   --marker-actual: #bff43a;
   --marker-opponent: #ff9d3a;
 
+  /* Theme-aware surfaces used outside the token blocks above */
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --map-bg: #0a0c0a;
+
   /* Radii */
   --r-sm: 8px;
   --r-md: 14px;
@@ -77,4 +81,51 @@
     Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono',
     Menlo, monospace;
+}
+
+/* Explicit dark theme is identical to the :root defaults above — this block
+   only exists so [data-theme='dark'] is a valid, self-consistent selector. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* ── Light theme ─────────────────────────────────────────────
+   Same warm-lime identity, re-tuned for contrast on light surfaces. The
+   accent is darkened for text/outline use (WCAG AA against light panels);
+   button fills keep near-white foreground text via --accent-contrast. */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f6f7f2;
+  --bg-deep: #eef1e7;
+  --surface-1: rgba(255, 255, 255, 0.75);
+  --surface-2: rgba(255, 255, 255, 0.92);
+  --surface-solid: #ffffff00;
+
+  --panel: rgba(255, 255, 255, 0.78);
+  --panel-strong: rgba(255, 255, 255, 0.94);
+  --panel-border: rgba(15, 20, 10, 0.12);
+  --panel-border-strong: rgba(15, 20, 10, 0.22);
+
+  --accent: #4f7d0e;
+  --accent-bright: #5e920f;
+  --accent-dim: rgba(79, 125, 14, 0.14);
+  --accent-contrast: #f8fff0;
+
+  --text: #171b14;
+  --text-muted: #4b544a;
+  --text-faint: #737c6e;
+
+  --danger: #c3392c;
+  --danger-dim: rgba(195, 57, 44, 0.12);
+  --marker-guess: #1f6fb2;
+  --marker-actual: #4f7d0e;
+  --marker-opponent: #b85e12;
+
+  --shadow-sm: 0 2px 8px rgba(20, 24, 16, 0.1);
+  --shadow-md: 0 10px 30px rgba(20, 24, 16, 0.14);
+  --shadow-lg: 0 24px 60px rgba(20, 24, 16, 0.18);
+
+  --hover-overlay: rgba(10, 14, 8, 0.05);
+  --map-bg: #e4e8dc;
 }

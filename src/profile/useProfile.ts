@@ -34,6 +34,14 @@ export interface ProfileController {
   error: string | null;
   /** Create or change the display name. Resolves true on success. */
   setName: (raw: string) => Promise<boolean>;
+  /**
+   * Server-synced theme/locale preferences, once known. `undefined` while
+   * still loading (or unreachable/unconfigured); `null` fields mean the
+   * player has never synced that preference.
+   */
+  serverPreferences?: { theme: string | null; locale: string | null };
+  /** Best-effort, non-blocking push of a local preference to the server. */
+  pushPreferences: (patch: { theme?: string; locale?: string }) => void;
 }
 
 export function useProfile(): ProfileController {
@@ -50,6 +58,9 @@ export function useProfile(): ProfileController {
   const [confirming, setConfirming] = useState(supabaseConfigured);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [serverPreferences, setServerPreferences] = useState<
+    { theme: string | null; locale: string | null } | undefined
+  >(undefined);
 
   // Reconcile against the server once, on mount, when configured.
   useEffect(() => {
@@ -64,6 +75,10 @@ export function useProfile(): ProfileController {
         const profile = await fetchProfile();
         if (cancelled) return;
         setOnline(true);
+        setServerPreferences({
+          theme: profile.themePreference,
+          locale: profile.localePreference,
+        });
         if (profile.exists && profile.displayName) {
           writeCachedProfile(profile.displayName);
           setNameState(profile.displayName);
@@ -131,6 +146,21 @@ export function useProfile(): ProfileController {
     [supabaseConfigured],
   );
 
+  const pushPreferences = useCallback(
+    (patch: { theme?: string; locale?: string }) => {
+      if (!supabaseConfigured) return;
+      void (async () => {
+        try {
+          const { syncPreferences } = await import('./profileApi');
+          await syncPreferences(patch);
+        } catch {
+          // Best-effort — local storage already holds the authoritative value.
+        }
+      })();
+    },
+    [supabaseConfigured],
+  );
+
   return {
     status,
     name,
@@ -140,6 +170,8 @@ export function useProfile(): ProfileController {
     saving,
     error,
     setName,
+    serverPreferences,
+    pushPreferences,
   };
 }
 

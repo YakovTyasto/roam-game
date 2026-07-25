@@ -134,6 +134,10 @@ export type Database = {
       mp_create_rematch: { Args: { p_room_id: string }; Returns: Json };
       roam_upsert_profile: { Args: { p_name: string }; Returns: Json };
       roam_get_profile: { Args: Record<PropertyKey, never>; Returns: Json };
+      roam_set_preferences: {
+        Args: { p_theme: string | null; p_locale: string | null };
+        Returns: Json;
+      };
       roam_create_solo_run: {
         Args: { p_difficulty: string; p_total_rounds: number; p_manifest: Json };
         Returns: Json;

@@ -76,3 +76,24 @@ Ends with `ALL V2 TESTS PASSED` and `ALL V2 HOST/WEEK TESTS PASSED`.
 The stub file defines `auth.uid()` to read a `test.uid` GUC so the harness can
 impersonate players with `select set_config('test.uid', '<uuid>', false)`; on
 real Supabase, `auth.uid()` comes from the signed-in session instead.
+
+## Theme/locale preference verification (`03_theme_locale_verify.sql`)
+
+`03_theme_locale_verify.sql` exercises migration `0006` after `0001`→`0006`:
+
+- `roam_set_preferences` no-ops (does not error) when the caller has no
+  profile row yet.
+- New/legacy profile rows default both preference columns to `NULL`.
+- Valid `theme`/`locale` values persist and round-trip through
+  `roam_get_profile`; a partial update leaves the other field untouched.
+- Invalid values (e.g. `'purple'`, `'fr'`) are rejected server-side — the
+  client is never trusted.
+- No preference state leaks across users.
+
+```bash
+# after the 0001→0006 apply loop:
+psql -d roam_mp_test -f supabase/migrations/0006_theme_locale_preferences.sql
+psql -d roam_mp_test -f supabase/tests/03_theme_locale_verify.sql
+```
+
+Ends with `ALL THEME/LOCALE PREFERENCE TESTS PASSED`.

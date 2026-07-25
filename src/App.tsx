@@ -13,6 +13,8 @@ import { parseRoomCodeFromUrl } from './multiplayer/inviteLink';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { usePrefersReducedMotion } from './hooks/useMediaQuery';
+import { useTheme } from './hooks/useTheme';
+import { decideThemeSync } from './config/theme';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { NameScreen } from './screens/NameScreen';
 import { SoloSetupScreen } from './screens/SoloSetupScreen';
@@ -46,6 +48,7 @@ export default function App() {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
   const profile = useProfile();
   const soloRun = useSoloRun();
+  const theme = useTheme();
 
   const [preferences, setPreferences] = useLocalStorage<Preferences>(
     `${APP.storagePrefix}:preferences`,
@@ -88,6 +91,28 @@ export default function App() {
   useEffect(() => {
     document.body.classList.toggle('reduce-motion', reduceMotion);
   }, [reduceMotion]);
+
+  // Reconcile the theme preference with the server profile once, without
+  // blocking first paint (which already used the local/pre-paint value). If
+  // this browser never had a stored preference, adopt the server's; otherwise
+  // push the local value up so the server catches up.
+  const themeSyncedRef = useRef(false);
+  useEffect(() => {
+    if (themeSyncedRef.current) return;
+    if (profile.serverPreferences === undefined) return;
+    themeSyncedRef.current = true;
+    const decision = decideThemeSync(
+      theme.hadStoredPreference,
+      theme.preference,
+      profile.serverPreferences.theme,
+    );
+    if (decision.action === 'adopt-server') {
+      theme.setPreference(decision.theme);
+    } else {
+      profile.pushPreferences({ theme: decision.theme });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.serverPreferences]);
 
   const hasKey = hasGoogleMapsKey();
 
@@ -257,6 +282,11 @@ export default function App() {
           online={profile.online}
           savingName={profile.saving}
           nameError={profile.error}
+          themePreference={theme.preference}
+          onChangeTheme={(next) => {
+            theme.setPreference(next);
+            profile.pushPreferences({ theme: next });
+          }}
           onChangeName={(name) => void profile.setName(name)}
           onChange={updatePreferences}
           onResetBest={() => {

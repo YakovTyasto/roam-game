@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Preferences } from '../../types';
 import { APP } from '../../config/app';
+import type { ThemePreference } from '../../config/theme';
 import { MAX_PLAYER_NAME_LENGTH } from '../../multiplayer/playerName';
 import { Button } from '../ui/Button';
 import styles from './SettingsContent.module.css';
@@ -14,6 +15,8 @@ interface SettingsContentProps {
   online: boolean;
   savingName: boolean;
   nameError: string | null;
+  themePreference: ThemePreference;
+  onChangeTheme: (theme: ThemePreference) => void;
   onChangeName: (name: string) => void;
   onChange: (patch: Partial<Preferences>) => void;
   onResetBest: () => void;
@@ -50,6 +53,8 @@ export function SettingsContent({
   online,
   savingName,
   nameError,
+  themePreference,
+  onChangeTheme,
   onChangeName,
   onChange,
   onResetBest,
@@ -105,6 +110,39 @@ export function SettingsContent({
             </div>
           </div>
         )}
+        <div className={styles.row}>
+          <div className={styles.rowText}>
+            <span className={styles.rowLabel}>Appearance</span>
+            <span className={styles.rowHint}>Match your system, or pick one.</span>
+          </div>
+          <div className={styles.segment} role="group" aria-label="Appearance">
+            <button
+              type="button"
+              className={styles.segmentButton}
+              aria-pressed={themePreference === 'system'}
+              onClick={() => onChangeTheme('system')}
+            >
+              System
+            </button>
+            <button
+              type="button"
+              className={styles.segmentButton}
+              aria-pressed={themePreference === 'light'}
+              onClick={() => onChangeTheme('light')}
+            >
+              Light
+            </button>
+            <button
+              type="button"
+              className={styles.segmentButton}
+              aria-pressed={themePreference === 'dark'}
+              onClick={() => onChangeTheme('dark')}
+            >
+              Dark
+            </button>
+          </div>
+        </div>
+
         <div className={styles.row}>
           <div className={styles.rowText}>
             <span className={styles.rowLabel}>Round timer</span>
