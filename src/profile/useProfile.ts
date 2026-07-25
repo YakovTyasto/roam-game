@@ -2,11 +2,24 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { hasSupabaseConfig } from '../config/env';
 import { validatePlayerName } from '../multiplayer/playerName';
 import { friendlyRateLimitMessage, isRateLimitedError } from '../utils/rateLimit';
+import { withTimeout } from '../utils/withTimeout';
 import {
   clearCachedProfile,
   readCachedProfile,
   writeCachedProfile,
 } from './profileCache';
+
+/**
+ * Bound on the initial profile bootstrap round trip. A fresh visitor (no
+ * cached profile) sees only a full-screen loading spinner — no interactive
+ * buttons at all — until this resolves, so it must never hang indefinitely:
+ * a cold backend, a DNS/CORS misconfiguration, or a stalled connection would
+ * otherwise leave every entry button unreachable with no way out. On expiry
+ * we fall back exactly like an unreachable backend (local-only play).
+ */
+const PROFILE_BOOTSTRAP_TIMEOUT_MS = 8000;
+/** Bound on saving a name from the (also entry-critical) onboarding screen. */
+const PROFILE_SAVE_TIMEOUT_MS = 8000;
 
 /**
  * Profile lifecycle:
@@ -73,7 +86,7 @@ export function useProfile(): ProfileController {
     void (async () => {
       try {
         const { fetchProfile, saveProfile } = await import('./profileApi');
-        const profile = await fetchProfile();
+        const profile = await withTimeout(fetchProfile(), PROFILE_BOOTSTRAP_TIMEOUT_MS);
         if (cancelled) return;
         setOnline(true);
         setServerPreferences({
@@ -87,7 +100,7 @@ export function useProfile(): ProfileController {
         } else if (cached) {
           // We have a local name but the server has none yet — migrate it up.
           try {
-            const saved = await saveProfile(cached.name);
+            const saved = await withTimeout(saveProfile(cached.name), PROFILE_SAVE_TIMEOUT_MS);
             if (cancelled) return;
             writeCachedProfile(saved);
             setNameState(saved);
@@ -100,9 +113,14 @@ export function useProfile(): ProfileController {
         }
       } catch {
         if (cancelled) return;
-        // Backend unreachable. Fall back to the cached name if we have one;
-        // otherwise the user can still set a local-only name to start.
+        // Backend unreachable (or the round trip timed out). Fall back to the
+        // cached name if we have one; otherwise the user can still set a
+        // local-only name to start — buttons must become usable either way.
         setOnline(false);
+        // Unblock the theme/locale sync effects too — they wait for this to
+        // become defined; an unreachable server means "nothing to adopt",
+        // so they'll push the local preference up next time, not hang.
+        setServerPreferences({ theme: null, locale: null });
         setStatus(cached ? 'ready' : 'onboarding');
       } finally {
         if (!cancelled) setConfirming(false);
@@ -131,7 +149,7 @@ export function useProfile(): ProfileController {
       if (supabaseConfigured) {
         try {
           const { saveProfile } = await import('./profileApi');
-          const saved = await saveProfile(valid.name);
+          const saved = await withTimeout(saveProfile(valid.name), PROFILE_SAVE_TIMEOUT_MS);
           writeCachedProfile(saved);
           setNameState(saved);
           setOnline(true);
