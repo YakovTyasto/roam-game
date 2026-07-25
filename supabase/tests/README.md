@@ -1,4 +1,45 @@
-# Multiplayer SQL verification
+# Database migrations & SQL verification
+
+## Exact production application order
+
+Apply every migration below, in this exact order, via the Supabase SQL
+Editor (or `supabase db push`) before deploying the corresponding app code.
+Each file is idempotent-safe to inspect but **not** designed to be re-run —
+apply once, in order, per environment.
+
+| # | File | Adds |
+|---|---|---|
+| 1 | `0001_multiplayer_schema.sql` | Core multiplayer schema (rooms, players, rounds, guesses), RLS |
+| 2 | `0002_multiplayer_functions.sql` | Multiplayer RPCs (create/join/start/submit/advance/leave/rematch) |
+| 3 | `0003_difficulty_and_party_rooms.sql` | Difficulty tiers, 2-8 player party rooms, host transfer |
+| 4 | `0004_player_profiles_and_leaderboard.sql` | Player profiles, server-tracked solo runs, weekly leaderboard tables |
+| 5 | `0005_v2_rpc_functions.sql` | Profile/solo-run/leaderboard RPCs |
+| 6 | `0006_theme_locale_preferences.sql` | Nullable `theme_preference`/`locale_preference` profile columns + sync RPC |
+| 7 | `0007_custom_round_config.sql` | Widens round count to 1-20; custom solo timer |
+| 8 | `0008_solo_run_abandon.sql` | Explicit solo-run abandonment RPC |
+| 9 | `0009_solo_run_resume.sql` | Extends the (already-existing) active-run RPC with server-time resume data |
+| 10 | `0010_rate_limiting.sql` | Server-side rate limiting (generic counter + 4 wired RPCs) |
+
+All of 6-10 are additive/backward-compatible: new nullable columns, widened
+check constraints, and new or same-signature functions — verified against a
+database seeded with pre-V3 (0001-0005-only) data, see "Upgrade-path
+verification" below. Never edit an applied migration file; a fix always
+ships as a new incremental migration.
+
+## Upgrade-path verification
+
+Two upgrade paths were verified against a real local Postgres instance for
+this phase (not just a fresh 0001→latest apply):
+
+- **0001→latest (fresh):** every suite below, run after applying all ten
+  migrations to an empty database.
+- **0005→latest (existing production data):** apply 0001-0005, seed a
+  profile row (simulating real V2 production data), then apply 0006-0010 on
+  top and re-run every suite — confirming the pre-existing row survives
+  unchanged and new nullable columns correctly default to `NULL` rather than
+  requiring a backfill.
+
+## Running the suites locally
 
 `01_multiplayer_verify.sql` exercises the migrations end-to-end and asserts the
 security-critical guarantees directly in the database:
