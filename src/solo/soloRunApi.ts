@@ -53,3 +53,11 @@ export async function finalizeSoloRun(runId: string): Promise<void> {
   const { error } = await supabase.rpc('roam_finalize_solo_run', { p_run_id: runId });
   if (error) throw new Error(error.message);
 }
+
+/** Explicitly abandon an active run (exit flow). Idempotent; never scores. */
+export async function abandonSoloRun(runId: string): Promise<void> {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  const { error } = await supabase.rpc('roam_abandon_solo_run', { p_run_id: runId });
+  if (error) throw new Error(error.message);
+}

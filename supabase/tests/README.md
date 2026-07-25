@@ -97,3 +97,28 @@ psql -d roam_mp_test -f supabase/tests/03_theme_locale_verify.sql
 ```
 
 Ends with `ALL THEME/LOCALE PREFERENCE TESTS PASSED`.
+
+## Exit flow verification (`04_exit_flow_verify.sql`)
+
+`04_exit_flow_verify.sql` exercises migration `0008` and the existing
+`mp_leave_room` guarantees after `0001`→`0008`:
+
+- `roam_abandon_solo_run` marks the run abandoned, is idempotent on a second
+  call, and leaves the player profile untouched.
+- An abandoned run can never be finalized (`roam_finalize_solo_run` rejects
+  it) and produces zero `game_results` rows — abandoning never scores.
+- A host leaving an **active** (not just lobby) room transfers host
+  ownership deterministically to the earliest-joined remaining player
+  (lowest slot), and the room keeps running for the remaining players.
+- Duplicate/concurrent `mp_leave_room` calls for the same player are
+  idempotent.
+- The last eligible player leaving abandons the room cleanly (no deadlock).
+
+```bash
+# after the 0001→0008 apply loop:
+psql -d roam_mp_test -f supabase/migrations/0007_custom_round_config.sql
+psql -d roam_mp_test -f supabase/migrations/0008_solo_run_abandon.sql
+psql -d roam_mp_test -f supabase/tests/04_exit_flow_verify.sql
+```
+
+Ends with `ALL EXIT FLOW TESTS PASSED`.

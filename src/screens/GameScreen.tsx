@@ -12,6 +12,8 @@ import { StreetView } from '../components/street/StreetView';
 import { HUD } from '../components/hud/HUD';
 import { MapPanel, type Device } from '../components/map/MapPanel';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
+import { ExitConfirmDialog } from '../components/ui/ExitConfirmDialog';
+import { useExitGuard } from '../hooks/useExitGuard';
 
 interface GameScreenProps {
   state: GameState;
@@ -25,6 +27,10 @@ interface GameScreenProps {
    */
   onGuessSubmitted?: (roundIndex: number, guess: LatLng) => void;
   onOpenSettings: () => void;
+  /** Exit flow: persist resumable state (fixed games only), then leave. */
+  onSaveAndExit: () => void;
+  /** Exit flow: discard the run without saving, then leave. */
+  onAbandon: () => void;
 }
 
 export function GameScreen({
@@ -34,6 +40,8 @@ export function GameScreen({
   difficulty = DEFAULT_DIFFICULTY,
   onGuessSubmitted,
   onOpenSettings,
+  onSaveAndExit,
+  onAbandon,
 }: GameScreenProps) {
   // null means the configured game has No Timer — the round-timer feature is
   // entirely inactive regardless of the "show timer" display preference.
@@ -159,6 +167,12 @@ export function GameScreen({
     ? state.results[state.results.length - 1]
     : undefined;
 
+  // ── Always-available exit flow ──────────────────────────
+  const [exitOpen, setExitOpen] = useState(false);
+  const hasUnsavedProgress =
+    state.status === 'exploring' || state.status === 'selectingGuess' || state.status === 'roundResult';
+  useExitGuard(hasUnsavedProgress, () => setExitOpen(true));
+
   return (
     <div className="noselect" style={{ position: 'absolute', inset: 0 }}>
       <StreetView
@@ -177,6 +191,7 @@ export function GameScreen({
         difficultyLabel={difficultyLabel(difficulty)}
         onOpenSettings={onOpenSettings}
         onFinishEndless={isEndless ? () => dispatch({ type: 'FINISH_ENDLESS' }) : undefined}
+        onExit={() => setExitOpen(true)}
       />
 
       <MapPanel
@@ -197,6 +212,32 @@ export function GameScreen({
       />
 
       {isLoading && <LoadingOverlay />}
+
+      <ExitConfirmDialog
+        open={exitOpen}
+        variant={isEndless ? 'endless' : 'solo'}
+        onContinue={() => setExitOpen(false)}
+        onSaveAndExit={
+          isEndless
+            ? undefined
+            : () => {
+                setExitOpen(false);
+                onSaveAndExit();
+              }
+        }
+        onFinishAndSummary={
+          isEndless
+            ? () => {
+                setExitOpen(false);
+                dispatch({ type: 'FINISH_ENDLESS' });
+              }
+            : undefined
+        }
+        onAbandon={() => {
+          setExitOpen(false);
+          onAbandon();
+        }}
+      />
     </div>
   );
 }

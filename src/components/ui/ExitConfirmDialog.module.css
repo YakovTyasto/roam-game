@@ -1,0 +1,11 @@
+.body {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+}

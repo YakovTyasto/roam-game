@@ -26,6 +26,11 @@ export interface SoloRunController {
   recordGuess: (roundIndex: number, guess: LatLng) => void;
   /** Finalize the server run once all rounds are in (no-op locally). */
   finalize: () => Promise<void>;
+  /**
+   * Explicitly abandon the active run (exit flow's "Abandon game"). Idempotent
+   * and a no-op when not server-tracked. Never creates a leaderboard result.
+   */
+  abandon: () => Promise<void>;
   /** Whether the current game is being recorded to the leaderboard. */
   isServerTracked: () => boolean;
 }
@@ -123,7 +128,19 @@ export function useSoloRun(): SoloRunController {
     }
   }, []);
 
+  const abandon = useCallback(async () => {
+    const runId = runIdRef.current;
+    runIdRef.current = null;
+    if (!runId) return;
+    try {
+      const { abandonSoloRun } = await import('./soloRunApi');
+      await abandonSoloRun(runId);
+    } catch {
+      /* best-effort — the 12h run expiry is the fallback */
+    }
+  }, []);
+
   const isServerTracked = useCallback(() => runIdRef.current !== null, []);
 
-  return { begin, recordGuess, finalize, isServerTracked };
+  return { begin, recordGuess, finalize, abandon, isServerTracked };
 }

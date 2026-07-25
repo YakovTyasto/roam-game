@@ -7,6 +7,8 @@ import { StreetView } from '../../components/street/StreetView';
 import { WorldMap, type OtherGuess } from '../../components/map/WorldMap';
 import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
 import { Button } from '../../components/ui/Button';
+import { ExitConfirmDialog } from '../../components/ui/ExitConfirmDialog';
+import { useExitGuard } from '../../hooks/useExitGuard';
 import type { RoomView } from '../../multiplayer/machine';
 import { rankByScore } from '../../multiplayer/ranking';
 import type { MpPlayer, MpRoom } from '../../multiplayer/types';
@@ -57,7 +59,13 @@ export function MultiplayerGame({
   const [pendingGuess, setPendingGuess] = useState<LatLng | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [readyPanoId, setReadyPanoId] = useState<string | null>(null);
+  const [exitOpen, setExitOpen] = useState(false);
   const online = new Set(onlineUserIds);
+
+  // An active match is always meaningful state to guard against accidental
+  // back/refresh — the server marks a departed player and continues without
+  // them (see mp_leave_room), so this is about the local player's own intent.
+  useExitGuard(true, () => setExitOpen(true));
 
   useEffect(() => {
     setPendingGuess(null);
@@ -176,7 +184,7 @@ export function MultiplayerGame({
               </div>
             )}
           </div>
-          <Button variant="subtle" onClick={onLeave} aria-label="Leave match">
+          <Button variant="subtle" onClick={() => setExitOpen(true)} aria-label="Exit match">
             <LogOut size={18} aria-hidden />
           </Button>
         </div>
@@ -341,6 +349,16 @@ export function MultiplayerGame({
       </section>
 
       {readyPanoId !== round.panoId && <LoadingOverlay label="Loading panorama…" />}
+
+      <ExitConfirmDialog
+        open={exitOpen}
+        variant="multiplayer"
+        onContinue={() => setExitOpen(false)}
+        onAbandon={() => {
+          setExitOpen(false);
+          onLeave();
+        }}
+      />
     </div>
   );
 }

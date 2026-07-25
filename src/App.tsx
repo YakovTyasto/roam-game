@@ -233,6 +233,26 @@ export default function App() {
     setScreen('home');
   }, []);
 
+  // ── Exit flow (solo/Endless) ────────────────────────────────────────────
+  // Save and exit: leaves the local UI state, but deliberately does NOT
+  // abandon a server-tracked run — it stays 'active' server-side and is
+  // resumable (see roam_get_active_solo_run; full resume UI is a separate,
+  // dedicated pass). Local-only games (no Supabase, or Endless) have nothing
+  // server-side to preserve yet, so this currently behaves like Abandon for
+  // them — an accepted, honestly-scoped limitation until local resume lands.
+  const saveAndExit = useCallback(() => {
+    goHome();
+  }, [goHome]);
+
+  // Abandon: explicitly invalidates any server-tracked active run (never
+  // creates a leaderboard result — finalize is never called) and clears only
+  // this run's local state, leaving profile/best score/theme/location
+  // history untouched.
+  const abandonGame = useCallback(() => {
+    void soloRun.abandon();
+    goHome();
+  }, [soloRun, goHome]);
+
   // ── Profile gating ────────────────────────────────────────────────────
   if (profile.status === 'loading') {
     return (
@@ -296,6 +316,8 @@ export default function App() {
           difficulty={activeDifficulty}
           onGuessSubmitted={recordGuess}
           onOpenSettings={() => setSettingsOpen(true)}
+          onSaveAndExit={saveAndExit}
+          onAbandon={abandonGame}
         />
       );
     }

@@ -1,4 +1,4 @@
-import { Compass, MapPin, Timer, Settings, Flag } from 'lucide-react';
+import { Compass, MapPin, Timer, Settings, Flag, DoorOpen } from 'lucide-react';
 import { APP } from '../../config/app';
 import { Button } from '../ui/Button';
 import styles from './HUD.module.css';
@@ -15,6 +15,8 @@ interface HUDProps {
   onOpenSettings: () => void;
   /** Endless only: end the session now and view the summary. */
   onFinishEndless?: () => void;
+  /** Always-available exit control — opens the exit-confirmation dialog. */
+  onExit: () => void;
 }
 
 function formatClock(seconds: number): string {
@@ -32,10 +34,14 @@ export function HUD({
   difficultyLabel,
   onOpenSettings,
   onFinishEndless,
+  onExit,
 }: HUDProps) {
   return (
     <div className={styles.hud}>
       <div className={styles.cluster}>
+        <Button variant="subtle" iconOnly onClick={onExit} aria-label="Exit game">
+          <DoorOpen size={20} aria-hidden />
+        </Button>
         <div className={styles.pill}>
           <MapPin size={16} className={styles.icon} aria-hidden />
           <span className={styles.label}>Round</span>

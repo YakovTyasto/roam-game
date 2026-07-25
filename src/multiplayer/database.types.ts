@@ -152,6 +152,7 @@ export type Database = {
         Returns: Json;
       };
       roam_finalize_solo_run: { Args: { p_run_id: string }; Returns: Json };
+      roam_abandon_solo_run: { Args: { p_run_id: string }; Returns: Json };
       roam_get_active_solo_run: { Args: Record<PropertyKey, never>; Returns: Json };
       roam_leaderboard: {
         Args: {
