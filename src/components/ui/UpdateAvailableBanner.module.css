@@ -1,0 +1,46 @@
+.banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 14px);
+  transform: translateX(-50%);
+  z-index: 1300;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 10px 10px 16px;
+  border-radius: var(--r-full);
+  background: var(--panel-strong);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-size: var(--fs-xs);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  animation: roam-rise var(--dur) var(--ease);
+}
+
+.icon {
+  color: var(--accent);
+  flex: none;
+}
+
+.dismiss {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dismiss:hover {
+  color: var(--text);
+}

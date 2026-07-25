@@ -41,6 +41,8 @@ import { Modal } from './components/ui/Modal';
 import { SettingsContent } from './components/settings/SettingsContent';
 import { OfflineBanner } from './components/ui/OfflineBanner';
 import { EndlessUsageNotice } from './components/ui/EndlessUsageNotice';
+import { UpdateAvailableBanner } from './components/ui/UpdateAvailableBanner';
+import { useServiceWorkerUpdate } from './pwa/useServiceWorkerUpdate';
 import { LoadingOverlay } from './components/ui/LoadingOverlay';
 
 // Multiplayer (and the Supabase SDK it pulls in) is code-split so the solo
@@ -102,6 +104,7 @@ export default function App() {
   const [endlessNotice, setEndlessNotice] = useState<number | null>(null);
 
   const online = useOnlineStatus();
+  const swUpdate = useServiceWorkerUpdate();
   const systemReducedMotion = usePrefersReducedMotion();
   const reduceMotion = preferences.reduceMotion || systemReducedMotion;
 
@@ -560,6 +563,10 @@ export default function App() {
       </Modal>
 
       {!online && <OfflineBanner />}
+
+      {swUpdate.needsRefresh && (
+        <UpdateAvailableBanner onUpdate={swUpdate.applyUpdate} onDismiss={swUpdate.dismiss} />
+      )}
 
       {endlessNotice !== null && (
         <EndlessUsageNotice roundsPlayed={endlessNotice} onDismiss={() => setEndlessNotice(null)} />

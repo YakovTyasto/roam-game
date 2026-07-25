@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // Conservative update strategy: a new service worker installs and
+      // waits, but never activates/reloads the page silently — the player
+      // is shown an explicit "Update available" prompt (see
+      // src/pwa/useServiceWorkerUpdate.ts) and chooses when to reload.
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'robots.txt'],
       // We deliberately cache ONLY the application shell and local assets.
       // Street View and OpenStreetMap tiles are network-dependent and are

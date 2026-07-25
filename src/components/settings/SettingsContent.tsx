@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Smartphone } from 'lucide-react';
 import type { Preferences } from '../../types';
 import { APP } from '../../config/app';
 import type { ThemePreference } from '../../config/theme';
 import { MAX_PLAYER_NAME_LENGTH } from '../../multiplayer/playerName';
+import { isIos, shouldShowInstallHint, writeInstallHintDismissed } from '../../pwa/pwaInstall';
 import { Button } from '../ui/Button';
 import styles from './SettingsContent.module.css';
 
@@ -69,6 +71,14 @@ export function SettingsContent({
   }, [playerName, editingName]);
 
   const dirty = nameDraft.trim().length > 0 && nameDraft.trim() !== playerName;
+
+  // Computed once on mount (browser APIs) — never re-checked mid-session, so
+  // dismissing it can't be undone by a re-render, and it never pops up
+  // unprompted outside Settings.
+  const [showInstallHint, setShowInstallHint] = useState(false);
+  useEffect(() => {
+    setShowInstallHint(shouldShowInstallHint());
+  }, []);
 
   return (
     <div>
@@ -239,6 +249,33 @@ export function SettingsContent({
           </button>
         </div>
       </div>
+
+      {showInstallHint && (
+        <div className={styles.row}>
+          <div className={styles.rowText}>
+            <span className={styles.rowLabel}>
+              <Smartphone size={14} aria-hidden style={{ verticalAlign: '-2px', marginRight: 6 }} />
+              Install {APP.name}
+            </span>
+            <span className={styles.rowHint}>
+              {isIos()
+                ? 'Tap the Share icon in Safari, then "Add to Home Screen".'
+                : 'Use your browser’s menu and choose "Install app" or "Add to Home Screen" for a full-screen, app-like experience.'}
+            </span>
+          </div>
+          <button
+            type="button"
+            className={styles.segmentButton}
+            onClick={() => {
+              writeInstallHintDismissed();
+              setShowInstallHint(false);
+            }}
+            style={{ border: '1px solid var(--panel-border)' }}
+          >
+            Got it
+          </button>
+        </div>
+      )}
 
       <p className={styles.footerNote}>
         Preferences and your best score are stored only in this browser.
