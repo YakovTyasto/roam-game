@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { hasSupabaseConfig } from '../config/env';
 import { validatePlayerName } from '../multiplayer/playerName';
+import { friendlyRateLimitMessage, isRateLimitedError } from '../utils/rateLimit';
 import {
   clearCachedProfile,
   readCachedProfile,
@@ -134,10 +135,16 @@ export function useProfile(): ProfileController {
           writeCachedProfile(saved);
           setNameState(saved);
           setOnline(true);
-        } catch {
-          // Saved locally; the server will catch up on the next successful call.
-          setOnline(false);
-          setError('Saved locally — online services are currently unavailable.');
+        } catch (err) {
+          const message = err instanceof Error ? err.message : '';
+          if (isRateLimitedError(message)) {
+            // Still saved locally — only the server sync was rejected.
+            setError(friendlyRateLimitMessage());
+          } else {
+            // Saved locally; the server will catch up on the next successful call.
+            setOnline(false);
+            setError('Saved locally — online services are currently unavailable.');
+          }
         }
       }
       setSaving(false);

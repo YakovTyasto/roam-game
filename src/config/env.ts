@@ -29,3 +29,18 @@ export const SUPABASE_PUBLISHABLE_KEY: string = (
 /** Whether Supabase is configured. Drives whether multiplayer is available. */
 export const hasSupabaseConfig = (): boolean =>
   SUPABASE_URL.length > 0 && SUPABASE_PUBLISHABLE_KEY.length > 0;
+
+/**
+ * Optional Cloudflare Turnstile site key for production CAPTCHA on the
+ * anonymous sign-in bootstrap (see docs/CAPTCHA_SETUP.md). This is a PUBLIC
+ * site key — safe to ship in the client bundle, same as the Supabase and
+ * Google Maps keys above. The matching secret key lives only in the
+ * Supabase Dashboard (Auth → Attack Protection), never in any Vite/client
+ * variable. Unset by default: CAPTCHA stays off until explicitly configured,
+ * so local development and tests are never blocked by it.
+ */
+export const TURNSTILE_SITE_KEY: string = (
+  import.meta.env.VITE_TURNSTILE_SITE_KEY ?? ''
+).trim();
+
+export const hasTurnstileConfig = (): boolean => TURNSTILE_SITE_KEY.length > 0;
