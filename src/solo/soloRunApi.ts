@@ -13,6 +13,7 @@ import type { Json } from '../multiplayer/database.types';
 export async function createSoloRun(
   difficulty: string,
   manifest: ManifestRound[],
+  timerSeconds: number | null = null,
 ): Promise<string> {
   const supabase = getSupabase();
   if (!supabase) throw new Error('Supabase is not configured.');
@@ -21,6 +22,7 @@ export async function createSoloRun(
     p_difficulty: difficulty,
     p_total_rounds: manifest.length,
     p_manifest: manifest as unknown as Json,
+    p_timer_seconds: timerSeconds,
   });
   if (error) throw new Error(error.message);
   const obj = (data ?? {}) as Record<string, unknown>;

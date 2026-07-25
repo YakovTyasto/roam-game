@@ -1,17 +1,20 @@
-import { Compass, MapPin, Timer, Settings } from 'lucide-react';
+import { Compass, MapPin, Timer, Settings, Flag } from 'lucide-react';
 import { APP } from '../../config/app';
 import { Button } from '../ui/Button';
 import styles from './HUD.module.css';
 
 interface HUDProps {
   round: number;
-  totalRounds: number;
+  /** null = Endless (no fixed total — shown as "∞"). */
+  totalRounds: number | null;
   score: number;
   showTimer: boolean;
   secondsLeft: number | null;
   /** Active difficulty label, shown as a small pill during play. */
   difficultyLabel?: string;
   onOpenSettings: () => void;
+  /** Endless only: end the session now and view the summary. */
+  onFinishEndless?: () => void;
 }
 
 function formatClock(seconds: number): string {
@@ -28,6 +31,7 @@ export function HUD({
   secondsLeft,
   difficultyLabel,
   onOpenSettings,
+  onFinishEndless,
 }: HUDProps) {
   return (
     <div className={styles.hud}>
@@ -39,7 +43,7 @@ export function HUD({
             {round}
             <span aria-hidden> / </span>
             <span className="sr-only"> of </span>
-            {totalRounds}
+            {totalRounds === null ? <span aria-label="Endless">∞</span> : totalRounds}
           </span>
         </div>
         {difficultyLabel && (
@@ -69,6 +73,12 @@ export function HUD({
               {formatClock(secondsLeft)}
             </span>
           </div>
+        )}
+        {onFinishEndless && (
+          <Button variant="subtle" onClick={onFinishEndless} aria-label="Finish Endless session">
+            <Flag size={16} aria-hidden />
+            Finish
+          </Button>
         )}
         <Button
           variant="subtle"

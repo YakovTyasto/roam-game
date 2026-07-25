@@ -1,4 +1,3 @@
-import { APP } from '../config/app';
 import type { GameAction, GameState } from './state';
 import { initialGameState } from './state';
 
@@ -6,6 +5,11 @@ import { initialGameState } from './state';
  * Pure game state-machine reducer. All non-trivial transitions live here so
  * they can be unit-tested without React. Distance/score computation happens
  * in the caller (via the tested utils) and arrives ready-made in SUBMIT_GUESS.
+ *
+ * `roundCount` (null = Endless) and `timerSeconds` (null = No Timer) come from
+ * the game's config (see config/gameConfig.ts) rather than a hardcoded
+ * constant, so fixed round counts of any size and Endless share this same
+ * state machine.
  */
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -15,6 +19,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         status: 'loadingRound',
         locations: action.locations,
         backups: action.backups,
+        roundCount: action.roundCount,
+        timerSeconds: action.timerSeconds,
       };
 
     case 'ROUND_READY':
@@ -50,7 +56,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'NEXT_ROUND': {
       if (state.status !== 'roundResult') return state;
-      const isLast = state.roundIndex + 1 >= APP.roundsPerGame;
+      // roundCount === null means Endless: it never auto-finishes here, only
+      // via FINISH_ENDLESS (an explicit player action).
+      const isLast = state.roundCount !== null && state.roundIndex + 1 >= state.roundCount;
       if (isLast) {
         return { ...state, status: 'finalResult' };
       }
@@ -61,6 +69,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         guess: null,
       };
     }
+
+    case 'ADD_ROUND':
+      if (state.status !== 'loadingRound') return state;
+      if (state.roundIndex < state.locations.length) return state; // already have one
+      return { ...state, locations: [...state.locations, action.location] };
+
+    case 'FINISH_ENDLESS':
+      if (state.roundCount !== null) return state; // only meaningful for Endless
+      if (state.status !== 'roundResult' && state.status !== 'exploring' && state.status !== 'selectingGuess') {
+        return state;
+      }
+      return { ...state, status: 'finalResult' };
 
     case 'REPLACE_CURRENT_LOCATION': {
       // Swap in a spare location when the current one has no panorama.

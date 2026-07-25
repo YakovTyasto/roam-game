@@ -1,13 +1,18 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import type { Preferences } from './types';
-import { APP, MAX_GAME_SCORE } from './config/app';
+import type { GameLocation, Preferences } from './types';
+import { APP } from './config/app';
 import type { Difficulty } from './config/difficulty';
 import { DEFAULT_DIFFICULTY, difficultyLabel, toDifficulty } from './config/difficulty';
+import type { GameConfig } from './config/gameConfig';
+import { quickConfig } from './config/gameConfig';
 import { hasGoogleMapsKey } from './config/env';
 import { gameReducer } from './game/reducer';
 import { initialGameState } from './game/state';
 import { useSoloRun } from './solo/useSoloRun';
-import { resetLocationHistory } from './utils/locationHistory';
+import { locationProvider } from './providers/LocationProvider';
+import { pickNextEndlessLocation, shouldWarnEndlessUsage } from './utils/endlessSelection';
+import { computeEndlessStats } from './utils/endlessStats';
+import { readLocationHistory, resetLocationHistory } from './utils/locationHistory';
 import { useProfile } from './profile/useProfile';
 import { parseRoomCodeFromUrl } from './multiplayer/inviteLink';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -26,6 +31,7 @@ import { ErrorScreen } from './screens/ErrorScreen';
 import { Modal } from './components/ui/Modal';
 import { SettingsContent } from './components/settings/SettingsContent';
 import { OfflineBanner } from './components/ui/OfflineBanner';
+import { EndlessUsageNotice } from './components/ui/EndlessUsageNotice';
 import { LoadingOverlay } from './components/ui/LoadingOverlay';
 
 // Multiplayer (and the Supabase SDK it pulls in) is code-split so the solo
@@ -77,12 +83,14 @@ export default function App() {
   const [showSetup, setShowSetup] = useState(false);
   const [isBest, setIsBest] = useState(false);
   const [startingSolo, setStartingSolo] = useState(false);
-  const [activeDifficulty, setActiveDifficulty] = useState<Difficulty>(
-    toDifficulty(soloDifficulty),
+  const [activeConfig, setActiveConfig] = useState<GameConfig>(() =>
+    quickConfig(toDifficulty(soloDifficulty), APP.roundsPerGame),
   );
+  const activeDifficulty = activeConfig.difficulty;
   const [screen, setScreen] = useState<AppScreen>(
     initialRoomCode ? 'multiplayer' : 'home',
   );
+  const [endlessNotice, setEndlessNotice] = useState<number | null>(null);
 
   const online = useOnlineStatus();
   const systemReducedMotion = usePrefersReducedMotion();
@@ -117,18 +125,26 @@ export default function App() {
   const hasKey = hasGoogleMapsKey();
 
   const startSolo = useCallback(
-    async (difficulty: Difficulty) => {
+    async (config: GameConfig) => {
       if (!hasKey) {
         setShowSetup(true);
         return;
       }
       setIsBest(false);
       setStartingSolo(true);
-      setActiveDifficulty(difficulty);
-      setSoloDifficulty(difficulty);
+      setActiveConfig(config);
+      setSoloDifficulty(config.difficulty);
+      setEndlessNotice(null);
+      endlessAllLocationsRef.current = null;
       try {
-        const { locations, backups } = await soloRun.begin(difficulty);
-        dispatch({ type: 'START_GAME', locations, backups });
+        const { locations, backups } = await soloRun.begin(config);
+        dispatch({
+          type: 'START_GAME',
+          locations,
+          backups,
+          roundCount: config.roundCount,
+          timerSeconds: config.timerSeconds,
+        });
         setScreen('home');
       } finally {
         setStartingSolo(false);
@@ -143,6 +159,49 @@ export default function App() {
     [soloRun],
   );
 
+  // ── Endless: generate one round at a time (never a preallocated manifest) ──
+  const endlessAllLocationsRef = useRef<GameLocation[] | null>(null);
+  const endlessGeneratingRef = useRef(false);
+  const isEndless = state.roundCount === null;
+
+  useEffect(() => {
+    if (state.status !== 'loadingRound') return;
+    if (!isEndless) return;
+    if (state.roundIndex < state.locations.length) return; // already have this round
+    if (endlessGeneratingRef.current) return;
+    endlessGeneratingRef.current = true;
+
+    void (async () => {
+      try {
+        if (!endlessAllLocationsRef.current) {
+          endlessAllLocationsRef.current = await locationProvider.getAll();
+        }
+        const excludeIds = new Set(state.locations.map((l) => l.id));
+        const recentIds = readLocationHistory();
+        const next = pickNextEndlessLocation(
+          endlessAllLocationsRef.current,
+          activeConfig.difficulty,
+          excludeIds,
+          recentIds,
+        );
+        if (!next) {
+          dispatch({ type: 'SET_ERROR', message: 'No more locations are available right now.' });
+          return;
+        }
+        dispatch({ type: 'ADD_ROUND', location: next });
+      } finally {
+        endlessGeneratingRef.current = false;
+      }
+    })();
+  }, [state.status, state.roundIndex, state.locations, isEndless, activeConfig.difficulty]);
+
+  // Informational notice every 25 Endless rounds (not a blocking dialog).
+  useEffect(() => {
+    if (!isEndless) return;
+    const played = state.results.length;
+    if (shouldWarnEndlessUsage(played)) setEndlessNotice(played);
+  }, [isEndless, state.results.length]);
+
   // Persist best score + finalize the server run once a game finishes.
   const finalizedRef = useRef(false);
   useEffect(() => {
@@ -154,13 +213,15 @@ export default function App() {
     finalizedRef.current = true;
 
     const total = state.results.reduce((sum, r) => sum + r.score, 0);
-    if (total > bestScore) {
+    // The "best score" stat represents the classic 5-round game only — other
+    // round counts and Endless are shown in session stats, not compared here.
+    if (state.roundCount === APP.roundsPerGame && total > bestScore) {
       setBestScore(total);
       setIsBest(true);
     }
     // Server-authoritative leaderboard finalization (no-op when not tracked).
     void soloRun.finalize();
-  }, [state.status, state.results, bestScore, setBestScore, soloRun]);
+  }, [state.status, state.results, state.roundCount, bestScore, setBestScore, soloRun]);
 
   const updatePreferences = useCallback(
     (patch: Partial<Preferences>) => setPreferences((prev) => ({ ...prev, ...patch })),
@@ -217,7 +278,8 @@ export default function App() {
           isBest={isBest}
           units={preferences.units}
           difficultyLabel={difficultyLabel(activeDifficulty)}
-          onPlayAgain={() => void startSolo(activeDifficulty)}
+          endlessStats={state.roundCount === null ? computeEndlessStats(state.results) : undefined}
+          onPlayAgain={() => void startSolo(activeConfig)}
           onHome={goHome}
         />
       );
@@ -243,7 +305,7 @@ export default function App() {
         <SoloSetupScreen
           initialDifficulty={toDifficulty(soloDifficulty)}
           busy={startingSolo}
-          onStart={(d) => void startSolo(d)}
+          onStart={(config) => void startSolo(config)}
           onBack={() => setScreen('home')}
         />
       );
@@ -299,11 +361,17 @@ export default function App() {
 
       {!online && <OfflineBanner />}
 
+      {endlessNotice !== null && (
+        <EndlessUsageNotice roundsPlayed={endlessNotice} onDismiss={() => setEndlessNotice(null)} />
+      )}
+
       <span className="sr-only" aria-live="polite">
         {state.status === 'finalResult'
           ? `Game over. You scored ${state.results
               .reduce((s, r) => s + r.score, 0)
-              .toLocaleString()} out of ${MAX_GAME_SCORE.toLocaleString()}.`
+              .toLocaleString()} out of ${(
+              Math.max(1, state.results.length) * APP.maxRoundScore
+            ).toLocaleString()}.`
           : ''}
       </span>
     </>

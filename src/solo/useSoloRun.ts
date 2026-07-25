@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import type { GameLocation, LatLng } from '../types';
 import type { Difficulty } from '../config/difficulty';
+import type { GameConfig } from '../config/gameConfig';
 import { hasGoogleMapsKey, hasSupabaseConfig } from '../config/env';
 import { locationProvider } from '../providers/LocationProvider';
 import { buildDifficultyPool } from '../utils/difficultyPool';
@@ -10,12 +11,16 @@ import type { ManifestRound } from '../multiplayer/types';
 
 export interface SoloRunController {
   /**
-   * Begin a solo game for `difficulty`. When Supabase + Maps are available this
-   * also starts a server-tracked run (for the leaderboard); otherwise it falls
-   * back to a purely local game. Always returns locations to play locally.
+   * Begin a solo game for `config`. When Supabase + Maps are available AND
+   * the game is fixed-length (not Endless), this also starts a
+   * server-tracked run (for the leaderboard and resume); otherwise — or for
+   * Endless, which is always local-only in this phase — it falls back to a
+   * purely local game. Always returns locations to play locally; Endless
+   * only returns the first round (see utils/endlessSelection.ts for how
+   * subsequent rounds are generated one at a time).
    */
   begin: (
-    difficulty: Difficulty,
+    config: GameConfig,
   ) => Promise<{ locations: GameLocation[]; backups: GameLocation[] }>;
   /** Record a guess against the active server run (no-op locally). */
   recordGuess: (roundIndex: number, guess: LatLng) => void;
@@ -48,23 +53,32 @@ export function useSoloRun(): SoloRunController {
   const roundsRef = useRef(0);
   const submittedRef = useRef(0);
 
-  const begin = useCallback(async (difficulty: Difficulty) => {
+  const begin = useCallback(async (config: GameConfig) => {
     runIdRef.current = null;
     roundsRef.current = 0;
     submittedRef.current = 0;
 
-    const rounds = 5;
+    const { difficulty, roundCount, timerSeconds } = config;
 
-    // Try the server-tracked path first when everything is configured.
+    // Endless has no fixed total_rounds and is always local-only/unranked in
+    // this phase — only the first round is needed up front.
+    if (roundCount === null) {
+      const { locations, backups } = await locationProvider.getGameLocations(1, difficulty);
+      return { locations, backups };
+    }
+
+    // Try the server-tracked path first when everything is configured. Any
+    // round count (including a non-5 custom count) can be server-tracked —
+    // the server itself decides leaderboard eligibility (exactly 5 rounds).
     if (hasSupabaseConfig() && hasGoogleMapsKey()) {
       try {
         const google = await ensureGoogleMaps();
         const all = await locationProvider.getAll();
-        const { locations: pool } = buildDifficultyPool(all, difficulty, rounds);
-        const manifest = await buildManifest(google, pool, rounds);
+        const { locations: pool } = buildDifficultyPool(all, difficulty, roundCount);
+        const manifest = await buildManifest(google, pool, roundCount);
         const { createSoloRun } = await import('./soloRunApi');
-        runIdRef.current = await createSoloRun(difficulty, manifest);
-        roundsRef.current = rounds;
+        runIdRef.current = await createSoloRun(difficulty, manifest, timerSeconds);
+        roundsRef.current = roundCount;
         return { locations: manifestToLocations(manifest), backups: [] };
       } catch {
         // Fall through to the local-only game; leaderboard simply won't record.
@@ -73,7 +87,7 @@ export function useSoloRun(): SoloRunController {
     }
 
     const { locations, backups } = await locationProvider.getGameLocations(
-      rounds,
+      roundCount,
       difficulty,
     );
     return { locations, backups };

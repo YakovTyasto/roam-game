@@ -26,6 +26,8 @@ const startedGame = (): GameState =>
     type: 'START_GAME',
     locations: fiveLocations,
     backups: [loc('spare1'), loc('spare2')],
+    roundCount: 5,
+    timerSeconds: 120,
   });
 
 describe('gameReducer', () => {
@@ -116,6 +118,8 @@ describe('gameReducer', () => {
       type: 'START_GAME',
       locations: fiveLocations,
       backups: [],
+      roundCount: 5,
+      timerSeconds: 120,
     });
     s = gameReducer(s, { type: 'REPLACE_CURRENT_LOCATION' });
     expect(s.status).toBe('error');
@@ -135,5 +139,89 @@ describe('gameReducer', () => {
     let s = gameReducer(startedGame(), { type: 'ROUND_READY' });
     s = gameReducer(s, { type: 'RESET' });
     expect(s).toEqual(initialGameState);
+  });
+
+  describe('configurable round count', () => {
+    it('finishes after a custom round count other than 5', () => {
+      let s = gameReducer(initialGameState, {
+        type: 'START_GAME',
+        locations: ['a', 'b', 'c'].map(loc),
+        backups: [],
+        roundCount: 3,
+        timerSeconds: 90,
+      });
+      for (let i = 0; i < 3; i++) {
+        s = gameReducer(s, { type: 'ROUND_READY' });
+        s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+        s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result(`r${i}`) });
+        s = gameReducer(s, { type: 'NEXT_ROUND' });
+      }
+      expect(s.status).toBe('finalResult');
+      expect(s.results).toHaveLength(3);
+    });
+
+    it('stores a null timerSeconds for No Timer', () => {
+      const s = gameReducer(initialGameState, {
+        type: 'START_GAME',
+        locations: fiveLocations,
+        backups: [],
+        roundCount: 5,
+        timerSeconds: null,
+      });
+      expect(s.timerSeconds).toBeNull();
+    });
+  });
+
+  describe('Endless mode', () => {
+    const startedEndless = (): GameState =>
+      gameReducer(initialGameState, {
+        type: 'START_GAME',
+        locations: [loc('e1')],
+        backups: [],
+        roundCount: null,
+        timerSeconds: 120,
+      });
+
+    it('never auto-finishes via NEXT_ROUND', () => {
+      let s = startedEndless();
+      for (let i = 0; i < 10; i++) {
+        s = gameReducer(s, { type: 'ADD_ROUND', location: loc(`gen-${i}`) });
+        s = gameReducer(s, { type: 'ROUND_READY' });
+        s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+        s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result(`r${i}`) });
+        s = gameReducer(s, { type: 'NEXT_ROUND' });
+      }
+      expect(s.status).toBe('loadingRound');
+      expect(s.results).toHaveLength(10);
+    });
+
+    it('ADD_ROUND appends a location only when one is actually needed', () => {
+      let s = startedEndless(); // roundIndex 0, locations already has index 0
+      s = gameReducer(s, { type: 'ADD_ROUND', location: loc('should-be-ignored') });
+      expect(s.locations).toHaveLength(1); // not appended — index 0 already exists
+
+      s = gameReducer(s, { type: 'ROUND_READY' });
+      s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('r0') });
+      s = gameReducer(s, { type: 'NEXT_ROUND' }); // roundIndex -> 1, status loadingRound
+      s = gameReducer(s, { type: 'ADD_ROUND', location: loc('e2') });
+      expect(s.locations.map((l) => l.id)).toEqual(['e1', 'e2']);
+    });
+
+    it('FINISH_ENDLESS ends the session on demand', () => {
+      let s = startedEndless();
+      s = gameReducer(s, { type: 'ROUND_READY' });
+      s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('r0') });
+      s = gameReducer(s, { type: 'FINISH_ENDLESS' });
+      expect(s.status).toBe('finalResult');
+      expect(s.results).toHaveLength(1);
+    });
+
+    it('FINISH_ENDLESS is a no-op for a fixed-round game', () => {
+      let s = gameReducer(startedGame(), { type: 'ROUND_READY' });
+      s = gameReducer(s, { type: 'FINISH_ENDLESS' });
+      expect(s.status).toBe('exploring');
+    });
   });
 });

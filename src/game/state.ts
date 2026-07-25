@@ -28,16 +28,30 @@ export interface GameState {
   results: RoundResult[];
   /** Human-readable error message when status is 'error'. */
   error: string | null;
+  /** Total rounds for a fixed game, or null for Endless (no fixed end). */
+  roundCount: number | null;
+  /** Per-round timer in seconds, or null for No Timer. */
+  timerSeconds: number | null;
 }
 
 export type GameAction =
-  | { type: 'START_GAME'; locations: GameLocation[]; backups: GameLocation[] }
+  | {
+      type: 'START_GAME';
+      locations: GameLocation[];
+      backups: GameLocation[];
+      roundCount: number | null;
+      timerSeconds: number | null;
+    }
   | { type: 'ROUND_READY' }
   | { type: 'OPEN_MAP' }
   | { type: 'CLOSE_MAP' }
   | { type: 'PLACE_GUESS'; guess: LatLng }
   | { type: 'SUBMIT_GUESS'; result: RoundResult }
   | { type: 'NEXT_ROUND' }
+  /** Endless only: append the next generated location once it's ready. */
+  | { type: 'ADD_ROUND'; location: GameLocation }
+  /** Endless only: end the session on demand and show the summary. */
+  | { type: 'FINISH_ENDLESS' }
   | { type: 'REPLACE_CURRENT_LOCATION' }
   | { type: 'SET_ERROR'; message: string }
   | { type: 'RESET' };
@@ -50,7 +64,11 @@ export const initialGameState: GameState = {
   guess: null,
   results: [],
   error: null,
+  roundCount: null,
+  timerSeconds: null,
 };
+
+export const isEndlessGame = (state: GameState): boolean => state.roundCount === null;
 
 export const currentLocation = (state: GameState): GameLocation | null =>
   state.locations[state.roundIndex] ?? null;

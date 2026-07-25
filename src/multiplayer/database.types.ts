@@ -139,7 +139,12 @@ export type Database = {
         Returns: Json;
       };
       roam_create_solo_run: {
-        Args: { p_difficulty: string; p_total_rounds: number; p_manifest: Json };
+        Args: {
+          p_difficulty: string;
+          p_total_rounds: number;
+          p_manifest: Json;
+          p_timer_seconds: number | null;
+        };
         Returns: Json;
       };
       roam_submit_solo_guess: {

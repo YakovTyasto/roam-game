@@ -3,9 +3,8 @@ import type { Dispatch } from 'react';
 import type { LatLng, Preferences } from '../types';
 import type { GameAction, GameState } from '../game/state';
 import { currentLocation } from '../game/state';
-import { APP } from '../config/app';
 import type { Difficulty } from '../config/difficulty';
-import { DEFAULT_DIFFICULTY, difficultyLabel, difficultyRoundSeconds } from '../config/difficulty';
+import { DEFAULT_DIFFICULTY, difficultyLabel } from '../config/difficulty';
 import { haversineDistanceKm } from '../utils/distance';
 import { calculateScore } from '../utils/score';
 import { useIsDesktop, useIsTablet } from '../hooks/useMediaQuery';
@@ -36,7 +35,10 @@ export function GameScreen({
   onGuessSubmitted,
   onOpenSettings,
 }: GameScreenProps) {
-  const ROUND_SECONDS = difficultyRoundSeconds(difficulty);
+  // null means the configured game has No Timer — the round-timer feature is
+  // entirely inactive regardless of the "show timer" display preference.
+  const ROUND_SECONDS = state.timerSeconds;
+  const isEndless = state.roundCount === null;
   const isDesktop = useIsDesktop();
   const isTablet = useIsTablet();
   const device: Device = isDesktop ? 'desktop' : isTablet ? 'tablet' : 'phone';
@@ -115,8 +117,8 @@ export function GameScreen({
     [dispatch],
   );
 
-  // ── Optional per-round timer ────────────────────────────
-  const [secondsLeft, setSecondsLeft] = useState<number>(ROUND_SECONDS);
+  // ── Optional per-round timer (state.timerSeconds === null → No Timer) ──
+  const [secondsLeft, setSecondsLeft] = useState<number>(ROUND_SECONDS ?? 0);
   const submitRef = useRef(submitGuess);
   submitRef.current = submitGuess;
   const guessRef = useRef(state.guess);
@@ -124,10 +126,11 @@ export function GameScreen({
 
   // Reset the timer whenever a fresh round begins exploring.
   useEffect(() => {
-    if (state.status === 'exploring') setSecondsLeft(ROUND_SECONDS);
+    if (state.status === 'exploring' && ROUND_SECONDS !== null) setSecondsLeft(ROUND_SECONDS);
   }, [state.roundIndex, state.status, ROUND_SECONDS]);
 
   const timerActive =
+    ROUND_SECONDS !== null &&
     preferences.timer &&
     (state.status === 'exploring' || state.status === 'selectingGuess');
 
@@ -167,12 +170,13 @@ export function GameScreen({
 
       <HUD
         round={state.roundIndex + 1}
-        totalRounds={APP.roundsPerGame}
+        totalRounds={state.roundCount}
         score={totalScore}
-        showTimer={preferences.timer}
-        secondsLeft={preferences.timer ? secondsLeft : null}
+        showTimer={preferences.timer && ROUND_SECONDS !== null}
+        secondsLeft={ROUND_SECONDS !== null && preferences.timer ? secondsLeft : null}
         difficultyLabel={difficultyLabel(difficulty)}
         onOpenSettings={onOpenSettings}
+        onFinishEndless={isEndless ? () => dispatch({ type: 'FINISH_ENDLESS' }) : undefined}
       />
 
       <MapPanel
@@ -186,7 +190,7 @@ export function GameScreen({
         onPlaceGuess={handlePlaceGuess}
         onConfirm={handleConfirm}
         onNext={handleNext}
-        isLastRound={state.roundIndex + 1 >= APP.roundsPerGame}
+        isLastRound={state.roundCount !== null && state.roundIndex + 1 >= state.roundCount}
         distanceKm={lastResult?.distanceKm ?? null}
         score={lastResult?.score ?? null}
         units={preferences.units}
