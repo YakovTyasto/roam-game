@@ -5,7 +5,7 @@ import type { Difficulty } from '../config/difficulty';
 import { locationProvider } from '../providers/LocationProvider';
 import { buildDifficultyPool } from '../utils/difficultyPool';
 import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
-import { getSupabase } from './supabaseClient';
+import { getSupabase, getSupabaseConfigError } from './supabaseClient';
 import { ensureAnonymousSession } from './auth';
 import * as api from './api';
 import { MultiplayerError } from './api';
@@ -16,6 +16,7 @@ import { isRoundExpired, remainingSeconds, toEpochMs } from './timer';
 import { validatePlayerName } from './playerName';
 import { isValidRoomCode, normalizeRoomCode } from './roomCode';
 import type { MpRoom, MultiplayerStatus, RoomSnapshot } from './types';
+import { toFriendlyErrorMessage } from '../utils/rateLimit';
 
 /** Options chosen by the host when creating a private room. */
 export interface CreateRoomInput {
@@ -59,8 +60,8 @@ export interface MultiplayerController {
 }
 
 function errorMessage(e: unknown): string {
-  if (e instanceof MultiplayerError) return e.message;
-  if (e instanceof Error) return e.message;
+  if (e instanceof MultiplayerError) return toFriendlyErrorMessage(e.message);
+  if (e instanceof Error) return toFriendlyErrorMessage(e.message);
   return 'Something went wrong. Please try again.';
 }
 
@@ -136,7 +137,17 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
 
   // ── Authentication ────────────────────────────────────────────────────
   const authenticate = useCallback(() => {
-    if (!supabase) return;
+    if (!supabase) {
+      // Env vars are present (supaConfigured) but createClient() rejected
+      // them (e.g. a typo'd URL) — without this, status would stay stuck on
+      // 'authenticating' (a bare spinner, zero buttons) forever. Surface it
+      // as a normal auth error so the existing "Couldn't connect" screen
+      // (retry + back-to-home) takes over instead.
+      setAuthError(
+        getSupabaseConfigError() ?? 'Multiplayer is misconfigured. Please try again later.',
+      );
+      return;
+    }
     setAuthError(null);
     ensureAnonymousSession()
       .then((id) => setUserId(id))
