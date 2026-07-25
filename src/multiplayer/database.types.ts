@@ -134,8 +134,17 @@ export type Database = {
       mp_create_rematch: { Args: { p_room_id: string }; Returns: Json };
       roam_upsert_profile: { Args: { p_name: string }; Returns: Json };
       roam_get_profile: { Args: Record<PropertyKey, never>; Returns: Json };
+      roam_set_preferences: {
+        Args: { p_theme: string | null; p_locale: string | null };
+        Returns: Json;
+      };
       roam_create_solo_run: {
-        Args: { p_difficulty: string; p_total_rounds: number; p_manifest: Json };
+        Args: {
+          p_difficulty: string;
+          p_total_rounds: number;
+          p_manifest: Json;
+          p_timer_seconds: number | null;
+        };
         Returns: Json;
       };
       roam_submit_solo_guess: {
@@ -143,6 +152,7 @@ export type Database = {
         Returns: Json;
       };
       roam_finalize_solo_run: { Args: { p_run_id: string }; Returns: Json };
+      roam_abandon_solo_run: { Args: { p_run_id: string }; Returns: Json };
       roam_get_active_solo_run: { Args: Record<PropertyKey, never>; Returns: Json };
       roam_leaderboard: {
         Args: {
