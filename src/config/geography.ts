@@ -37,69 +37,152 @@ export function isContinent(value: unknown): value is Continent {
 }
 
 /**
- * Country (as spelled in the catalog) → continent. Only countries that appear
- * in the catalog need an entry; `validateGeographyMetadata` reports any that
- * are missing, so adding a location in a new country fails the audit loudly
- * rather than defaulting to the wrong continent.
+ * Country/territory → continent.
+ *
+ * This is a **geography table, not a coverage claim.** Presence here says only
+ * where a country is; whether Street View exists at a given coordinate is
+ * decided by the verification step in `scripts/verify-candidates.ts` and
+ * recorded per location as a resolved `panoId`. Never infer coverage from this
+ * table.
+ *
+ * Candidate validation *requires* a country to appear here, so adding a
+ * location in a new country is a deliberate two-step act: map the country
+ * first, then submit the candidate. That is why the list is broad — the
+ * expansion workflow is unusable if every batch is blocked on a config edit —
+ * but it is still explicit rather than derived from a library, so a wrong
+ * continent is a reviewable diff.
  *
  * Transcontinental countries are assigned the continent their *catalog*
- * locations sit in, which is documented per entry rather than left implicit.
+ * locations sit in, documented per entry rather than left implicit.
  */
 export const COUNTRY_CONTINENT: Readonly<Record<string, Continent>> = {
   // ── Europe ────────────────────────────────────────────
+  Albania: 'Europe',
+  Andorra: 'Europe',
+  Austria: 'Europe',
+  Belgium: 'Europe',
+  Bulgaria: 'Europe',
   Croatia: 'Europe',
+  Cyprus: 'Europe',
   Czechia: 'Europe',
+  Denmark: 'Europe',
+  Estonia: 'Europe',
+  'Faroe Islands': 'Europe',
+  Finland: 'Europe',
   France: 'Europe',
   Germany: 'Europe',
+  Gibraltar: 'Europe',
   Greece: 'Europe',
+  Hungary: 'Europe',
   Iceland: 'Europe',
+  Ireland: 'Europe',
+  'Isle of Man': 'Europe',
   Italy: 'Europe',
+  Latvia: 'Europe',
+  Lithuania: 'Europe',
+  Luxembourg: 'Europe',
+  Malta: 'Europe',
+  Monaco: 'Europe',
+  Montenegro: 'Europe',
   Netherlands: 'Europe',
+  'North Macedonia': 'Europe',
+  Norway: 'Europe',
+  Poland: 'Europe',
   Portugal: 'Europe',
+  Romania: 'Europe',
+  'San Marino': 'Europe',
+  Serbia: 'Europe',
+  Slovakia: 'Europe',
+  Slovenia: 'Europe',
   Spain: 'Europe',
   Sweden: 'Europe',
   Switzerland: 'Europe',
+  Ukraine: 'Europe',
   'United Kingdom': 'Europe',
   // Transcontinental: the catalog's Türkiye location (Sultanahmet) is in
   // Istanbul's European half, so it counts as Europe for diversity purposes.
   'Türkiye': 'Europe',
 
   // ── Asia ──────────────────────────────────────────────
+  Bangladesh: 'Asia',
+  Bhutan: 'Asia',
+  Cambodia: 'Asia',
   'Hong Kong': 'Asia',
   India: 'Asia',
-  // Transcontinental region: Israel sits in Western Asia. Grouped with Asia so
-  // "Africa & Middle East" copy in the dataset stays cosmetic, not structural.
+  Indonesia: 'Asia',
+  // Transcontinental region: Israel and Jordan sit in Western Asia.
   Israel: 'Asia',
   Japan: 'Asia',
+  Jordan: 'Asia',
+  Kazakhstan: 'Asia',
+  Kyrgyzstan: 'Asia',
+  Laos: 'Asia',
+  Macau: 'Asia',
+  Malaysia: 'Asia',
+  Mongolia: 'Asia',
+  Nepal: 'Asia',
+  Philippines: 'Asia',
+  Qatar: 'Asia',
   Singapore: 'Asia',
   'South Korea': 'Asia',
+  'Sri Lanka': 'Asia',
   Taiwan: 'Asia',
   Thailand: 'Asia',
   'United Arab Emirates': 'Asia',
+  Vietnam: 'Asia',
 
   // ── Africa ────────────────────────────────────────────
+  Botswana: 'Africa',
   // Transcontinental: Egypt's catalog location (Giza) is west of Suez.
   Egypt: 'Africa',
+  Eswatini: 'Africa',
+  Ghana: 'Africa',
   Kenya: 'Africa',
+  Lesotho: 'Africa',
+  Madagascar: 'Africa',
   Morocco: 'Africa',
+  Nigeria: 'Africa',
+  Réunion: 'Africa',
+  Rwanda: 'Africa',
+  Senegal: 'Africa',
   'South Africa': 'Africa',
+  Tanzania: 'Africa',
+  Tunisia: 'Africa',
+  Uganda: 'Africa',
 
   // ── North America ─────────────────────────────────────
+  Bermuda: 'North America',
   Canada: 'North America',
+  'Costa Rica': 'North America',
   Cuba: 'North America',
+  Curaçao: 'North America',
+  'Dominican Republic': 'North America',
+  Greenland: 'North America',
+  Guatemala: 'North America',
+  Jamaica: 'North America',
   Mexico: 'North America',
+  Panama: 'North America',
+  'Puerto Rico': 'North America',
   'United States': 'North America',
 
   // ── South America ─────────────────────────────────────
   Argentina: 'South America',
+  Bolivia: 'South America',
   Brazil: 'South America',
   Chile: 'South America',
   Colombia: 'South America',
+  Ecuador: 'South America',
   Peru: 'South America',
+  Uruguay: 'South America',
 
   // ── Oceania ───────────────────────────────────────────
+  'American Samoa': 'Oceania',
   Australia: 'Oceania',
+  Fiji: 'Oceania',
+  Guam: 'Oceania',
   'New Zealand': 'Oceania',
+  'Northern Mariana Islands': 'Oceania',
+  'Papua New Guinea': 'Oceania',
 };
 
 /**
@@ -110,13 +193,33 @@ export const COUNTRY_CONTINENT: Readonly<Record<string, Continent>> = {
  */
 export const LEFT_SIDE_DRIVING_COUNTRIES: ReadonlySet<string> = new Set([
   'Australia',
+  'Bangladesh',
+  'Bhutan',
+  'Botswana',
+  'Cyprus',
+  'Eswatini',
+  'Fiji',
   'Hong Kong',
   'India',
+  'Indonesia',
+  'Ireland',
+  'Isle of Man',
+  'Jamaica',
   'Japan',
+  'Kenya',
+  'Lesotho',
+  'Macau',
+  'Malaysia',
+  'Malta',
+  'Nepal',
   'New Zealand',
+  'Papua New Guinea',
   'Singapore',
   'South Africa',
+  'Sri Lanka',
+  'Tanzania',
   'Thailand',
+  'Uganda',
   'United Kingdom',
 ]);
 
@@ -127,12 +230,32 @@ export const LEFT_SIDE_DRIVING_COUNTRIES: ReadonlySet<string> = new Set([
  * owns islands.
  */
 export const ISLAND_COUNTRIES: ReadonlySet<string> = new Set([
+  'American Samoa',
+  'Bermuda',
   'Cuba',
+  'Curaçao',
+  'Cyprus',
+  'Dominican Republic',
+  'Faroe Islands',
+  'Fiji',
+  'Greenland',
+  'Guam',
   'Hong Kong',
   'Iceland',
+  'Indonesia',
+  'Ireland',
+  'Isle of Man',
+  'Jamaica',
   'Japan',
+  'Madagascar',
+  'Malta',
   'New Zealand',
+  'Northern Mariana Islands',
+  'Philippines',
+  'Puerto Rico',
+  'Réunion',
   'Singapore',
+  'Sri Lanka',
   'Taiwan',
   'United Kingdom',
 ]);

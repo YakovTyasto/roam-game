@@ -32,6 +32,8 @@ import {
 } from '../utils/canonicalGroup';
 import { haversineDistanceKm } from '../utils/distance';
 import { buildDifficultyPool } from '../utils/difficultyPool';
+import type { LocationSetting } from '../config/releaseGates';
+import { LOCATION_SETTINGS, VERIFICATION_GATES, isLocationSetting } from '../config/releaseGates';
 import {
   GAME_ROUND_COUNTS,
   STANDARD_ROUND_COUNT,
@@ -80,7 +82,21 @@ export interface DifficultyAudit {
   locations: number;
   /** Groups from this tier alone, before any adjacent-tier fallback. */
   ownGroups: number;
+  /** Canonical groups per physical setting within this tier. */
+  settings: Record<LocationSetting, number>;
   sufficiency: PoolSufficiency[];
+}
+
+export interface VerificationAudit {
+  /** Entries carrying a verified panorama id. */
+  verified: number;
+  /** Entries with no verified panorama id at all. */
+  unverified: number;
+  /** Verified, but checked longer ago than the staleness threshold. */
+  stale: number;
+  /** Entries whose `panoVerifiedAt` is missing or unparseable. */
+  undatedVerification: number;
+  verifiedPercent: number;
 }
 
 export interface CollectionAudit {
@@ -100,7 +116,17 @@ export interface CollectionAudit {
 
 export interface MetadataIssue {
   locationId: string;
-  field: 'id' | 'coordinates' | 'label' | 'country' | 'continent' | 'difficulty' | 'tags';
+  field:
+    | 'id'
+    | 'coordinates'
+    | 'label'
+    | 'country'
+    | 'continent'
+    | 'difficulty'
+    | 'tags'
+    | 'setting'
+    | 'panoId'
+    | 'panoVerifiedAt';
   message: string;
 }
 
@@ -126,6 +152,8 @@ export interface DatasetAuditReport {
     explicitGroups: { groupId: string; locationIds: string[] }[];
   };
   clusters: ClusterReport[];
+  /** Street View verification state across the catalog. */
+  verification: VerificationAudit;
   metadataIssues: MetadataIssue[];
   /**
    * Headline verdict for the configuration players actually get by default:
@@ -262,6 +290,26 @@ export function auditDataset(
     if (loc.tags !== undefined && !Array.isArray(loc.tags)) {
       metadataIssues.push({ locationId: id, field: 'tags', message: 'Tags must be an array.' });
     }
+    if (!isLocationSetting(loc.setting)) {
+      metadataIssues.push({
+        locationId: id,
+        field: 'setting',
+        message: `Missing or invalid setting ("${String(loc.setting)}") — required for the per-difficulty balance gates.`,
+      });
+    }
+    if (!isNonEmptyString(loc.panoId)) {
+      metadataIssues.push({
+        locationId: id,
+        field: 'panoId',
+        message: 'No verified Street View panorama id — run the candidate verification workflow.',
+      });
+    } else if (!isNonEmptyString(loc.panoVerifiedAt) || !Number.isFinite(Date.parse(loc.panoVerifiedAt))) {
+      metadataIssues.push({
+        locationId: id,
+        field: 'panoVerifiedAt',
+        message: 'Panorama id has no valid verification date — its age cannot be judged.',
+      });
+    }
   }
 
   // ── Canonical grouping ──────────────────────────────────────────────────
@@ -368,10 +416,21 @@ export function auditDataset(
   // ── Difficulty pools ────────────────────────────────────────────────────
   const byDifficulty: DifficultyAudit[] = DIFFICULTIES.map((difficulty) => {
     const own = groupable.filter((l) => l.difficulty === difficulty);
+    const settings = LOCATION_SETTINGS.reduce(
+      (acc, setting) => {
+        acc[setting] = countGroups(
+          own.filter((l) => l.setting === setting),
+          groupOf,
+        );
+        return acc;
+      },
+      {} as Record<LocationSetting, number>,
+    );
     return {
       difficulty,
       locations: own.length,
       ownGroups: countGroups(own, groupOf),
+      settings,
       sufficiency: GAME_ROUND_COUNTS.map((roundCount) => {
         // Mirror real play: the pool widens to adjacent tiers only when the
         // tier's own pool cannot supply the round count.
@@ -408,6 +467,29 @@ export function auditDataset(
     };
   });
 
+  // ── Street View verification ────────────────────────────────────────────
+  // A location is only "verified" when a real panorama id was resolved and
+  // recorded. Coverage is withdrawn and re-shot over time, so verifications
+  // also carry an age.
+  const staleBefore = Date.now() - VERIFICATION_GATES.staleAfterDays * 86_400_000;
+  let verified = 0;
+  let stale = 0;
+  let undatedVerification = 0;
+  for (const loc of locations) {
+    if (!isNonEmptyString(loc.panoId)) continue;
+    verified += 1;
+    const checkedAt = isNonEmptyString(loc.panoVerifiedAt) ? Date.parse(loc.panoVerifiedAt) : NaN;
+    if (!Number.isFinite(checkedAt)) undatedVerification += 1;
+    else if (checkedAt < staleBefore) stale += 1;
+  }
+  const verification: VerificationAudit = {
+    verified,
+    unverified: locations.length - verified,
+    stale,
+    undatedVerification,
+    verifiedPercent: locations.length > 0 ? (verified / locations.length) * 100 : 0,
+  };
+
   const totalGroups = groups.length;
   const groupsRequired = comfortablePoolSize(STANDARD_ROUND_COUNT);
   const defaultPool = buildDifficultyPool(groupable, DEFAULT_DIFFICULTY, STANDARD_ROUND_COUNT);
@@ -434,6 +516,7 @@ export function auditDataset(
       explicitGroups,
     },
     clusters,
+    verification,
     metadataIssues,
     verdict: {
       standardRoundCount: STANDARD_ROUND_COUNT,

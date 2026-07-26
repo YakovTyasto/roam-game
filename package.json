@@ -12,7 +12,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc -b --noEmit",
     "audit:dataset": "vite-node scripts/audit-dataset.ts",
-    "audit:dataset:check": "vite-node scripts/audit-dataset.ts -- --check"
+    "audit:dataset:check": "vite-node scripts/audit-dataset.ts -- --check",
+    "audit:gates": "vite-node scripts/audit-dataset.ts -- --gates",
+    "catalog:verify": "vite-node scripts/verify-candidates.ts --"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.8",

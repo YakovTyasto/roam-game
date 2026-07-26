@@ -223,10 +223,29 @@ describe('auditDataset — collections', () => {
 describe('the shipped catalog', () => {
   const report = auditDataset(LOCATIONS);
 
-  it('has no metadata issues and no duplicate ids', () => {
-    expect(report.metadataIssues).toEqual([]);
+  it('has no duplicate ids', () => {
     expect(report.duplicates.duplicateLocationIds).toEqual([]);
-    expect(report.ok).toBe(true);
+  });
+
+  it('has no descriptive metadata gaps', () => {
+    // Everything a reviewer writes by hand must be complete. The only
+    // outstanding issues are panorama verification, asserted separately below,
+    // because those are produced by a tool rather than authored.
+    const descriptive = report.metadataIssues.filter(
+      (i) => i.field !== 'panoId' && i.field !== 'panoVerifiedAt',
+    );
+    expect(descriptive).toEqual([]);
+  });
+
+  it('is honest that no panorama has been verified yet', () => {
+    // The pre-V4 catalog was authored without a verification step, so no entry
+    // carries a confirmed panorama id. This is a release blocker, tracked by
+    // the `verification.streetView` gate — not something to quietly tolerate.
+    // When the expansion workflow has verified the catalog, this test should be
+    // updated deliberately, not deleted.
+    expect(report.verification.verified).toBe(0);
+    expect(report.verification.unverified).toBe(LOCATIONS.length);
+    expect(report.ok).toBe(false);
   });
 
   it('contains no duplicate, identical or near-duplicate places', () => {

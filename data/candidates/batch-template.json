@@ -1,0 +1,17 @@
+{
+  "batch": "template",
+  "notes": "Copy to batch-NNN.json and replace the candidates. 25-50 per batch. Every field below is required except `tags`, `continent` and `locationGroupId`. Do NOT add a panoId by hand — it is filled in only by a real verification run.",
+  "candidates": [
+    {
+      "id": "example-place-slug",
+      "lat": 0,
+      "lng": 0,
+      "label": "Human-readable place name, shown only after the guess",
+      "country": "Country name exactly as spelled in src/config/geography.ts",
+      "difficulty": "normal",
+      "setting": "suburban",
+      "tags": [],
+      "source": "Where this coordinate came from, so a reviewer can check it"
+    }
+  ]
+}

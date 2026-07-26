@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { LOCATIONS } from '../src/data/locations';
 import { auditDataset } from '../src/audit/datasetAudit';
 import { formatAuditMarkdown } from '../src/audit/formatAudit';
+import { evaluateReleaseGates } from '../src/audit/releaseGates';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const docsDir = resolve(here, '..', 'docs');
@@ -27,8 +28,14 @@ const jsonPath = resolve(docsDir, 'dataset-audit.json');
 const mdPath = resolve(docsDir, 'DATASET_AUDIT.md');
 
 const checkOnly = process.argv.includes('--check');
+/**
+ * `--gates` exits non-zero while any V4 release gate fails. This is the
+ * blocking check: the catalog must not reach production below it.
+ */
+const gatesOnly = process.argv.includes('--gates');
 
 const report = auditDataset(LOCATIONS);
+const gateReport = evaluateReleaseGates(report);
 const json = `${JSON.stringify(report, null, 2)}\n`;
 const markdown = formatAuditMarkdown(report);
 
@@ -40,7 +47,26 @@ function readOrNull(path: string): string | null {
   }
 }
 
-if (checkOnly) {
+if (gatesOnly) {
+  const { summary, groupsStillNeeded: need } = gateReport;
+  for (const gate of gateReport.gates) {
+    console.log(`${gate.passed ? 'PASS' : 'FAIL'}  ${gate.id.padEnd(38)} ${gate.requirement}`);
+    if (!gate.passed) console.log(`      actual: ${gate.actual}`);
+  }
+  console.log(`\n${summary.passed}/${summary.total} release gates pass.`);
+
+  if (!gateReport.passed) {
+    console.error(
+      `\nRELEASE BLOCKED. Still required: +${need.easy} Easy, +${need.normal} Normal, ` +
+        `+${need.hard} Hard (+${need.total} total canonical groups).\n` +
+        'Shuffle-bag cycling guarantees coverage of whatever exists; it is not a\n' +
+        'substitute for catalog expansion. See docs/CATALOG_EXPANSION.md for the\n' +
+        'batch validation workflow.',
+    );
+    process.exit(1);
+  }
+  console.log('Catalog meets every V4 release gate.');
+} else if (checkOnly) {
   const staleFiles = [
     [jsonPath, json],
     [mdPath, markdown],
@@ -71,6 +97,7 @@ if (checkOnly) {
 }
 
 // Headline numbers on stdout so the CLI is useful without opening the files.
+if (!gatesOnly) {
 console.log(
   `\n${report.totals.locations} locations → ${report.totals.canonicalGroups} canonical groups ` +
     `(${report.totals.redundantLocations} redundant), ${report.totals.countries} countries, ` +
@@ -89,3 +116,4 @@ console.log(
         : `short by ${report.verdict.groupsRequired - report.verdict.defaultPoolGroups} groups`
     }.`,
 );
+}

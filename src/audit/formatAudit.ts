@@ -7,6 +7,8 @@
  */
 
 import type { DatasetAuditReport } from './datasetAudit';
+import { evaluateReleaseGates } from './releaseGates';
+import { LOCATION_SETTINGS } from '../config/releaseGates';
 
 function table(headers: readonly string[], rows: readonly (readonly string[])[]): string {
   const head = `| ${headers.join(' | ')} |`;
@@ -37,6 +39,44 @@ export function formatAuditMarkdown(report: DatasetAuditReport): string {
       'panorama, or sit within ' +
       `${report.thresholds.nearDuplicateKm} km of each other. Perceived variety is ` +
       'governed by group count, never by row count.',
+  );
+  lines.push('');
+
+  // ── Release gates ───────────────────────────────────────────────────────
+  const gateReport = evaluateReleaseGates(report);
+  lines.push('## Release gates');
+  lines.push('');
+  lines.push(
+    gateReport.passed
+      ? '**PASS** — the catalog meets every V4 release gate.'
+      : `**BLOCKED** — ${gateReport.summary.failed} of ${gateReport.summary.total} release gates fail. ` +
+          'The catalog must not ship to production in this state.',
+  );
+  lines.push('');
+  if (!gateReport.passed) {
+    const need = gateReport.groupsStillNeeded;
+    lines.push(
+      `Still required: **+${need.easy} Easy, +${need.normal} Normal, +${need.hard} Hard** ` +
+        `(**+${need.total} total** canonical groups).`,
+    );
+    lines.push('');
+    lines.push(
+      'These are validated canonical *groups*, not rows. Shuffle-bag cycling ' +
+        'guarantees full coverage of whatever exists — it cannot substitute for ' +
+        'catalog expansion, and must not be presented as if it could.',
+    );
+    lines.push('');
+  }
+  lines.push(
+    table(
+      ['Gate', 'Requirement', 'Actual', 'Status'],
+      gateReport.gates.map((g) => [
+        `\`${g.id}\``,
+        g.requirement,
+        g.actual,
+        g.passed ? 'pass' : '**FAIL**',
+      ]),
+    ),
   );
   lines.push('');
 
@@ -95,6 +135,26 @@ export function formatAuditMarkdown(report: DatasetAuditReport): string {
     ),
   );
   lines.push('');
+  lines.push('### Setting balance per difficulty');
+  lines.push('');
+  lines.push(
+    'Canonical groups by physical character. A "Hard" tier made entirely of ' +
+      'famous city centres is not actually hard, which is exactly the shape the ' +
+      'pre-V4 catalog had — see the release gates above for the required mix.',
+  );
+  lines.push('');
+  lines.push(
+    table(
+      ['Difficulty', 'Groups', ...LOCATION_SETTINGS],
+      report.byDifficulty.map((d) => [
+        d.difficulty,
+        String(d.ownGroups),
+        ...LOCATION_SETTINGS.map((s) => String(d.settings[s])),
+      ]),
+    ),
+  );
+  lines.push('');
+
   lines.push('### Pool sufficiency per round count');
   lines.push('');
   lines.push(
@@ -228,6 +288,23 @@ export function formatAuditMarkdown(report: DatasetAuditReport): string {
     table(
       ['Cluster', 'Members', 'Span (km)'],
       report.clusters.map((c) => [c.id, c.members.join(', '), c.spanKm.toFixed(1)]),
+    ),
+  );
+  lines.push('');
+
+  // ── Verification ────────────────────────────────────────────────────────
+  const v2 = report.verification;
+  lines.push('## Street View verification');
+  lines.push('');
+  lines.push(
+    table(
+      ['Metric', 'Value'],
+      [
+        ['Verified panoramas', `${v2.verified} (${v2.verifiedPercent.toFixed(1)}%)`],
+        ['Unverified', String(v2.unverified)],
+        ['Stale (re-check recommended)', String(v2.stale)],
+        ['Verified but undated', String(v2.undatedVerification)],
+      ],
     ),
   );
   lines.push('');

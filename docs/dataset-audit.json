@@ -16,6 +16,13 @@
       "difficulty": "easy",
       "locations": 15,
       "ownGroups": 15,
+      "settings": {
+        "urban": 4,
+        "suburban": 0,
+        "rural": 0,
+        "landmark": 11,
+        "remote": 0
+      },
       "sufficiency": [
         {
           "roundCount": 3,
@@ -55,6 +62,13 @@
       "difficulty": "normal",
       "locations": 21,
       "ownGroups": 21,
+      "settings": {
+        "urban": 15,
+        "suburban": 0,
+        "rural": 0,
+        "landmark": 6,
+        "remote": 0
+      },
       "sufficiency": [
         {
           "roundCount": 3,
@@ -94,6 +108,13 @@
       "difficulty": "hard",
       "locations": 14,
       "ownGroups": 14,
+      "settings": {
+        "urban": 12,
+        "suburban": 1,
+        "rural": 0,
+        "landmark": 1,
+        "remote": 0
+      },
       "sufficiency": [
         {
           "roundCount": 3,
@@ -852,44 +873,44 @@
     },
     {
       "collection": "left-driving",
-      "locations": 14,
-      "groups": 14,
+      "locations": 15,
+      "groups": 15,
       "groupsByDifficulty": {
         "easy": 4,
         "normal": 7,
-        "hard": 3
+        "hard": 4
       },
       "sufficiency": [
         {
           "roundCount": 3,
-          "groups": 14,
+          "groups": 15,
           "playable": true,
           "comfortable": false,
-          "shortfall": 16,
+          "shortfall": 15,
           "usedFallback": false
         },
         {
           "roundCount": 5,
-          "groups": 14,
+          "groups": 15,
           "playable": true,
           "comfortable": false,
-          "shortfall": 36,
+          "shortfall": 35,
           "usedFallback": false
         },
         {
           "roundCount": 10,
-          "groups": 14,
+          "groups": 15,
           "playable": false,
           "comfortable": false,
-          "shortfall": 86,
+          "shortfall": 85,
           "usedFallback": false
         },
         {
           "roundCount": 20,
-          "groups": 14,
+          "groups": 15,
           "playable": false,
           "comfortable": false,
-          "shortfall": 186,
+          "shortfall": 185,
           "usedFallback": false
         }
       ],
@@ -904,7 +925,265 @@
     "explicitGroups": []
   },
   "clusters": [],
-  "metadataIssues": [],
+  "verification": {
+    "verified": 0,
+    "unverified": 50,
+    "stale": 0,
+    "undatedVerification": 0,
+    "verifiedPercent": 0
+  },
+  "metadataIssues": [
+    {
+      "locationId": "paris-eiffel",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "london-westminster",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "rome-colosseum",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "venice-canal",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "barcelona-sagrada",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "berlin-brandenburg",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "athens-acropolis",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "amsterdam-canal",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "prague-oldtown",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "lisbon-alfama",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "stockholm-gamlastan",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "zurich-lake",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "edinburgh-royalmile",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "reykjavik-center",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "dubrovnik-walls",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "nyc-timessquare",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "sf-goldengate",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "chicago-millennium",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "toronto-downtown",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "vancouver-gastown",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "mexicocity-zocalo",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "neworleans-french",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "oaxaca-center",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "havana-malecon",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "rio-copacabana",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "buenosaires-obelisco",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "santiago-center",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "cusco-plaza",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "cartagena-oldcity",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "valparaiso-hills",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "cairo-giza",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "dubai-marina",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "capetown-waterfront",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "jerusalem-oldcity",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "marrakech-medina",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "nairobi-center",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "tokyo-shibuya",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "singapore-marina",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "seoul-gyeongbok",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "bangkok-grandpalace",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "hongkong-tsimshatsui",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "istanbul-sultanahmet",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "delhi-indiagate",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "kyoto-gion",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "taipei-101",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "sydney-operahouse",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "melbourne-flinders",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "auckland-viaduct",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "queenstown-lakefront",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    },
+    {
+      "locationId": "wellington-waterfront",
+      "field": "panoId",
+      "message": "No verified Street View panorama id — run the candidate verification workflow."
+    }
+  ],
   "verdict": {
     "standardRoundCount": 5,
     "targetFreshGames": 10,
@@ -915,5 +1194,5 @@
     "freshGamesSupported": 4,
     "sufficient": false
   },
-  "ok": true
+  "ok": false
 }

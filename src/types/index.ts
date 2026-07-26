@@ -52,6 +52,19 @@ export interface GameLocation {
    * catalog import workflow, never guessed.
    */
   panoId?: string;
+  /**
+   * ISO date (YYYY-MM-DD) on which `panoId` was confirmed to exist via the
+   * Street View metadata endpoint. Street View coverage is withdrawn and
+   * re-shot over time, so a verification has an age; the audit reports stale
+   * ones so they can be re-checked.
+   */
+  panoVerifiedAt?: string;
+  /**
+   * Physical character of the location. Drives the per-difficulty balance
+   * gates — a "Hard" tier made entirely of famous city centres is not actually
+   * hard. See `config/releaseGates.ts`.
+   */
+  setting?: import('../config/releaseGates').LocationSetting;
 }
 
 /**
@@ -64,6 +77,7 @@ export interface GameLocation {
 export type CatalogLocation = GameLocation & {
   continent: import('../config/geography').Continent;
   tags: readonly import('../config/collections').CuratedTag[];
+  setting: import('../config/releaseGates').LocationSetting;
 };
 
 /** Result of a single completed round. */
