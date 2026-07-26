@@ -133,9 +133,16 @@ Fix every error and re-run until the batch is clean.
 This is the only step that touches Google.
 
 ```bash
-export ROAM_STREETVIEW_VERIFY_KEY=...        # NOT the VITE_ browser key
-npm run catalog:verify -- data/candidates/batch-001.json --verify-panoramas
+read -rs -p "Street View verify key: " ROAM_STREETVIEW_VERIFY_KEY
+export ROAM_STREETVIEW_VERIFY_KEY
+npm run catalog:verify -- data/candidates/batch-001.json \
+  --verify-panoramas --report data/candidates/batch-001.verified.json
 ```
+
+`read -rs` keeps the key off the screen and, because it never appears as a
+command argument, out of shell history. Always pass `--report`: verification is
+the only step whose result cannot be recreated offline, so a run without it
+throws away the resolved panorama ids and forces a second full pass.
 
 ### The key
 
@@ -162,6 +169,9 @@ For each accepted candidate it calls the Street View **metadata** endpoint with
 - otherwise → records the real `pano_id`, today's date, and how far the
   panorama sits from the requested point.
 
+The resolved panorama id is printed on each `ok` line and written to the
+`--report` file. It is never inferred, defaulted or generated.
+
 Requests are paced at roughly 5/second.
 
 ### Google usage
@@ -175,6 +185,23 @@ uses at runtime, so it does not consume the game's panorama-load budget.
 Confirm this against current Google pricing before a large run. Verifying 250
 locations is 250 metadata requests plus re-checks — small, but not something to
 assume is free forever.
+
+### Choosing coordinates that actually verify
+
+Batch 001 returned `ZERO_RESULTS` for 26 of 40 candidates — a 65% miss. The
+cause was method, not bad luck: a 50 m radius around a point picked *near a
+place name* usually lands beside the road rather than on it, and rural coverage
+follows roads exactly.
+
+Place candidates **on a named, long-distance road corridor** — a numbered
+national route, trunk road or European route — in a country with dense official
+coverage. A point anywhere along the Stuart Highway, Ruta 5, the N7, E6 or a
+Ring Road is almost certainly on tarmac Google has driven. A point "near a
+scenic village" often is not.
+
+The 50 m radius is deliberately not loosened: widening it would accept a
+panorama that is not the place under review, quietly detaching the catalog's
+coordinates from what players actually see.
 
 ## Step 4 — emit and review
 

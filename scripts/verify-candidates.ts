@@ -48,9 +48,10 @@
  *   npm run catalog:verify -- data/candidates/batch-001.json
  *   npm run catalog:verify -- data/candidates/batch-001.json --verify-panoramas
  *   npm run catalog:verify -- data/candidates/batch-001.json --verify-panoramas --emit
+ *   npm run catalog:verify -- data/candidates/batch-001.json --verify-panoramas --report out.json
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { LOCATIONS } from '../src/data/locations';
@@ -74,15 +75,33 @@ const REQUEST_INTERVAL_MS = 200;
 
 const argv = process.argv.slice(2);
 const flags = new Set(argv.filter((a) => a.startsWith('--')));
-const files = argv.filter((a) => !a.startsWith('--'));
 
 const shouldVerify = flags.has('--verify-panoramas');
 const shouldEmit = flags.has('--emit');
 
+/**
+ * `--report <path>` writes the verification outcome to JSON. Verification is
+ * the only step whose result cannot be recreated offline, so losing it means
+ * re-running every request against Google. The report holds resolved panorama
+ * ids and failure reasons — never the API key.
+ */
+const reportFlagIndex = argv.indexOf('--report');
+const reportPath = reportFlagIndex >= 0 ? argv[reportFlagIndex + 1] : undefined;
+
+// The value after --report is a path, not the batch file.
+const files = argv.filter(
+  (a, i) => !a.startsWith('--') && !(reportFlagIndex >= 0 && i === reportFlagIndex + 1),
+);
+
 if (files.length !== 1) {
   console.error(
-    'Usage: npm run catalog:verify -- <batch-file.json> [--verify-panoramas] [--emit]',
+    'Usage: npm run catalog:verify -- <batch-file.json> ' +
+      '[--verify-panoramas] [--emit] [--report <path.json>]',
   );
+  process.exit(2);
+}
+if (reportFlagIndex >= 0 && !reportPath) {
+  console.error('--report requires a file path.');
   process.exit(2);
 }
 
@@ -258,7 +277,10 @@ for (const result of report.accepted) {
   ) / 1000;
 
   verified.push({ candidate, panoId: outcome.panoId, verifiedAt: today, offsetKm });
-  console.log(`  ok    ${candidate.id}  (panorama ${offsetKm.toFixed(3)} km from the target)`);
+  // Print the resolved panorama id, not just "ok". It is the one piece of
+  // information a verification run produces that cannot be recreated offline,
+  // and a run that only says "ok" forces a second billable pass to recover it.
+  console.log(`  ok    ${candidate.id}  ${outcome.panoId}  (${offsetKm.toFixed(3)} km off target)`);
 }
 
 console.log(
@@ -269,6 +291,28 @@ console.log(
 if (unverified.length > 0) {
   console.log('\nNot verified (excluded from any emitted entries):');
   for (const item of unverified) console.log(`  - ${item.id}: ${item.reason}`);
+}
+
+if (reportPath) {
+  const artifact = {
+    batch: batch.batch ?? files[0],
+    verifiedAt: today,
+    counts: {
+      candidates: report.batchSize,
+      accepted: report.accepted.length,
+      verified: verified.length,
+      unverified: unverified.length,
+    },
+    verified: verified.map((v) => ({
+      id: v.candidate.id,
+      panoId: v.panoId,
+      verifiedAt: v.verifiedAt,
+      offsetKm: v.offsetKm,
+    })),
+    unverified,
+  };
+  writeFileSync(resolve(process.cwd(), reportPath), `${JSON.stringify(artifact, null, 2)}\n`, 'utf8');
+  console.log(`\nWrote verification report to ${reportPath}`);
 }
 
 // ── Phase 3: emit (opt-in) ──────────────────────────────────────────────────
