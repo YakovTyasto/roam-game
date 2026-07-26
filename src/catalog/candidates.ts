@@ -40,6 +40,13 @@ export interface Candidate {
   continent?: string;
   /** Free-text note on where the coordinate came from. Required for review. */
   source?: string;
+  /**
+   * Why this location earns a place in the catalog — which gate it moves, what
+   * it adds that the catalog lacks. Distinct from `source`, which says where
+   * the *coordinate* came from. Not machine-checked: a reviewer reads it to
+   * decide whether the batch is well-composed or just longer.
+   */
+  rationale?: string;
   /** Optional explicit canonical group, for deliberate same-place entries. */
   locationGroupId?: string;
 }
