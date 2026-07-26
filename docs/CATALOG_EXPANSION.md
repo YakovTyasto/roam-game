@@ -188,8 +188,22 @@ assume is free forever.
 
 ### Choosing coordinates that actually verify
 
-Batch 001 returned `ZERO_RESULTS` for 26 of 40 candidates — a 65% miss. The
-cause was method, not bad luck: a 50 m radius around a point picked *near a
+Batch 001 returned `ZERO_RESULTS` for 26 of 40 candidates — a 65% miss. Two
+things the results make clear:
+
+**Verification is effectively binary.** Every candidate that verified did so
+within 3–75 m of the requested point. None resolved to something 40 m away that
+"nearly" matched. Either the coordinate is on a covered road or nothing is
+there, so precision matters far more than luck.
+
+**A single failure does not condemn a country.** Australia verified on the
+Landsborough Highway but failed on the Nullarbor and in Tasmania; New Zealand
+verified in Central Otago but failed on the Coromandel. Iceland, Norway, Chile
+and Uruguay all failed despite extensive national coverage. Those are coordinate
+misses, not coverage gaps — which is why a replacement should move *within* the
+country to a better-evidenced road before abandoning it.
+
+The cause was method, not bad luck: a 50 m radius around a point picked *near a
 place name* usually lands beside the road rather than on it, and rural coverage
 follows roads exactly.
 
@@ -202,6 +216,25 @@ scenic village" often is not.
 The 50 m radius is deliberately not loosened: widening it would accept a
 panorama that is not the place under review, quietly detaching the catalog's
 coordinates from what players actually see.
+
+**City-edge suburban locations verify far more reliably than remote roads.**
+That is convenient rather than a compromise — `normal`/`suburban` is currently
+the worst-failing balance gate, so the greatest need and the highest-probability
+candidates coincide. Lead with them.
+
+### Coverage evidence
+
+Recorded from real verification runs, not assumed. "Proven" means at least one
+candidate in that country actually resolved a panorama.
+
+| Status | Countries |
+| --- | --- |
+| **Proven** (batch 001) | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala |
+| **Failed once, strong national coverage** — retry on a trunk road | Iceland, Norway, Chile, Uruguay, Costa Rica, Ghana, Jamaica, Tunisia |
+| **Failed once, sparse coverage** — prefer a same-continent proven country | Fiji, American Samoa, Guam, Northern Mariana Islands, Greenland, Bhutan, Mongolia, Madagascar, Tanzania, Uganda, Botswana, Lesotho, Eswatini, Bolivia, Jordan |
+
+Extend this table as batches come back. It is the cheapest way to stop spending
+requests on the same dead ends.
 
 ## Step 4 — emit and review
 
