@@ -102,4 +102,23 @@ export const LOCATIONS: CatalogLocation[] = [
   { id: 'auckland-viaduct', lat: -36.8434, lng: 174.7593, label: 'Viaduct Harbour, Auckland', country: 'New Zealand', continent: 'Oceania', difficulty: 'normal', tags: [], setting: 'urban' },
   { id: 'queenstown-lakefront', lat: -45.0312, lng: 168.6626, label: 'Lakefront, Queenstown', country: 'New Zealand', continent: 'Oceania', difficulty: 'hard', tags: [], setting: 'suburban' },
   { id: 'wellington-waterfront', lat: -41.2889, lng: 174.7772, label: 'Waterfront, Wellington', country: 'New Zealand', continent: 'Oceania', difficulty: 'hard', tags: ['capitals'], setting: 'urban' },
+
+  // ── Batch 001 (verified 2026-07-26) ────────────────────────
+  // Added by the catalog expansion workflow. Every panoId below was
+  // resolved by a real Street View metadata request; see
+  // data/candidates/batch-001.verified.json for the run that produced them.
+  { id: 'southafrica-karoo-highway', lat: -32.36, lng: 22.58, label: 'Great Karoo, Western Cape', country: 'South Africa', continent: 'Africa', difficulty: 'hard', tags: [], setting: 'remote', panoId: '6XcgSnZYKCaqmpiHezLY2A', panoVerifiedAt: '2026-07-26' },
+  { id: 'reunion-cilaos-road', lat: -21.13, lng: 55.47, label: 'Route de Cilaos', country: 'Réunion', continent: 'Africa', difficulty: 'hard', tags: [], setting: 'rural', panoId: 'qW7KV42pmtSv-_exOSCPwg', panoVerifiedAt: '2026-07-26' },
+  { id: 'rwanda-musanze-hills', lat: -1.5, lng: 29.63, label: 'Terraced hills near Musanze', country: 'Rwanda', continent: 'Africa', difficulty: 'normal', tags: [], setting: 'rural', panoId: 'kWJVmwr36D8qB5M5xdUttw', panoVerifiedAt: '2026-07-26' },
+  { id: 'australia-winton-landsborough', lat: -22.39, lng: 143.04, label: 'Landsborough Highway, outback Queensland', country: 'Australia', continent: 'Oceania', difficulty: 'hard', tags: [], setting: 'remote', panoId: 'cg9R2KlxLFxE7-GirlU0kQ', panoVerifiedAt: '2026-07-26' },
+  { id: 'newzealand-alexandra-otago', lat: -45.25, lng: 169.38, label: 'Central Otago near Alexandra', country: 'New Zealand', continent: 'Oceania', difficulty: 'hard', tags: [], setting: 'rural', panoId: 'K0WHDxl2l3XzLaHfyju3Zg', panoVerifiedAt: '2026-07-26' },
+  { id: 'argentina-ruta40-patagonia', lat: -46.59, lng: -70.93, label: 'Ruta 40, Patagonian steppe', country: 'Argentina', continent: 'South America', difficulty: 'hard', tags: [], setting: 'remote', panoId: 'iCMjk39lJgxck7sqG-0hbg', panoVerifiedAt: '2026-07-26' },
+  { id: 'peru-altiplano-juliaca', lat: -15.83, lng: -70.02, label: 'Altiplano near Juliaca', country: 'Peru', continent: 'South America', difficulty: 'hard', tags: [], setting: 'remote', panoId: 'WHn8qkLSijnBWHnnfYmVLA', panoVerifiedAt: '2026-07-26' },
+  { id: 'ecuador-banos-andes', lat: -1.4, lng: -78.42, label: 'Andean valley near Baños', country: 'Ecuador', continent: 'South America', difficulty: 'hard', tags: [], setting: 'rural', panoId: 'G5pXZSn45H9TZkJ2caal1Q', panoVerifiedAt: '2026-07-26' },
+  { id: 'colombia-salento-coffee', lat: 4.64, lng: -75.57, label: 'Coffee country near Salento', country: 'Colombia', continent: 'South America', difficulty: 'normal', tags: [], setting: 'rural', panoId: 'XY2nmz3Vy1G6PjhCxz7oTQ', panoVerifiedAt: '2026-07-26' },
+  { id: 'brazil-gramado-serra', lat: -29.38, lng: -50.87, label: 'Serra Gaúcha near Gramado', country: 'Brazil', continent: 'South America', difficulty: 'normal', tags: [], setting: 'suburban', panoId: 'P10LY2LFq2Kk17HOlb707g', panoVerifiedAt: '2026-07-26' },
+  { id: 'kyrgyzstan-naryn-pass', lat: 41.43, lng: 75.99, label: 'Mountain road near Naryn', country: 'Kyrgyzstan', continent: 'Asia', difficulty: 'hard', tags: [], setting: 'remote', panoId: 'Hqd7TGGxGMBBhm_TX0uAGw', panoVerifiedAt: '2026-07-26' },
+  { id: 'srilanka-ella-hills', lat: 6.87, lng: 81.05, label: 'Hill country near Ella', country: 'Sri Lanka', continent: 'Asia', difficulty: 'normal', tags: [], setting: 'rural', panoId: 'BX4aUMb_Mvb6RX9BMz_laQ', panoVerifiedAt: '2026-07-26' },
+  { id: 'malaysia-ipoh-outskirts', lat: 4.55, lng: 101.1, label: 'Outskirts of Ipoh', country: 'Malaysia', continent: 'Asia', difficulty: 'normal', tags: [], setting: 'suburban', panoId: 'xmOzOqLby_a4jZzLHNXbDQ', panoVerifiedAt: '2026-07-26' },
+  { id: 'guatemala-chichicastenango', lat: 14.94, lng: -91.11, label: 'Highlands near Chichicastenango', country: 'Guatemala', continent: 'North America', difficulty: 'hard', tags: [], setting: 'rural', panoId: 'l91IdZPdPl11WLPNqLlaVg', panoVerifiedAt: '2026-07-26' },
 ];

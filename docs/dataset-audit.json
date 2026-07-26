@@ -5,10 +5,10 @@
     "clusterKm": 25
   },
   "totals": {
-    "locations": 50,
-    "canonicalGroups": 50,
+    "locations": 64,
+    "canonicalGroups": 64,
     "redundantLocations": 0,
-    "countries": 38,
+    "countries": 45,
     "continents": 6
   },
   "byDifficulty": [
@@ -50,120 +50,130 @@
         },
         {
           "roundCount": 20,
-          "groups": 36,
-          "playable": false,
+          "groups": 41,
+          "playable": true,
           "comfortable": false,
-          "shortfall": 164,
+          "shortfall": 159,
           "usedFallback": true
         }
       ]
     },
     {
       "difficulty": "normal",
-      "locations": 21,
-      "ownGroups": 21,
+      "locations": 26,
+      "ownGroups": 26,
       "settings": {
         "urban": 15,
-        "suburban": 0,
-        "rural": 0,
+        "suburban": 2,
+        "rural": 3,
         "landmark": 6,
         "remote": 0
       },
       "sufficiency": [
         {
           "roundCount": 3,
-          "groups": 21,
+          "groups": 26,
           "playable": true,
           "comfortable": false,
-          "shortfall": 9,
+          "shortfall": 4,
           "usedFallback": false
         },
         {
           "roundCount": 5,
-          "groups": 21,
+          "groups": 26,
           "playable": true,
           "comfortable": false,
-          "shortfall": 29,
+          "shortfall": 24,
           "usedFallback": false
         },
         {
           "roundCount": 10,
-          "groups": 21,
+          "groups": 26,
           "playable": true,
           "comfortable": false,
-          "shortfall": 79,
+          "shortfall": 74,
           "usedFallback": false
         },
         {
           "roundCount": 20,
-          "groups": 21,
+          "groups": 26,
           "playable": false,
           "comfortable": false,
-          "shortfall": 179,
+          "shortfall": 174,
           "usedFallback": false
         }
       ]
     },
     {
       "difficulty": "hard",
-      "locations": 14,
-      "ownGroups": 14,
+      "locations": 23,
+      "ownGroups": 23,
       "settings": {
         "urban": 12,
         "suburban": 1,
-        "rural": 0,
+        "rural": 4,
         "landmark": 1,
-        "remote": 0
+        "remote": 5
       },
       "sufficiency": [
         {
           "roundCount": 3,
-          "groups": 14,
+          "groups": 23,
           "playable": true,
           "comfortable": false,
-          "shortfall": 16,
+          "shortfall": 7,
           "usedFallback": false
         },
         {
           "roundCount": 5,
-          "groups": 14,
+          "groups": 23,
           "playable": true,
           "comfortable": false,
-          "shortfall": 36,
+          "shortfall": 27,
           "usedFallback": false
         },
         {
           "roundCount": 10,
-          "groups": 14,
-          "playable": false,
+          "groups": 23,
+          "playable": true,
           "comfortable": false,
-          "shortfall": 86,
+          "shortfall": 77,
           "usedFallback": false
         },
         {
           "roundCount": 20,
-          "groups": 35,
+          "groups": 23,
           "playable": false,
           "comfortable": false,
-          "shortfall": 165,
-          "usedFallback": true
+          "shortfall": 177,
+          "usedFallback": false
         }
       ]
     }
   ],
   "byCountry": [
     {
+      "key": "New Zealand",
+      "locations": 4,
+      "groups": 4
+    },
+    {
       "key": "United States",
       "locations": 4,
       "groups": 4
     },
     {
-      "key": "New Zealand",
+      "key": "Australia",
       "locations": 3,
       "groups": 3
     },
     {
-      "key": "Australia",
+      "key": "Argentina",
+      "locations": 2,
+      "groups": 2
+    },
+    {
+      "key": "Brazil",
       "locations": 2,
       "groups": 2
     },
@@ -174,6 +184,11 @@
     },
     {
       "key": "Chile",
+      "locations": 2,
+      "groups": 2
+    },
+    {
+      "key": "Colombia",
       "locations": 2,
       "groups": 2
     },
@@ -193,24 +208,19 @@
       "groups": 2
     },
     {
-      "key": "United Kingdom",
+      "key": "Peru",
       "locations": 2,
       "groups": 2
     },
     {
-      "key": "Argentina",
-      "locations": 1,
-      "groups": 1
+      "key": "South Africa",
+      "locations": 2,
+      "groups": 2
     },
     {
-      "key": "Brazil",
-      "locations": 1,
-      "groups": 1
-    },
-    {
-      "key": "Colombia",
-      "locations": 1,
-      "groups": 1
+      "key": "United Kingdom",
+      "locations": 2,
+      "groups": 2
     },
     {
       "key": "Croatia",
@@ -224,6 +234,11 @@
     },
     {
       "key": "Czechia",
+      "locations": 1,
+      "groups": 1
+    },
+    {
+      "key": "Ecuador",
       "locations": 1,
       "groups": 1
     },
@@ -244,6 +259,11 @@
     },
     {
       "key": "Greece",
+      "locations": 1,
+      "groups": 1
+    },
+    {
+      "key": "Guatemala",
       "locations": 1,
       "groups": 1
     },
@@ -273,6 +293,16 @@
       "groups": 1
     },
     {
+      "key": "Kyrgyzstan",
+      "locations": 1,
+      "groups": 1
+    },
+    {
+      "key": "Malaysia",
+      "locations": 1,
+      "groups": 1
+    },
+    {
       "key": "Morocco",
       "locations": 1,
       "groups": 1
@@ -283,22 +313,22 @@
       "groups": 1
     },
     {
-      "key": "Peru",
-      "locations": 1,
-      "groups": 1
-    },
-    {
       "key": "Portugal",
       "locations": 1,
       "groups": 1
     },
     {
-      "key": "Singapore",
+      "key": "Rwanda",
       "locations": 1,
       "groups": 1
     },
     {
-      "key": "South Africa",
+      "key": "Réunion",
+      "locations": 1,
+      "groups": 1
+    },
+    {
+      "key": "Singapore",
       "locations": 1,
       "groups": 1
     },
@@ -309,6 +339,11 @@
     },
     {
       "key": "Spain",
+      "locations": 1,
+      "groups": 1
+    },
+    {
+      "key": "Sri Lanka",
       "locations": 1,
       "groups": 1
     },
@@ -351,44 +386,44 @@
     },
     {
       "key": "Asia",
+      "locations": 13,
+      "groups": 13
+    },
+    {
+      "key": "South America",
+      "locations": 11,
+      "groups": 11
+    },
+    {
+      "key": "North America",
       "locations": 10,
       "groups": 10
     },
     {
-      "key": "North America",
-      "locations": 9,
-      "groups": 9
-    },
-    {
-      "key": "South America",
-      "locations": 6,
-      "groups": 6
+      "key": "Africa",
+      "locations": 7,
+      "groups": 7
     },
     {
       "key": "Oceania",
-      "locations": 5,
-      "groups": 5
-    },
-    {
-      "key": "Africa",
-      "locations": 4,
-      "groups": 4
+      "locations": 7,
+      "groups": 7
     }
   ],
   "byCollection": [
     {
       "collection": "world",
-      "locations": 50,
-      "groups": 50,
+      "locations": 64,
+      "groups": 64,
       "groupsByDifficulty": {
         "easy": 15,
-        "normal": 21,
-        "hard": 14
+        "normal": 26,
+        "hard": 23
       },
       "sufficiency": [
         {
           "roundCount": 3,
-          "groups": 50,
+          "groups": 64,
           "playable": true,
           "comfortable": true,
           "shortfall": 0,
@@ -396,7 +431,7 @@
         },
         {
           "roundCount": 5,
-          "groups": 50,
+          "groups": 64,
           "playable": true,
           "comfortable": true,
           "shortfall": 0,
@@ -404,18 +439,18 @@
         },
         {
           "roundCount": 10,
-          "groups": 50,
+          "groups": 64,
           "playable": true,
           "comfortable": false,
-          "shortfall": 50,
+          "shortfall": 36,
           "usedFallback": false
         },
         {
           "roundCount": 20,
-          "groups": 50,
+          "groups": 64,
           "playable": true,
           "comfortable": false,
-          "shortfall": 150,
+          "shortfall": 136,
           "usedFallback": false
         }
       ],
@@ -468,12 +503,102 @@
     },
     {
       "collection": "asia",
+      "locations": 13,
+      "groups": 13,
+      "groupsByDifficulty": {
+        "easy": 3,
+        "normal": 7,
+        "hard": 3
+      },
+      "sufficiency": [
+        {
+          "roundCount": 3,
+          "groups": 13,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 17,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 5,
+          "groups": 13,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 37,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 10,
+          "groups": 13,
+          "playable": false,
+          "comfortable": false,
+          "shortfall": 87,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 20,
+          "groups": 13,
+          "playable": false,
+          "comfortable": false,
+          "shortfall": 187,
+          "usedFallback": false
+        }
+      ],
+      "shippable": true
+    },
+    {
+      "collection": "africa",
+      "locations": 7,
+      "groups": 7,
+      "groupsByDifficulty": {
+        "easy": 1,
+        "normal": 2,
+        "hard": 4
+      },
+      "sufficiency": [
+        {
+          "roundCount": 3,
+          "groups": 7,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 23,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 5,
+          "groups": 7,
+          "playable": false,
+          "comfortable": false,
+          "shortfall": 43,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 10,
+          "groups": 7,
+          "playable": false,
+          "comfortable": false,
+          "shortfall": 93,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 20,
+          "groups": 7,
+          "playable": false,
+          "comfortable": false,
+          "shortfall": 193,
+          "usedFallback": false
+        }
+      ],
+      "shippable": false
+    },
+    {
+      "collection": "north-america",
       "locations": 10,
       "groups": 10,
       "groupsByDifficulty": {
-        "easy": 3,
-        "normal": 5,
-        "hard": 2
+        "easy": 2,
+        "normal": 4,
+        "hard": 4
       },
       "sufficiency": [
         {
@@ -512,180 +637,90 @@
       "shippable": true
     },
     {
-      "collection": "africa",
-      "locations": 4,
-      "groups": 4,
-      "groupsByDifficulty": {
-        "easy": 1,
-        "normal": 1,
-        "hard": 2
-      },
-      "sufficiency": [
-        {
-          "roundCount": 3,
-          "groups": 4,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 26,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 5,
-          "groups": 4,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 46,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 10,
-          "groups": 4,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 96,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 20,
-          "groups": 4,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 196,
-          "usedFallback": false
-        }
-      ],
-      "shippable": false
-    },
-    {
-      "collection": "north-america",
-      "locations": 9,
-      "groups": 9,
-      "groupsByDifficulty": {
-        "easy": 2,
-        "normal": 4,
-        "hard": 3
-      },
-      "sufficiency": [
-        {
-          "roundCount": 3,
-          "groups": 9,
-          "playable": true,
-          "comfortable": false,
-          "shortfall": 21,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 5,
-          "groups": 9,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 41,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 10,
-          "groups": 9,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 91,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 20,
-          "groups": 9,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 191,
-          "usedFallback": false
-        }
-      ],
-      "shippable": false
-    },
-    {
       "collection": "south-america",
-      "locations": 6,
-      "groups": 6,
+      "locations": 11,
+      "groups": 11,
       "groupsByDifficulty": {
         "easy": 1,
-        "normal": 2,
-        "hard": 3
+        "normal": 4,
+        "hard": 6
       },
       "sufficiency": [
         {
           "roundCount": 3,
-          "groups": 6,
+          "groups": 11,
           "playable": true,
           "comfortable": false,
-          "shortfall": 24,
+          "shortfall": 19,
           "usedFallback": false
         },
         {
           "roundCount": 5,
-          "groups": 6,
-          "playable": false,
+          "groups": 11,
+          "playable": true,
           "comfortable": false,
-          "shortfall": 44,
+          "shortfall": 39,
           "usedFallback": false
         },
         {
           "roundCount": 10,
-          "groups": 6,
+          "groups": 11,
           "playable": false,
           "comfortable": false,
-          "shortfall": 94,
+          "shortfall": 89,
           "usedFallback": false
         },
         {
           "roundCount": 20,
-          "groups": 6,
+          "groups": 11,
           "playable": false,
           "comfortable": false,
-          "shortfall": 194,
+          "shortfall": 189,
           "usedFallback": false
         }
       ],
-      "shippable": false
+      "shippable": true
     },
     {
       "collection": "oceania",
-      "locations": 5,
-      "groups": 5,
+      "locations": 7,
+      "groups": 7,
       "groupsByDifficulty": {
         "easy": 1,
         "normal": 2,
-        "hard": 2
+        "hard": 4
       },
       "sufficiency": [
         {
           "roundCount": 3,
-          "groups": 5,
-          "playable": false,
+          "groups": 7,
+          "playable": true,
           "comfortable": false,
-          "shortfall": 25,
+          "shortfall": 23,
           "usedFallback": false
         },
         {
           "roundCount": 5,
-          "groups": 5,
+          "groups": 7,
           "playable": false,
           "comfortable": false,
-          "shortfall": 45,
+          "shortfall": 43,
           "usedFallback": false
         },
         {
           "roundCount": 10,
-          "groups": 5,
+          "groups": 7,
           "playable": false,
           "comfortable": false,
-          "shortfall": 95,
+          "shortfall": 93,
           "usedFallback": false
         },
         {
           "roundCount": 20,
-          "groups": 5,
+          "groups": 7,
           "playable": false,
           "comfortable": false,
-          "shortfall": 195,
+          "shortfall": 193,
           "usedFallback": false
         }
       ],
@@ -828,57 +863,12 @@
     },
     {
       "collection": "islands",
-      "locations": 12,
-      "groups": 12,
-      "groupsByDifficulty": {
-        "easy": 3,
-        "normal": 3,
-        "hard": 6
-      },
-      "sufficiency": [
-        {
-          "roundCount": 3,
-          "groups": 12,
-          "playable": true,
-          "comfortable": false,
-          "shortfall": 18,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 5,
-          "groups": 12,
-          "playable": true,
-          "comfortable": false,
-          "shortfall": 38,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 10,
-          "groups": 12,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 88,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 20,
-          "groups": 12,
-          "playable": false,
-          "comfortable": false,
-          "shortfall": 188,
-          "usedFallback": false
-        }
-      ],
-      "shippable": true
-    },
-    {
-      "collection": "left-driving",
       "locations": 15,
       "groups": 15,
       "groupsByDifficulty": {
-        "easy": 4,
-        "normal": 7,
-        "hard": 4
+        "easy": 3,
+        "normal": 4,
+        "hard": 8
       },
       "sufficiency": [
         {
@@ -915,6 +905,51 @@
         }
       ],
       "shippable": true
+    },
+    {
+      "collection": "left-driving",
+      "locations": 20,
+      "groups": 20,
+      "groupsByDifficulty": {
+        "easy": 4,
+        "normal": 9,
+        "hard": 7
+      },
+      "sufficiency": [
+        {
+          "roundCount": 3,
+          "groups": 20,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 10,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 5,
+          "groups": 20,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 30,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 10,
+          "groups": 20,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 80,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 20,
+          "groups": 20,
+          "playable": false,
+          "comfortable": false,
+          "shortfall": 180,
+          "usedFallback": false
+        }
+      ],
+      "shippable": true
     }
   ],
   "duplicates": {
@@ -926,11 +961,11 @@
   },
   "clusters": [],
   "verification": {
-    "verified": 0,
+    "verified": 14,
     "unverified": 50,
     "stale": 0,
     "undatedVerification": 0,
-    "verifiedPercent": 0
+    "verifiedPercent": 21.875
   },
   "metadataIssues": [
     {
@@ -1188,10 +1223,10 @@
     "standardRoundCount": 5,
     "targetFreshGames": 10,
     "defaultDifficulty": "normal",
-    "catalogGroups": 50,
-    "defaultPoolGroups": 21,
+    "catalogGroups": 64,
+    "defaultPoolGroups": 26,
     "groupsRequired": 50,
-    "freshGamesSupported": 4,
+    "freshGamesSupported": 5,
     "sufficient": false
   },
   "ok": false

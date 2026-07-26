@@ -237,15 +237,27 @@ describe('the shipped catalog', () => {
     expect(descriptive).toEqual([]);
   });
 
-  it('is honest that no panorama has been verified yet', () => {
-    // The pre-V4 catalog was authored without a verification step, so no entry
-    // carries a confirmed panorama id. This is a release blocker, tracked by
-    // the `verification.streetView` gate — not something to quietly tolerate.
-    // When the expansion workflow has verified the catalog, this test should be
-    // updated deliberately, not deleted.
-    expect(report.verification.verified).toBe(0);
-    expect(report.verification.unverified).toBe(LOCATIONS.length);
+  it('is honest that the catalog is only partly verified', () => {
+    // The pre-V4 catalog was authored without a verification step, so its
+    // original entries carry no confirmed panorama id; entries added by the
+    // expansion workflow all do. Until every entry is verified this stays a
+    // release blocker, tracked by the `verification.streetView` gate — not
+    // something to quietly tolerate.
+    const verified = LOCATIONS.filter((l) => l.panoId).length;
+    expect(report.verification.verified).toBe(verified);
+    expect(report.verification.unverified).toBe(LOCATIONS.length - verified);
+    expect(report.verification.undatedVerification).toBe(0);
     expect(report.ok).toBe(false);
+  });
+
+  it('never carries a panorama id without a verification date', () => {
+    // A panorama id can only come from a real verification run, and a run
+    // always records its date. An id without one means somebody hand-wrote it.
+    for (const location of LOCATIONS) {
+      if (location.panoId) {
+        expect(location.panoVerifiedAt, `${location.id} has an undated panoId`).toBeTruthy();
+      }
+    }
   });
 
   it('contains no duplicate, identical or near-duplicate places', () => {

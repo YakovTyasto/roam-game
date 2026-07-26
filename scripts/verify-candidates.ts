@@ -13,6 +13,12 @@
  *   3. **Emit (opt-in).** Only with `--emit`, and only for candidates that
  *      passed BOTH previous phases. Prints ready-to-paste catalog entries.
  *
+ * A saved `--report` file can be replayed later with `--from-report <path>` to
+ * emit entries **offline**, without re-querying Google. That mode still cannot
+ * invent anything: it only emits candidates the report records as verified,
+ * using the panorama id the report holds, and it refuses any id the report does
+ * not list.
+ *
  * SAFETY PROPERTIES — these are the point of the tool:
  *   • The API key is read from the environment and **never printed**, never
  *     logged, and never written to the report. Failures print the candidate id
@@ -88,9 +94,21 @@ const shouldEmit = flags.has('--emit');
 const reportFlagIndex = argv.indexOf('--report');
 const reportPath = reportFlagIndex >= 0 ? argv[reportFlagIndex + 1] : undefined;
 
+/**
+ * `--from-report <path>` emits catalog entries from a previously saved
+ * verification report, with no network access at all. Verification results are
+ * expensive to obtain and identical on replay, so turning one into catalog
+ * entries should not require querying Google again.
+ */
+const fromReportIndex = argv.indexOf('--from-report');
+const fromReportPath = fromReportIndex >= 0 ? argv[fromReportIndex + 1] : undefined;
+
 // The value after --report is a path, not the batch file.
 const files = argv.filter(
-  (a, i) => !a.startsWith('--') && !(reportFlagIndex >= 0 && i === reportFlagIndex + 1),
+  (a, i) =>
+    !a.startsWith('--') &&
+    !(reportFlagIndex >= 0 && i === reportFlagIndex + 1) &&
+    !(fromReportIndex >= 0 && i === fromReportIndex + 1),
 );
 
 if (files.length !== 1) {
@@ -166,6 +184,72 @@ console.log(
 if (report.accepted.length === 0) {
   console.error('\nNothing passed validation. Fix the batch and re-run.');
   process.exit(1);
+}
+
+// ── Replay: emit from a saved report, offline ───────────────────────────────
+
+interface SavedReport {
+  verified?: { id?: unknown; panoId?: unknown; verifiedAt?: unknown }[];
+}
+
+if (fromReportPath) {
+  let saved: SavedReport;
+  try {
+    saved = JSON.parse(readFileSync(resolve(process.cwd(), fromReportPath), 'utf8')) as SavedReport;
+  } catch (err) {
+    console.error(
+      `Could not read report: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    process.exit(2);
+  }
+
+  const rows = Array.isArray(saved.verified) ? saved.verified : [];
+  const byId = new Map<string, { panoId: string; verifiedAt: string }>();
+  for (const row of rows) {
+    if (typeof row?.id !== 'string' || typeof row?.panoId !== 'string') continue;
+    if (row.panoId.trim().length === 0) continue;
+    byId.set(row.id, {
+      panoId: row.panoId,
+      verifiedAt: typeof row.verifiedAt === 'string' ? row.verifiedAt : '',
+    });
+  }
+
+  console.log(`\n── Replay from ${fromReportPath} ──`);
+  console.log(`  ${byId.size} verified entr${byId.size === 1 ? 'y' : 'ies'} in the report.`);
+
+  // Only candidates the report vouches for are emitted. A candidate absent from
+  // the report has no panorama id, and one is never synthesised for it.
+  const replayed: VerifiedCandidate[] = [];
+  for (const result of report.accepted) {
+    const record = byId.get(result.candidate.id);
+    if (!record) continue;
+    if (!record.verifiedAt) {
+      console.error(`  FAIL  ${result.candidate.id}: report has no verification date.`);
+      process.exit(1);
+    }
+    replayed.push({
+      candidate: result.candidate,
+      panoId: record.panoId,
+      verifiedAt: record.verifiedAt,
+      offsetKm: 0,
+    });
+  }
+
+  const missing = [...byId.keys()].filter(
+    (id) => !report.accepted.some((r) => r.candidate.id === id),
+  );
+  if (missing.length > 0) {
+    console.error(
+      `  Report references ids that are not accepted candidates in this batch: ${missing.join(', ')}`,
+    );
+    process.exit(1);
+  }
+
+  console.log(`  ${replayed.length} matched this batch.\n`);
+  console.log('── Catalog entries ──');
+  console.log('Paste into src/data/locations.ts, then run `npm run audit:dataset`.\n');
+  console.log(renderCatalogEntries(replayed.map(toCatalogLocation)));
+  process.exit(0);
 }
 
 // ── Phase 2: panorama verification (opt-in, network) ────────────────────────

@@ -285,18 +285,27 @@ describe('the shipped catalog', () => {
   });
 
   it('reports the exact expansion still required', () => {
+    // Derived from the catalog rather than hard-coded, so a verified batch
+    // landing does not require editing this test — but the arithmetic itself
+    // is still asserted, and every tier must still be short.
+    const audit = auditDataset([...LOCATIONS]);
+    const own = (d: Difficulty) =>
+      audit.byDifficulty.find((t) => t.difficulty === d)!.ownGroups;
+
     expect(report.groupsStillNeeded).toEqual({
-      easy: MIN_GROUPS_BY_DIFFICULTY.easy - 15,
-      normal: MIN_GROUPS_BY_DIFFICULTY.normal - 21,
-      hard: MIN_GROUPS_BY_DIFFICULTY.hard - 14,
-      total: MIN_TOTAL_GROUPS - 50,
+      easy: MIN_GROUPS_BY_DIFFICULTY.easy - own('easy'),
+      normal: MIN_GROUPS_BY_DIFFICULTY.normal - own('normal'),
+      hard: MIN_GROUPS_BY_DIFFICULTY.hard - own('hard'),
+      total: MIN_TOTAL_GROUPS - audit.totals.canonicalGroups,
     });
+    for (const value of Object.values(report.groupsStillNeeded)) {
+      expect(value).toBeGreaterThan(0);
+    }
   });
 
   it('fails on verification, balance and depth — not on duplication', () => {
     const failed = new Set(report.gates.filter((g) => !g.passed).map((g) => g.id));
     expect(failed).toContain('verification.streetView');
-    expect(failed).toContain('balance.hard.rural-remote.min');
     expect(failed).toContain('breadth.continentDepth');
     // Deduplication was never the problem, and still isn't.
     expect(failed).not.toContain('integrity.duplicatePanoIds');
