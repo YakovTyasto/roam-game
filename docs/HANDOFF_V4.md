@@ -1,8 +1,21 @@
 # Handoff — Engagement, Diversity & Game Modes V4
 
-**Status: partial. Section 2 (Diversity Engine V2) is complete. Sections 3–17
-are not started.** Resume at **section 2.6 (dataset expansion tooling)**, then
-section 3 (server location catalog).
+**Status: partial. Section 2 (Diversity Engine V2) is complete, including the
+expansion tooling. Sections 3–17 are not started.** Resume at **catalog
+expansion** (author and verify candidate batches — see
+[`CATALOG_EXPANSION.md`](CATALOG_EXPANSION.md)), then section 3 (server
+location catalog).
+
+> ## ⛔ Release blocked
+>
+> `npm run audit:gates` fails: **12 of 25 release gates pass**. The catalog
+> holds 50 canonical groups against a required 300.
+>
+> **Still required: +65 Easy, +119 Normal, +66 Hard (+250 total).**
+>
+> Do not deploy to production while this command exits non-zero. The shuffle
+> bag guarantees full coverage of whatever exists; it is not a substitute for
+> catalog expansion and must not be presented as one.
 
 Nothing in this branch is a placeholder. There are no fake buttons, no "coming
 soon" controls, no mock production data, no unprotected RPCs, and no screens for
@@ -77,6 +90,7 @@ deployed, fixed V3 main.
 | `2d89f9c` | 2.3 — Durable per-player location history (migration 0011) |
 | `423e4e6` | 2.4 — Room-wide multiplayer novelty (migration 0012) |
 | `0926434` | 2.7 — Statistical verification over simulated games |
+| `9efba17` | 2.6 — Release gates + candidate validation/verification tooling |
 
 ---
 
@@ -90,15 +104,15 @@ deployed, fixed V3 main.
 - **2.3 — Persistent server-side history.**
 - **2.4 — Multiplayer diversity.**
 - **2.5 — Diversity inside a match.**
+- **2.6 — Dataset expansion tooling.** Offline validator, opt-in verification
+  CLI, batch workflow, and enforced release gates. **The catalog itself has not
+  been expanded** — see the release-blocked notice above and §7.
 - **2.7 — Statistical tests.**
 
 ## 5. Incomplete sections
 
 **Not started. No partial UI, scaffolding or stubs exist for any of these.**
 
-- **2.6 — Dataset expansion tooling.** *(resume here)* The audit already
-  reports exactly how much catalog growth is required; the safe
-  validate/verify/import workflow is not built.
 - **3 — Server location catalog.**
 - **4 — Daily Challenge.**
 - **5 — Challenge Links.**
@@ -110,7 +124,8 @@ deployed, fixed V3 main.
 - **11 — Themed collections (UI).** The tag/collection *model* is built,
   validated and audited (section 2 needs it), and collection selection works in
   the engine. No collection picker is exposed to players, which is deliberate:
-  the audit shows several collections are too small to ship.
+  the audit shows several collections are too small to ship (`rural` has zero
+  qualifying locations).
 - **12 — Navigation and home-screen UX.**
 - **13 — Localization/themes/accessibility/PWA for new features.** No new
   user-facing surface was added, so nothing new needed translating. Existing
@@ -135,9 +150,14 @@ deployed, fixed V3 main.
 (all new), `src/utils/canonicalGroup.ts` (new), `src/utils/selectRounds.ts`,
 `src/utils/endlessSelection.ts`, `src/utils/locationHistory.ts`
 
-**Audit**
-`src/audit/{datasetAudit,formatAudit}.ts` (new), `scripts/audit-dataset.ts` (new),
+**Audit and release gates**
+`src/audit/{datasetAudit,formatAudit,releaseGates}.ts` (new),
+`src/config/releaseGates.ts` (new), `scripts/audit-dataset.ts` (new),
 `docs/DATASET_AUDIT.md`, `docs/dataset-audit.json` (generated)
+
+**Catalog expansion tooling**
+`src/catalog/candidates.ts` (new), `scripts/verify-candidates.ts` (new),
+`data/candidates/batch-template.json` (new), `docs/CATALOG_EXPANSION.md` (new)
 
 **Providers / game wiring**
 `src/providers/LocationProvider.ts`, `src/App.tsx`, `src/solo/useSoloRun.ts`
@@ -151,7 +171,8 @@ deployed, fixed V3 main.
 `supabase/tests/README.md`
 
 **Docs / tooling**
-`docs/DIVERSITY_V4.md` (new), `docs/HANDOFF_V4.md` (new), `package.json`
+`docs/DIVERSITY_V4.md` (new), `docs/HANDOFF_V4.md` (new),
+`docs/CATALOG_EXPANSION.md` (new), `package.json`
 
 ---
 
@@ -190,22 +211,48 @@ Oceania 5, Africa 4.
 | africa | 4 | **no** |
 | rural | 0 | **no** |
 
-**Verdict: the catalog is too small.** A default game (Normal, 5 rounds) draws
-from **21** places. Ten repeat-free consecutive games need **50** — a shortfall
-of **29**. It supports **4** repeat-free standard games today.
+### Release gates — 12 of 25 pass
 
-Required growth to make every offered length comfortable (own-tier groups,
-ignoring adjacent-difficulty fallback):
+`npm run audit:gates` (exits non-zero while blocked). Thresholds live in
+`src/config/releaseGates.ts`; each is justified in a comment there.
 
-| Difficulty | Rounds | Now | Target | Must add |
-| --- | --- | --- | --- | --- |
-| easy | 3 / 5 / 10 / 20 | 15 | 30 / 50 / 100 / 200 | 15 / 35 / 85 / 185 |
-| normal | 3 / 5 / 10 / 20 | 21 | 30 / 50 / 100 / 200 | 9 / 29 / 79 / 179 |
-| hard | 3 / 5 / 10 / 20 | 14 | 30 / 50 / 100 / 200 | 16 / 36 / 86 / 186 |
+| Category | Pass | Fail | Failing gates |
+| --- | --- | --- | --- |
+| Size | 0 | 4 | all three tiers + the total |
+| Breadth | 2 | 1 | `continentDepth` (Asia 10, N.America 9, S.America 6, Oceania 5, Africa 4 — floor is 15) |
+| Concentration | 2 | 0 | — |
+| Integrity | 3 | 1 | `metadata` (50 entries lack a verified panorama) |
+| Verification | 1 | 1 | `streetView` — **0% verified** |
+| Balance | 4 | 6 | Normal has no suburban/rural and too many landmarks; **Hard has zero rural and zero remote** |
 
-**No selection algorithm can close this gap** — it can only make the most of
-what exists. Section 2.6 is the mechanism for closing it safely, and it is not
-built.
+**Required expansion: +65 Easy, +119 Normal, +66 Hard — +250 total canonical
+groups.** Tier counts are measured on each tier's *own* locations, because
+adjacent-difficulty fallback is borrowing, not growth.
+
+The balance failures are the more interesting finding. The catalog is 100%
+urban and landmark:
+
+| Difficulty | Groups | urban | suburban | rural | landmark | remote |
+| --- | --- | --- | --- | --- | --- | --- |
+| easy | 15 | 5 | 0 | 0 | 10 | 0 |
+| normal | 21 | 15 | 0 | 0 | 6 | 0 |
+| hard | 14 | 12 | 1 | 0 | 1 | 0 |
+
+Hard has **no rural and no remote locations at all**, which is why it is not
+meaningfully harder than Normal — it is the same kind of place with a shorter
+timer. Fixing that is a catalog problem, not a tuning problem.
+
+**No selection algorithm can close any of this** — it can only make the most of
+what exists. The workflow for closing it safely is
+[`CATALOG_EXPANSION.md`](CATALOG_EXPANSION.md).
+
+### Prerequisite completed
+
+The country→continent table grew from 38 to ~107 mapped countries. This was a
+hard prerequisite rather than polish: candidate validation rejects any country
+it cannot map, so at 38 countries the batch workflow would have blocked almost
+every submission. It remains a geography table and explicitly **not** a coverage
+claim — coverage is decided per location by verification.
 
 ## 8. Duplicate / near-duplicate findings
 
@@ -301,9 +348,27 @@ the added start-idempotency assertion).
 
 ## 13. New environment variables
 
-**None.** No public variable, no secret. The work uses the existing
-`VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` /
-`VITE_GOOGLE_MAPS_API_KEY` configuration unchanged.
+**Public (client): none.** The app uses the existing `VITE_SUPABASE_URL` /
+`VITE_SUPABASE_PUBLISHABLE_KEY` / `VITE_GOOGLE_MAPS_API_KEY` configuration
+unchanged, and nothing new is bundled into the client.
+
+**Secret (developer tooling only): one, optional.**
+
+| Variable | Where | Purpose |
+| --- | --- | --- |
+| `ROAM_STREETVIEW_VERIFY_KEY` | A developer's shell, never Vercel | Street View metadata verification during catalog expansion |
+
+Notes that matter:
+
+- It is deliberately **not** `VITE_`-prefixed. Vite bundles every `VITE_*`
+  variable into the client, so reusing that naming for a CLI key would ship it
+  to players.
+- It must be a **separate, IP-restricted** key with the Street View Static API
+  enabled. The browser key is HTTP-referrer restricted and would be rejected
+  from a CLI anyway.
+- It is never needed to build, test, deploy or run the game. Without it, the
+  verification CLI runs a pure offline validation pass.
+- The tool never prints it — not in logs, errors or reports.
 
 ## 14. Manual Supabase steps
 
@@ -342,9 +407,11 @@ The existing SPA configuration is untouched.
 | --- | --- |
 | `npm run typecheck` | pass |
 | `npm run lint` | pass, 0 errors, 0 warnings |
-| `npm run test` | **527 passed / 527** (51 files; baseline was 316) |
+| `npm run test` | **585 passed / 585** (53 files; baseline was 316) |
 | `npm run build` | pass |
-| `npm run audit:dataset:check` | pass — artifacts current, catalog clean |
+| `npm run audit:dataset:check` | pass — artifacts current |
+| `npm run audit:gates` | **exit 1 — 12/25 gates pass (expected; release blocker)** |
+| `npm run catalog:verify` (offline) | pass — validation, rejection and key-gating paths exercised |
 | SQL suites | 151 assertions pass on both migration paths |
 
 Formatting: no formatter is configured in this repo, so none was run.
@@ -383,13 +450,15 @@ Built from `origin/main` and from this branch with the same toolchain:
 
 | Chunk | main | this branch | Δ |
 | --- | --- | --- | --- |
-| `index-*.js` (main) | 403.91 kB (125.82 kB gz) | 417.73 kB (129.89 kB gz) | **+13.8 kB (+4.1 kB gz)** |
+| `index-*.js` (main) | 403.91 kB (125.82 kB gz) | 420.47 kB (130.60 kB gz) | **+16.6 kB (+4.8 kB gz)** |
 | `auth-*.js` (Supabase, lazy) | 216.68 kB | 216.68 kB | unchanged |
 | `MultiplayerApp-*.js` (lazy) | 36.84 kB | 36.84 kB | unchanged |
 | PWA precache | 762.13 KiB | 772.27 KiB | +10.1 KiB |
 
-The +13.8 kB is the diversity engine, canonical grouping, geography/collection
-tables and the audit types. **Supabase remains fully lazy** — `historyApi.ts` is
+The +16.6 kB is the diversity engine, canonical grouping, the geography and
+collection tables (the country table grew to ~107 entries) and the audit types.
+The release-gate and candidate-validation modules are imported only by the CLIs
+and tests, so they are tree-shaken out of the app bundle. **Supabase remains fully lazy** — `historyApi.ts` is
 only ever reached through a dynamic `import()`, and the `auth` chunk is
 byte-identical, confirming nothing leaked into the solo path.
 
@@ -414,9 +483,12 @@ app bundle (`App.tsx` never references it).
 
 ## 21. Known limitations
 
-1. **The catalog is too small** (§7). This is the binding constraint on
-   perceived variety, and the engine cannot fix it. 29 more Normal-tier places
-   are needed for the stated freshness target.
+1. **The catalog is far below the release gates** (§7) and this blocks
+   production deployment. 250 more validated canonical groups are required
+   (+65 Easy, +119 Normal, +66 Hard), together with per-difficulty setting
+   balance — Hard currently has zero rural and zero remote locations — and
+   100% Street View verification, of which 0% is done. The engine cannot fix
+   any of this; `docs/CATALOG_EXPANSION.md` is the workflow that can.
 2. **Two-player rooms get no room-wide novelty.** With one other participant,
    any aggregate entry would be attributable to that person, so the RPC returns
    nothing and the host falls back to their own history. Deliberate, documented,
@@ -433,11 +505,22 @@ app bundle (`App.tsx` never references it).
 6. **The `rural` collection has zero qualifying locations** and several
    continent collections are below the shippable floor. They are defined in code
    and reported unavailable by the audit rather than offered to players.
-7. **Endless sessions can eventually repeat** once every place in the pool has
+   Expanding the catalog to the gates fixes this as a side effect.
+7. **Catalog expansion has not been performed.** The tooling, gates, batch
+   format and documentation are complete and tested, but authoring and
+   verifying ~250 locations requires an authorized Street View API key and
+   human review of every entry. Neither was available in this session, and
+   fabricating entries or claiming unverified coverage would defeat the point
+   of the tooling. Expect 8–10 review batches.
+8. **Endless sessions can eventually repeat** once every place in the pool has
    been served. Uniqueness within a *fixed* match is a hard guarantee; an
    unbounded session cannot honour it forever, and the code says so.
 
 ## 22. Safe deployment order
+
+**Step 0 is a hard gate: `npm run audit:gates` must exit 0.** It currently
+exits 1 with 250 canonical groups still required. Do not proceed past this
+point while it fails.
 
 1. Review this branch and both migrations.
 2. Apply `0011` then `0012` to a **non-production/test** database.
@@ -476,5 +559,15 @@ app bundle (`App.tsx` never references it).
 **No secret was read, printed, staged, or committed.** `.env.local` was never
 opened. No API key, token, database URL or Supabase secret appears in any
 migration, test, script or source file. No service-role key exists in the
-client. The new tooling (`npm run audit:dataset`) is fully offline and makes no
-network request of any kind.
+client.
+
+The audit tooling (`npm run audit:dataset`, `npm run audit:gates`) is fully
+offline and makes no network request of any kind.
+
+The verification tooling (`npm run catalog:verify`) *can* make network requests,
+but only when given both an explicit `--verify-panoramas` flag and an explicit
+`ROAM_STREETVIEW_VERIFY_KEY`. Neither was supplied in this session, so no
+network request was made and no key was read. The tool is written so the key can
+never reach output: it is never interpolated into a log line, and error paths
+report the candidate id and API status rather than the request URL, which would
+contain it.
