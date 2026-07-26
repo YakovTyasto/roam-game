@@ -180,8 +180,14 @@ export interface DrawOptions<T> {
    * ranking and *before* the picks are taken. This is where the soft in-match
    * geographic diversity rules plug in; it may only reorder, never add or
    * remove, and must always terminate.
+   *
+   * It is applied **separately either side of the cycle boundary**, so a soft
+   * preference can never reach into the next cycle while the current one still
+   * owes places — see `drawFromBag`. `alreadyPicked` carries the picks made
+   * before this segment so the second call can still honour rules that depend
+   * on the whole match (e.g. "no two consecutive rounds in one country").
    */
-  arrange?: (ranked: T[], count: number) => T[];
+  arrange?: (ranked: T[], count: number, alreadyPicked: readonly T[]) => T[];
 }
 
 /**
@@ -233,17 +239,25 @@ export function drawFromBag<T>(options: DrawOptions<T>): BagDraw<T> {
   // reshuffled independently so the new cycle isn't a continuation of the old
   // ordering.
   const rankedNextCycle = orderByNovelty(usedThisCycle, keyOf, recentKeys, rng);
-  const ranked = [...rankedInCycle, ...rankedNextCycle];
 
-  const arranged = arrange ? arrange(ranked, count) : ranked;
-  // Defensive: `arrange` may only permute. If a caller returns something else,
-  // fall back to the trusted ranking rather than serving duplicates.
-  const usable =
-    arranged.length === ranked.length &&
-    new Set(arranged.map(keyOf)).size === new Set(ranked.map(keyOf)).size
-      ? arranged
-      : ranked;
+  // The soft arrangement is applied to each side of the cycle boundary
+  // separately, and never across it. Arranging the concatenated list would let
+  // a soft geographic preference pull a place from the *next* cycle while the
+  // current one still owed places — silently trading the bag's coverage
+  // guarantee for a nicer-looking country spread. Soft rules are subordinate
+  // to the bag, so the boundary is enforced structurally rather than trusted.
+  const fromCycle = Math.min(count, rankedInCycle.length);
+  const firstSegment = applyArrange(rankedInCycle, fromCycle, [], keyOf, arrange);
+  const firstPicks = firstSegment.slice(0, fromCycle);
+  const secondSegment = applyArrange(
+    rankedNextCycle,
+    count - fromCycle,
+    firstPicks,
+    keyOf,
+    arrange,
+  );
 
+  const usable = [...firstSegment, ...secondSegment];
   const picked = usable.slice(0, count);
   const backups = usable.slice(count, count + Math.max(0, backupCount));
 
@@ -253,6 +267,30 @@ export function drawFromBag<T>(options: DrawOptions<T>): BagDraw<T> {
     nextState: markDrawn(state, picked.map(keyOf), poolKeys),
     startedNewCycle,
   };
+}
+
+/**
+ * Run the soft arrangement over one segment, rejecting anything that isn't a
+ * permutation of its input.
+ *
+ * `arrange` is a hook: a future rule, or a caller-supplied one, could add,
+ * drop or duplicate entries by mistake. Uniqueness within a match is a hard
+ * guarantee, so a misbehaving hook falls back to the trusted ranking rather
+ * than being allowed to break it.
+ */
+function applyArrange<T>(
+  ranked: readonly T[],
+  count: number,
+  alreadyPicked: readonly T[],
+  keyOf: (item: T) => string,
+  arrange?: (ranked: T[], count: number, alreadyPicked: readonly T[]) => T[],
+): T[] {
+  if (!arrange || ranked.length === 0) return [...ranked];
+  const arranged = arrange([...ranked], count, alreadyPicked);
+  const sameSize = arranged.length === ranked.length;
+  const sameMembers =
+    sameSize && new Set(arranged.map(keyOf)).size === new Set(ranked.map(keyOf)).size;
+  return sameMembers ? arranged : [...ranked];
 }
 
 /** Groups still undealt in the current cycle. Useful for tests and diagnostics. */

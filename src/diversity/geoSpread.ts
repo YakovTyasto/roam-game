@@ -92,18 +92,34 @@ function satisfies(
  * Reorder `ranked` so its first `count` entries are as geographically varied as
  * the pool allows, preserving the novelty ranking wherever the rules are
  * indifferent. Returns a permutation of the input — same length, same members.
+ *
+ * `alreadyPicked` are rounds chosen before this call, from a different
+ * candidate segment (the shuffle bag arranges either side of a cycle boundary
+ * separately). They constrain the rules but are never returned, so a match that
+ * spans a cycle boundary is still spread as one game.
  */
 export function spreadGeography(
   ranked: readonly GameLocation[],
   count: number,
+  alreadyPicked: readonly GameLocation[] = [],
   thresholds: CanonicalThresholds = CANONICAL_THRESHOLDS,
 ): GameLocation[] {
   const wanted = Math.min(Math.max(0, Math.floor(count)), ranked.length);
-  if (wanted <= 1) return [...ranked];
+  if (wanted < 1) return [...ranked];
+  if (wanted === 1 && alreadyPicked.length === 0) return [...ranked];
 
-  const limit = maxPerContinent(wanted);
+  // The continent cap is a property of the whole match, so it counts the
+  // rounds already chosen as well as the ones this call will choose.
+  const limit = maxPerContinent(wanted + alreadyPicked.length);
   const remaining = [...ranked];
-  const state: SpreadState = { picked: [], continentCounts: new Map() };
+  const state: SpreadState = { picked: [...alreadyPicked], continentCounts: new Map() };
+  for (const location of alreadyPicked) {
+    const continent = continentOf(location);
+    if (continent) {
+      state.continentCounts.set(continent, (state.continentCounts.get(continent) ?? 0) + 1);
+    }
+  }
+  const carried = alreadyPicked.length;
 
   for (let slot = 0; slot < wanted; slot++) {
     let chosenIndex = -1;
@@ -124,8 +140,10 @@ export function spreadGeography(
     }
   }
 
+  // Drop the carried-in prefix: it belongs to the caller's earlier segment and
+  // must not be returned here, or it would appear twice in the match.
   // Everything not selected keeps its ranked order and becomes backup material.
-  return [...state.picked, ...remaining];
+  return [...state.picked.slice(carried), ...remaining];
 }
 
 /** Diagnostics for a chosen set — used by tests and the audit summary. */

@@ -62,7 +62,11 @@ export interface SelectionRequest {
    */
   spread?: boolean;
   /** Custom soft re-ordering hook, replacing the default spread. */
-  arrange?: (ranked: GameLocation[], count: number) => GameLocation[];
+  arrange?: (
+    ranked: GameLocation[],
+    count: number,
+    alreadyPicked: readonly GameLocation[],
+  ) => GameLocation[];
 }
 
 export interface SelectionResult {
@@ -126,7 +130,9 @@ export function selectRounds(request: SelectionRequest): SelectionResult {
     recentKeys: recentGroupIds,
     rng,
     backupCount,
-    arrange: arrange ?? (spread ? (ranked, n) => spreadGeography(ranked, n) : undefined),
+    arrange:
+      arrange ??
+      (spread ? (ranked, n, alreadyPicked) => spreadGeography(ranked, n, alreadyPicked) : undefined),
   });
 
   const poolGroups = new Set(eligible.map(keyOf)).size;

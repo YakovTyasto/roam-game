@@ -276,6 +276,49 @@ The lookup is bounded at 2.5 s and every failure falls back to host-only
 history. Nothing about starting a match can sit behind a call that never
 answers.
 
+## Statistical verification
+
+The engine's promises are statistical ("every place before any repeat",
+"distribution isn't biased toward a handful of favourites"), so they are
+asserted over simulated runs rather than hand-written cases.
+`simulate.ts` plays whole sequences of games against a seeded LCG, threading bag
+and history exactly as `store.ts` does through localStorage — statistical
+properties, deterministic tests.
+
+Measured on the shipped catalog (100 games each, Normal tier, 21 places):
+
+| Rounds | Fresh rounds before first repeat | Cycles | Places served | Per-place min/max | CoV | Countries/game | Continents/game | Duplicate matches |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 3 | 21 / 21 | 14 | 21/21 | 14 / 15 | 0.032 | 3.00 | 2.51 | 0 |
+| 5 | 21 / 21 | 23 | 21/21 | 23 / 24 | 0.016 | 4.99 | 3.40 | 0 |
+| 10 | 21 / 21 | 47 | 21/21 | 47 / 48 | 0.010 | 9.84 | 4.84 | 0 |
+| 20 | 21 / 21 | 95 | 21/21 | 95 / 96 | 0.004 | 19.09 | 5.95 | 0 |
+
+Every place is dealt before any repeats, at every offered length. Per-place
+counts never differ by more than one deal, so no subset is favoured. On a pool
+large enough to complete whole cycles the coefficient of variation is exactly
+0 — the evenness is structural, not luck.
+
+### A bug this found
+
+The soft geographic layer originally arranged the *concatenated* candidate list.
+That let a country-spread preference pull a place from the **next** cycle while
+the current one still owed places — quietly trading the bag's coverage
+guarantee for a nicer-looking spread. The simulation caught it as 59 fresh
+rounds where 60 were required. The boundary is now enforced structurally:
+`drawFromBag` arranges each side of the cycle boundary separately and passes the
+earlier picks as context, so the soft rules still see the whole match but can
+never reach across. Soft rules are subordinate to the bag, by construction.
+
+### Honest limits
+
+On the real catalog, ~0.7% of five-round games contain two consecutive rounds
+from the same country. The Normal tier has 21 places and only Canada appears
+twice; when a cycle's tail happens to be that pair, adjacency is unavoidable.
+The rule is soft precisely so the game still starts. The test asserts the rate
+stays under 2% rather than pretending it is zero, and asserts a hard zero on a
+pool where the rule is always satisfiable.
+
 ## Freshness targets
 
 Defined once in `src/config/diversity.ts`:
