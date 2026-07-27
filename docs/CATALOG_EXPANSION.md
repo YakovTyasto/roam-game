@@ -240,6 +240,28 @@ place; "the edge of town" and "a road near X" usually are not. Prefer a
 specific, nameable pedestrian location over a plausible-sounding stretch of
 road, and the hit rate roughly doubles.
 
+**Nameability is not recognizability.** They are separate axes and conflating
+them mis-tiers locations. Nameability is a *coverage* heuristic — does Google's
+car stop at a place you can name precisely. Recognizability is what sets
+*difficulty* — how much the player can read off the view. A named village square
+in Aragón is highly nameable and barely recognisable: perfect Normal. The
+Brandenburg Gate is both: Easy. An unnamed stretch of the Nullarbor is neither:
+it fails verification *and* would have been Hard.
+
+So pick the coordinate for coverage, then tier it on clues:
+
+| Tier | Choose | Avoid |
+| --- | --- | --- |
+| Easy | Landmarks, major squares, central promenades, distinctive city centres | — |
+| Normal suburban | Named residential streets, local junctions, small-town centres, transport areas | Globally recognisable landmarks |
+| Normal rural | Named villages, bridges, regional routes, country-road junctions with moderate signage | Iconic scenery |
+| Hard | Precisely located remote named roads and routes, sparse clues, weak signage | Anything nameable on sight |
+
+When a famous feature sits near an otherwise-good Normal candidate, place the
+coordinate on the ordinary streets instead — Antigua's side streets rather than
+its arch, Ollantaytambo's village rather than its ruins. The round is then solved
+from signage, architecture and vegetation, which is what Normal should test.
+
 The recheck of the 50 pre-V4 entries verified 44 (88%), which is consistent:
 those were also authored as specific named places.
 
