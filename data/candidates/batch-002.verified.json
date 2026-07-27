@@ -1,0 +1,218 @@
+{
+  "batch": "002",
+  "verifiedAt": "2026-07-26",
+  "counts": {
+    "candidates": 40,
+    "accepted": 40,
+    "verified": 22,
+    "unverified": 18
+  },
+  "verified": [
+    {
+      "id": "southafrica-n7-namaqualand",
+      "panoId": "BnxpR4aNTWG7dL3osbzJzQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "southafrica-stellenbosch-outskirts",
+      "panoId": "VpSqHP0_m1w_Ah2s3SWb0w",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "lesotho-a2-mafeteng",
+      "panoId": "QHJ8W805MDz9x1J-wl0DjQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "ghana-n1-takoradi",
+      "panoId": "8yw-sityAwtdv2RPZ2j5vQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.024
+    },
+    {
+      "id": "newzealand-sh6-haast",
+      "panoId": "6k-_awBkZjPoxpa9tguOYQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.036
+    },
+    {
+      "id": "newzealand-sh1-canterbury",
+      "panoId": "1eAU6XIIqegHswGIPSBvZg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.093
+    },
+    {
+      "id": "chile-ruta5-chanaral",
+      "panoId": "g7FUWEnZPyVAUifJHch7EQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "argentina-ruta3-santacruz",
+      "panoId": "hLZwUeSkM9PayxJvu2OV_g",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.044
+    },
+    {
+      "id": "argentina-rosario-outskirts",
+      "panoId": "I5I3sbEZkwDmRpdlQDt_bg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.027
+    },
+    {
+      "id": "brazil-minas-rural",
+      "panoId": "avE_Ar4JhLKucthNuSPOMA",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.014
+    },
+    {
+      "id": "peru-panamericana-nazca",
+      "panoId": "6wEOoVOTponHYbvcQq28DA",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.013
+    },
+    {
+      "id": "uruguay-ruta9-rocha",
+      "panoId": "S9C6JHsdlZUA2dimkvXFDg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "colombia-boyaca-rural",
+      "panoId": "hHGrwIrTxv5a6VxyGy9MLQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "canada-transcanada-swiftcurrent",
+      "panoId": "xUsoLzvKPfchqhIF40f20Q",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "mexico-mex1-catavina",
+      "panoId": "yUG_-0LzC_X1GAXlwkfkIQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.027
+    },
+    {
+      "id": "mexico-merida-outskirts",
+      "panoId": "MLy_FIiO-dIESkP3dTN65w",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.05
+    },
+    {
+      "id": "japan-hokkaido-biei",
+      "panoId": "P-7apcUUn5L013sSQjlwNg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "thailand-1095-pai",
+      "panoId": "jfSIgOuFReig-_qAwRrCaQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.055
+    },
+    {
+      "id": "indonesia-yogyakarta-outskirts",
+      "panoId": "rWQe_mcztSFXMnqAjqfBWA",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "norway-e6-finnmark",
+      "panoId": "brfx4leWpVejGpi6eFMwnA",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "spain-ronda-countryside",
+      "panoId": "aQMdugK4F3-PYh0Fzjy7ZQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.092
+    },
+    {
+      "id": "portugal-n2-alentejo",
+      "panoId": "a0fjzJXlL5tWsuooCeNppQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.003
+    }
+  ],
+  "unverified": [
+    {
+      "id": "botswana-a3-motopi",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "eswatini-lubombo-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "kenya-a104-riftvalley",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-stuart-highway-nt",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-great-northern-newman",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-adelaide-hills-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-taranaki-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "chile-chiloe-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "brazil-br101-ilheus",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "canada-halifax-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "costarica-guanacaste-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "puertorico-cordillera-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "taiwan-hualien-coast",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "southkorea-jeju-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "philippines-cebu-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "iceland-ringroad-klaustur",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "sweden-e45-storuman",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "ireland-n59-connemara",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

@@ -6,56 +6,56 @@ A **canonical group** is one distinct *place*. Several catalog rows collapse int
 
 ## Release gates
 
-**BLOCKED** — 12 of 25 release gates fail. The catalog must not ship to production in this state.
+**BLOCKED** — 8 of 25 release gates fail. The catalog must not ship to production in this state.
 
-Still required: **+65 Easy, +114 Normal, +57 Hard** (**+236 total** canonical groups).
+Still required: **+65 Easy, +106 Normal, +43 Hard** (**+214 total** canonical groups).
 
 These are validated canonical *groups*, not rows. Shuffle-bag cycling guarantees full coverage of whatever exists — it cannot substitute for catalog expansion, and must not be presented as if it could.
 
 | Gate | Requirement | Actual | Status |
 | --- | --- | --- | --- |
 | `size.easy` | 80 validated easy canonical groups | 15 | **FAIL** |
-| `size.normal` | 140 validated normal canonical groups | 26 | **FAIL** |
-| `size.hard` | 80 validated hard canonical groups | 23 | **FAIL** |
-| `size.total` | 300 total unique canonical groups | 64 | **FAIL** |
-| `breadth.countries` | at least 60 countries | 45 | **FAIL** |
+| `size.normal` | 140 validated normal canonical groups | 34 | **FAIL** |
+| `size.hard` | 80 validated hard canonical groups | 37 | **FAIL** |
+| `size.total` | 300 total unique canonical groups | 86 | **FAIL** |
+| `breadth.countries` | at least 60 countries | 50 | **FAIL** |
 | `breadth.continents` | at least 6 continents represented | 6 | pass |
-| `breadth.continentDepth` | every represented continent holds at least 15 groups | Asia 13, South America 11, North America 10, Africa 7, Oceania 7 | **FAIL** |
-| `concentration.country` | no country above 10% of the catalog | New Zealand 6.3% (4/64) | pass |
+| `breadth.continentDepth` | every represented continent holds at least 15 groups | North America 13, Africa 11, Oceania 9 | **FAIL** |
+| `concentration.country` | no country above 10% of the catalog | New Zealand 7.0% (6/86) | pass |
 | `concentration.cluster` | no more than 3 groups within one 25 km cluster | no cluster is overloaded | pass |
 | `integrity.duplicatePanoIds` | no duplicate panorama ids | 0 duplicate pano id(s) | pass |
 | `integrity.nearDuplicates` | no identical or near-duplicate coordinates | 0 identical, 0 near-duplicate pair(s) | pass |
 | `integrity.redundantGroups` | no catalog row collapses into another row's canonical group | 0 redundant row(s) | pass |
 | `integrity.metadata` | every location has reviewed difficulty, country, continent, setting and collection metadata | 50 metadata issue(s) | **FAIL** |
-| `verification.streetView` | 100% of locations have a verified Street View panorama | 21.9% (14/64) | **FAIL** |
+| `verification.streetView` | 100% of locations have a verified Street View panorama | 41.9% (36/86) | **FAIL** |
 | `verification.dated` | every verified panorama records when it was checked | 0 undated verification(s) | pass |
 | `balance.easy.landmark.min` | easy: at least 35% landmark | 73.3% (11/15) | pass |
 | `balance.easy.landmark-urban.min` | easy: at least 80% landmark + urban | 100.0% (15/15) | pass |
 | `balance.easy.remote.max` | easy: at most 5% remote | 0.0% (0/15) | pass |
-| `balance.normal.urban.min` | normal: at least 25% urban | 57.7% (15/26) | pass |
-| `balance.normal.suburban.min` | normal: at least 20% suburban | 7.7% (2/26) | **FAIL** |
-| `balance.normal.rural-remote.min` | normal: at least 15% rural + remote | 11.5% (3/26) | **FAIL** |
-| `balance.normal.landmark.max` | normal: at most 20% landmark | 23.1% (6/26) | **FAIL** |
-| `balance.hard.rural-remote.min` | hard: at least 45% rural + remote | 39.1% (9/23) | **FAIL** |
-| `balance.hard.remote.min` | hard: at least 15% remote | 21.7% (5/23) | pass |
-| `balance.hard.landmark.max` | hard: at most 10% landmark | 4.3% (1/23) | pass |
+| `balance.normal.urban.min` | normal: at least 25% urban | 44.1% (15/34) | pass |
+| `balance.normal.suburban.min` | normal: at least 20% suburban | 20.6% (7/34) | pass |
+| `balance.normal.rural-remote.min` | normal: at least 15% rural + remote | 17.6% (6/34) | pass |
+| `balance.normal.landmark.max` | normal: at most 20% landmark | 17.6% (6/34) | pass |
+| `balance.hard.rural-remote.min` | hard: at least 45% rural + remote | 62.2% (23/37) | pass |
+| `balance.hard.remote.min` | hard: at least 15% remote | 32.4% (12/37) | pass |
+| `balance.hard.landmark.max` | hard: at most 10% landmark | 2.7% (1/37) | pass |
 
 ## Verdict
 
-The catalog holds **64 canonical groups** in total, but a default game (normal difficulty, 5 rounds) can only draw from **26** of them. Staying repeat-free across 10 consecutive games needs **50**.
+The catalog holds **86 canonical groups** in total, but a default game (normal difficulty, 5 rounds) can only draw from **34** of them. Staying repeat-free across 10 consecutive games needs **50**.
 
-- Repeat-free consecutive standard games supported: **5**
+- Repeat-free consecutive standard games supported: **6**
 - Meets the freshness target: **NO**
-- **Shortfall: 24 more canonical groups** at normal difficulty are required before the selector alone can deliver the intended variety. No selection algorithm can invent places that are not in the catalog — see "Required catalog growth" below.
+- **Shortfall: 16 more canonical groups** at normal difficulty are required before the selector alone can deliver the intended variety. No selection algorithm can invent places that are not in the catalog — see "Required catalog growth" below.
 
 ## Totals
 
 | Metric | Value |
 | --- | --- |
-| Locations (rows) | 64 |
-| Canonical groups (distinct places) | 64 |
+| Locations (rows) | 86 |
+| Canonical groups (distinct places) | 86 |
 | Redundant rows (collapsed into another row) | 0 |
-| Countries | 45 |
+| Countries | 50 |
 | Continents represented | 6 |
 
 ## By difficulty
@@ -63,8 +63,8 @@ The catalog holds **64 canonical groups** in total, but a default game (normal d
 | Difficulty | Locations | Own groups |
 | --- | --- | --- |
 | easy | 15 | 15 |
-| normal | 26 | 26 |
-| hard | 23 | 23 |
+| normal | 34 | 34 |
+| hard | 37 | 37 |
 
 ### Setting balance per difficulty
 
@@ -73,8 +73,8 @@ Canonical groups by physical character. A "Hard" tier made entirely of famous ci
 | Difficulty | Groups | urban | suburban | rural | landmark | remote |
 | --- | --- | --- | --- | --- | --- | --- |
 | easy | 15 | 4 | 0 | 0 | 11 | 0 |
-| normal | 26 | 15 | 2 | 3 | 6 | 0 |
-| hard | 23 | 12 | 1 | 4 | 1 | 5 |
+| normal | 34 | 15 | 7 | 6 | 6 | 0 |
+| hard | 37 | 12 | 1 | 11 | 1 | 12 |
 
 ### Pool sufficiency per round count
 
@@ -85,15 +85,15 @@ Groups counted the way real play sees them, i.e. after adjacent-difficulty fallb
 | easy | 3 | 15 | yes | NO | 15 | NO |
 | easy | 5 | 15 | yes | NO | 35 | NO |
 | easy | 10 | 15 | NO | NO | 85 | NO |
-| easy | 20 | 41 | yes | NO | 159 | yes |
-| normal | 3 | 26 | yes | NO | 4 | NO |
-| normal | 5 | 26 | yes | NO | 24 | NO |
-| normal | 10 | 26 | yes | NO | 74 | NO |
-| normal | 20 | 26 | NO | NO | 174 | NO |
-| hard | 3 | 23 | yes | NO | 7 | NO |
-| hard | 5 | 23 | yes | NO | 27 | NO |
-| hard | 10 | 23 | yes | NO | 77 | NO |
-| hard | 20 | 23 | NO | NO | 177 | NO |
+| easy | 20 | 49 | yes | NO | 151 | yes |
+| normal | 3 | 34 | yes | yes | 0 | NO |
+| normal | 5 | 34 | yes | NO | 16 | NO |
+| normal | 10 | 34 | yes | NO | 66 | NO |
+| normal | 20 | 34 | NO | NO | 166 | NO |
+| hard | 3 | 37 | yes | yes | 0 | NO |
+| hard | 5 | 37 | yes | NO | 13 | NO |
+| hard | 10 | 37 | yes | NO | 63 | NO |
+| hard | 20 | 37 | NO | NO | 163 | NO |
 
 ### Required catalog growth
 
@@ -105,43 +105,46 @@ Target counts to make every offered round count comfortable — that is, 10 cons
 | easy | 5 | 15 | 50 | 35 |
 | easy | 10 | 15 | 100 | 85 |
 | easy | 20 | 15 | 200 | 185 |
-| normal | 3 | 26 | 30 | 4 |
-| normal | 5 | 26 | 50 | 24 |
-| normal | 10 | 26 | 100 | 74 |
-| normal | 20 | 26 | 200 | 174 |
-| hard | 3 | 23 | 30 | 7 |
-| hard | 5 | 23 | 50 | 27 |
-| hard | 10 | 23 | 100 | 77 |
-| hard | 20 | 23 | 200 | 177 |
+| normal | 3 | 34 | 30 | 0 |
+| normal | 5 | 34 | 50 | 16 |
+| normal | 10 | 34 | 100 | 66 |
+| normal | 20 | 34 | 200 | 166 |
+| hard | 3 | 37 | 30 | 0 |
+| hard | 5 | 37 | 50 | 13 |
+| hard | 10 | 37 | 100 | 63 |
+| hard | 20 | 37 | 200 | 163 |
 
 ## By continent
 
 | Continent | Locations | Groups |
 | --- | --- | --- |
-| Europe | 16 | 16 |
-| Asia | 13 | 13 |
-| South America | 11 | 11 |
-| North America | 10 | 10 |
-| Africa | 7 | 7 |
-| Oceania | 7 | 7 |
+| Europe | 19 | 19 |
+| South America | 18 | 18 |
+| Asia | 16 | 16 |
+| North America | 13 | 13 |
+| Africa | 11 | 11 |
+| Oceania | 9 | 9 |
 
 ## By country
 
 | Country | Locations | Groups |
 | --- | --- | --- |
-| New Zealand | 4 | 4 |
+| New Zealand | 6 | 6 |
+| Argentina | 4 | 4 |
+| Mexico | 4 | 4 |
+| South Africa | 4 | 4 |
 | United States | 4 | 4 |
 | Australia | 3 | 3 |
-| Argentina | 2 | 2 |
-| Brazil | 2 | 2 |
-| Canada | 2 | 2 |
-| Chile | 2 | 2 |
-| Colombia | 2 | 2 |
+| Brazil | 3 | 3 |
+| Canada | 3 | 3 |
+| Chile | 3 | 3 |
+| Colombia | 3 | 3 |
+| Japan | 3 | 3 |
+| Peru | 3 | 3 |
 | Italy | 2 | 2 |
-| Japan | 2 | 2 |
-| Mexico | 2 | 2 |
-| Peru | 2 | 2 |
-| South Africa | 2 | 2 |
+| Portugal | 2 | 2 |
+| Spain | 2 | 2 |
+| Thailand | 2 | 2 |
 | United Kingdom | 2 | 2 |
 | Croatia | 1 | 1 |
 | Cuba | 1 | 1 |
@@ -150,30 +153,32 @@ Target counts to make every offered round count comfortable — that is, 10 cons
 | Egypt | 1 | 1 |
 | France | 1 | 1 |
 | Germany | 1 | 1 |
+| Ghana | 1 | 1 |
 | Greece | 1 | 1 |
 | Guatemala | 1 | 1 |
 | Hong Kong | 1 | 1 |
 | Iceland | 1 | 1 |
 | India | 1 | 1 |
+| Indonesia | 1 | 1 |
 | Israel | 1 | 1 |
 | Kenya | 1 | 1 |
 | Kyrgyzstan | 1 | 1 |
+| Lesotho | 1 | 1 |
 | Malaysia | 1 | 1 |
 | Morocco | 1 | 1 |
 | Netherlands | 1 | 1 |
-| Portugal | 1 | 1 |
+| Norway | 1 | 1 |
 | Rwanda | 1 | 1 |
 | Réunion | 1 | 1 |
 | Singapore | 1 | 1 |
 | South Korea | 1 | 1 |
-| Spain | 1 | 1 |
 | Sri Lanka | 1 | 1 |
 | Sweden | 1 | 1 |
 | Switzerland | 1 | 1 |
 | Taiwan | 1 | 1 |
-| Thailand | 1 | 1 |
 | Türkiye | 1 | 1 |
 | United Arab Emirates | 1 | 1 |
+| Uruguay | 1 | 1 |
 
 ## By collection
 
@@ -181,18 +186,18 @@ A collection is **shippable** only when it can fill a standard game at least twi
 
 | Collection | Locations | Groups | Easy | Normal | Hard | Shippable |
 | --- | --- | --- | --- | --- | --- | --- |
-| world | 64 | 64 | 15 | 26 | 23 | yes |
-| europe | 16 | 16 | 7 | 7 | 2 | yes |
-| asia | 13 | 13 | 3 | 7 | 3 | yes |
-| africa | 7 | 7 | 1 | 2 | 4 | NO |
-| north-america | 10 | 10 | 2 | 4 | 4 | yes |
-| south-america | 11 | 11 | 1 | 4 | 6 | yes |
-| oceania | 7 | 7 | 1 | 2 | 4 | NO |
+| world | 86 | 86 | 15 | 34 | 37 | yes |
+| europe | 19 | 19 | 7 | 7 | 5 | yes |
+| asia | 16 | 16 | 3 | 8 | 5 | yes |
+| africa | 11 | 11 | 1 | 4 | 6 | yes |
+| north-america | 13 | 13 | 2 | 5 | 6 | yes |
+| south-america | 18 | 18 | 1 | 8 | 9 | yes |
+| oceania | 9 | 9 | 1 | 2 | 6 | NO |
 | capitals | 22 | 22 | 7 | 10 | 5 | yes |
 | famous | 23 | 23 | 15 | 6 | 2 | yes |
 | rural | 0 | 0 | 0 | 0 | 0 | NO |
-| islands | 15 | 15 | 3 | 4 | 8 | yes |
-| left-driving | 20 | 20 | 4 | 9 | 7 | yes |
+| islands | 19 | 19 | 3 | 5 | 11 | yes |
+| left-driving | 28 | 28 | 4 | 11 | 13 | yes |
 
 ## Duplicates and near-duplicates
 
@@ -214,7 +219,7 @@ Locations within 25 km of each other. These stay separate places for uniqueness;
 
 | Metric | Value |
 | --- | --- |
-| Verified panoramas | 14 (21.9%) |
+| Verified panoramas | 36 (41.9%) |
 | Unverified | 50 |
 | Stale (re-check recommended) | 0 |
 | Verified but undated | 0 |

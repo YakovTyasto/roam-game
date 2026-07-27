@@ -188,8 +188,9 @@ assume is free forever.
 
 ### Choosing coordinates that actually verify
 
-Batch 001 returned `ZERO_RESULTS` for 26 of 40 candidates — a 65% miss. Two
-things the results make clear:
+Batch 001 returned `ZERO_RESULTS` for 26 of 40 candidates — a 65% miss. Batch
+002, placed on road corridors instead, missed 18 of 40. Two things the results
+make clear:
 
 **Verification is effectively binary.** Every candidate that verified did so
 within 3–75 m of the requested point. None resolved to something 40 m away that
@@ -227,14 +228,27 @@ candidates coincide. Lead with them.
 Recorded from real verification runs, not assumed. "Proven" means at least one
 candidate in that country actually resolved a panorama.
 
+Hit rate by batch: **001 = 35%** (14/40, coordinates picked near place names),
+**002 = 55%** (22/40, coordinates placed on named road corridors). The corridor
+method works, but it is not a guarantee.
+
 | Status | Countries |
 | --- | --- |
-| **Proven** (batch 001) | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala |
-| **Failed once, strong national coverage** — retry on a trunk road | Iceland, Norway, Chile, Uruguay, Costa Rica, Ghana, Jamaica, Tunisia |
-| **Failed once, sparse coverage** — prefer a same-continent proven country | Fiji, American Samoa, Guam, Northern Mariana Islands, Greenland, Bhutan, Mongolia, Madagascar, Tanzania, Uganda, Botswana, Lesotho, Eswatini, Bolivia, Jordan |
+| **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal |
+| **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Costa Rica |
+| **Failed once** — one more attempt on a trunk road is reasonable | Kenya, Sweden, Ireland, Taiwan, South Korea, Philippines, Puerto Rico, Jamaica, Tunisia |
+| **Sparse coverage** — prefer a same-continent proven country | Fiji, American Samoa, Guam, Northern Mariana Islands, Greenland, Bhutan, Mongolia, Madagascar, Tanzania, Uganda, Bolivia, Jordan |
 
-Extend this table as batches come back. It is the cheapest way to stop spending
-requests on the same dead ends.
+Two results worth keeping in mind, because they complicate the simple story:
+
+- **A proven country still misses.** Australia verified on the Landsborough
+  Highway in batch 001, then failed on all three batch-002 candidates including
+  the Stuart Highway. Country-level evidence raises the odds; it does not settle
+  an individual coordinate.
+- **Suburban is not reliably easier.** City-edge candidates verified in Ghana,
+  Argentina, Mexico and Indonesia but failed in Australia, Canada, the
+  Philippines and South Korea. Prefer them for balance reasons, not because they
+  are a safe bet.
 
 ## Step 4 — emit and review
 
