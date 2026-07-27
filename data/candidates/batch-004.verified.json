@@ -1,0 +1,242 @@
+{
+  "batch": "004",
+  "verifiedAt": "2026-07-27",
+  "counts": {
+    "candidates": 40,
+    "accepted": 40,
+    "verified": 34,
+    "unverified": 6
+  },
+  "verified": [
+    {
+      "id": "australia-brisbane-southbank",
+      "panoId": "wP5syAo8yetqXBnV-EEBLw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.031
+    },
+    {
+      "id": "australia-goldcoast-surfers",
+      "panoId": "Upmy8hBDMqsWR55nOAcsJw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.037
+    },
+    {
+      "id": "newzealand-christchurch-centre",
+      "panoId": "Pnr3gGMt8pTdHpKgg-i-xw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.016
+    },
+    {
+      "id": "newzealand-rotorua-gardens",
+      "panoId": "bfdhwJZwzfW4nssAaxn4MA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "newzealand-dunedin-octagon",
+      "panoId": "Hn34FrbGwUWbxeAkmHZklw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "southafrica-johannesburg-newtown",
+      "panoId": "Sgp7DvAZuQmbWjpHehpaug",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "southafrica-pretoria-union-buildings",
+      "panoId": "eGbR3kyzeBiiz0Abt9uzMg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.009
+    },
+    {
+      "id": "senegal-dakar-place-independance",
+      "panoId": "CR87oBdsI-FjCZl9rpE-1g",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.014
+    },
+    {
+      "id": "nigeria-lagos-marina",
+      "panoId": "INdmZPzyPA2x4xyMCfMsmQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.031
+    },
+    {
+      "id": "india-mumbai-gateway",
+      "panoId": "_u6tanRA4GZi2jjqeDvycg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "philippines-manila-intramuros",
+      "panoId": "fiYDkjj_hITl7sqZsyNd0A",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "cambodia-siemreap-angkor",
+      "panoId": "u-y_MApaJfTEWjdGoX40lQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "japan-osaka-dotonbori",
+      "panoId": "REPRhZd6-Yd2jO6I4SbCfg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "southkorea-busan-haeundae",
+      "panoId": "rC7Dgv_sxIcmGX2PqCDhNA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.029
+    },
+    {
+      "id": "thailand-chiangmai-oldcity",
+      "panoId": "s8-coGYWlU1yo8Xa5dcT-Q",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "austria-vienna-schonbrunn",
+      "panoId": "cyk8P_zrVFEPoDeJHrpENQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "hungary-budapest-chainbridge",
+      "panoId": "5TIqM4MbYTi7hCWl1iyy5Q",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "ireland-dublin-oconnell",
+      "panoId": "2zC0AMogePyOM1WmtUNmaw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "denmark-copenhagen-nyhavn",
+      "panoId": "6gydHFCiuBavs9k-zRGECw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "poland-krakow-mainsquare",
+      "panoId": "aVzx-gQEZg-oY7tZ8o2DIg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.013
+    },
+    {
+      "id": "finland-helsinki-senatesquare",
+      "panoId": "c26dHIq8hx_0Gcnl7clr0g",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "dominicanrepublic-santodomingo-zona",
+      "panoId": "DJIDkLk095s0BlgL1LHyog",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.046
+    },
+    {
+      "id": "panama-city-cascoviejo",
+      "panoId": "6i60cARjI4hHus2AANWKAw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.018
+    },
+    {
+      "id": "costarica-sanjose-centre",
+      "panoId": "tMbwRB4tNmsd02hLWvhJAQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "puertorico-oldsanjuan",
+      "panoId": "AW9ocRtlLCBnUM8as3p2bA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "canada-quebeccity-chateau",
+      "panoId": "PypgpCKbNCRHD6y-NFoeqg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.013
+    },
+    {
+      "id": "mexico-guadalajara-centro",
+      "panoId": "V6d6SBowfQMah2oYLqwFrA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "bermuda-hamilton-frontstreet",
+      "panoId": "yEg8JITFgqh9a6ESoT52FA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.014
+    },
+    {
+      "id": "bolivia-lapaz-plaza-murillo",
+      "panoId": "htl5v11uVb8wt1BCXAbKeA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "brazil-salvador-pelourinho",
+      "panoId": "DObpWgRPw9ciKcfOe48Mvg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "peru-lima-plaza-mayor",
+      "panoId": "ZWpSfXO6Pw0dT9cKhsoDBA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "argentina-cordoba-centre",
+      "panoId": "74Mv--ITTRlxu825cm4g_Q",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "uruguay-montevideo-ciudadvieja",
+      "panoId": "0I6s3XTcAQn52Jpko9bvUQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.041
+    },
+    {
+      "id": "ecuador-quito-plaza-grande",
+      "panoId": "Xvzntx1TUxZGQnhaQc7Z0Q",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.011
+    }
+  ],
+  "unverified": [
+    {
+      "id": "australia-canberra-parliament",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "fiji-suva-centre",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "papuanewguinea-portmoresby-centre",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "ghana-accra-independence-square",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "vietnam-hanoi-hoankiem",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "uae-abudhabi-corniche",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

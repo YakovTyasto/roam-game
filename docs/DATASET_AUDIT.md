@@ -6,32 +6,32 @@ A **canonical group** is one distinct *place*. Several catalog rows collapse int
 
 ## Release gates
 
-**BLOCKED** — 8 of 25 release gates fail. The catalog must not ship to production in this state.
+**BLOCKED** — 7 of 25 release gates fail. The catalog must not ship to production in this state.
 
-Still required: **+65 Easy, +92 Normal, +43 Hard** (**+200 total** canonical groups).
+Still required: **+31 Easy, +92 Normal, +43 Hard** (**+166 total** canonical groups).
 
 These are validated canonical *groups*, not rows. Shuffle-bag cycling guarantees full coverage of whatever exists — it cannot substitute for catalog expansion, and must not be presented as if it could.
 
 | Gate | Requirement | Actual | Status |
 | --- | --- | --- | --- |
-| `size.easy` | 80 validated easy canonical groups | 15 | **FAIL** |
+| `size.easy` | 80 validated easy canonical groups | 49 | **FAIL** |
 | `size.normal` | 140 validated normal canonical groups | 48 | **FAIL** |
 | `size.hard` | 80 validated hard canonical groups | 37 | **FAIL** |
-| `size.total` | 300 total unique canonical groups | 100 | **FAIL** |
-| `breadth.countries` | at least 60 countries | 50 | **FAIL** |
+| `size.total` | 300 total unique canonical groups | 134 | **FAIL** |
+| `breadth.countries` | at least 60 countries | 66 | pass |
 | `breadth.continents` | at least 6 continents represented | 6 | pass |
-| `breadth.continentDepth` | every represented continent holds at least 15 groups | Africa 13, Oceania 9 | **FAIL** |
-| `concentration.country` | no country above 10% of the catalog | New Zealand 6.0% (6/100) | pass |
+| `breadth.continentDepth` | every represented continent holds at least 15 groups | Oceania 14 | **FAIL** |
+| `concentration.country` | no country above 10% of the catalog | New Zealand 6.7% (9/134) | pass |
 | `concentration.cluster` | no more than 3 groups within one 25 km cluster | no cluster is overloaded | pass |
 | `integrity.duplicatePanoIds` | no duplicate panorama ids | 0 duplicate pano id(s) | pass |
 | `integrity.nearDuplicates` | no identical or near-duplicate coordinates | 0 identical, 0 near-duplicate pair(s) | pass |
 | `integrity.redundantGroups` | no catalog row collapses into another row's canonical group | 0 redundant row(s) | pass |
-| `integrity.metadata` | every location has reviewed difficulty, country, continent, setting and collection metadata | 50 metadata issue(s) | **FAIL** |
-| `verification.streetView` | 100% of locations have a verified Street View panorama | 50.0% (50/100) | **FAIL** |
+| `integrity.metadata` | every location has reviewed difficulty, country, continent, setting and collection metadata | 6 metadata issue(s) | **FAIL** |
+| `verification.streetView` | 100% of locations have a verified Street View panorama | 95.5% (128/134) | **FAIL** |
 | `verification.dated` | every verified panorama records when it was checked | 0 undated verification(s) | pass |
-| `balance.easy.landmark.min` | easy: at least 35% landmark | 73.3% (11/15) | pass |
-| `balance.easy.landmark-urban.min` | easy: at least 80% landmark + urban | 100.0% (15/15) | pass |
-| `balance.easy.remote.max` | easy: at most 5% remote | 0.0% (0/15) | pass |
+| `balance.easy.landmark.min` | easy: at least 35% landmark | 55.1% (27/49) | pass |
+| `balance.easy.landmark-urban.min` | easy: at least 80% landmark + urban | 100.0% (49/49) | pass |
+| `balance.easy.remote.max` | easy: at most 5% remote | 0.0% (0/49) | pass |
 | `balance.normal.urban.min` | normal: at least 25% urban | 31.3% (15/48) | pass |
 | `balance.normal.suburban.min` | normal: at least 20% suburban | 37.5% (18/48) | pass |
 | `balance.normal.rural-remote.min` | normal: at least 15% rural + remote | 18.8% (9/48) | pass |
@@ -42,7 +42,7 @@ These are validated canonical *groups*, not rows. Shuffle-bag cycling guarantees
 
 ## Verdict
 
-The catalog holds **100 canonical groups** in total, but a default game (normal difficulty, 5 rounds) can only draw from **48** of them. Staying repeat-free across 10 consecutive games needs **50**.
+The catalog holds **134 canonical groups** in total, but a default game (normal difficulty, 5 rounds) can only draw from **48** of them. Staying repeat-free across 10 consecutive games needs **50**.
 
 - Repeat-free consecutive standard games supported: **9**
 - Meets the freshness target: **NO**
@@ -52,17 +52,17 @@ The catalog holds **100 canonical groups** in total, but a default game (normal 
 
 | Metric | Value |
 | --- | --- |
-| Locations (rows) | 100 |
-| Canonical groups (distinct places) | 100 |
+| Locations (rows) | 134 |
+| Canonical groups (distinct places) | 134 |
 | Redundant rows (collapsed into another row) | 0 |
-| Countries | 50 |
+| Countries | 66 |
 | Continents represented | 6 |
 
 ## By difficulty
 
 | Difficulty | Locations | Own groups |
 | --- | --- | --- |
-| easy | 15 | 15 |
+| easy | 49 | 49 |
 | normal | 48 | 48 |
 | hard | 37 | 37 |
 
@@ -72,7 +72,7 @@ Canonical groups by physical character. A "Hard" tier made entirely of famous ci
 
 | Difficulty | Groups | urban | suburban | rural | landmark | remote |
 | --- | --- | --- | --- | --- | --- | --- |
-| easy | 15 | 4 | 0 | 0 | 11 | 0 |
+| easy | 49 | 22 | 0 | 0 | 27 | 0 |
 | normal | 48 | 15 | 18 | 9 | 6 | 0 |
 | hard | 37 | 12 | 1 | 11 | 1 | 12 |
 
@@ -82,10 +82,10 @@ Groups counted the way real play sees them, i.e. after adjacent-difficulty fallb
 
 | Difficulty | Rounds | Groups | Playable | Comfortable | Shortfall | Used fallback |
 | --- | --- | --- | --- | --- | --- | --- |
-| easy | 3 | 15 | yes | NO | 15 | NO |
-| easy | 5 | 15 | yes | NO | 35 | NO |
-| easy | 10 | 15 | NO | NO | 85 | NO |
-| easy | 20 | 63 | yes | NO | 137 | yes |
+| easy | 3 | 49 | yes | yes | 0 | NO |
+| easy | 5 | 49 | yes | NO | 1 | NO |
+| easy | 10 | 49 | yes | NO | 51 | NO |
+| easy | 20 | 49 | yes | NO | 151 | NO |
 | normal | 3 | 48 | yes | yes | 0 | NO |
 | normal | 5 | 48 | yes | NO | 2 | NO |
 | normal | 10 | 48 | yes | NO | 52 | NO |
@@ -101,10 +101,10 @@ Target counts to make every offered round count comfortable — that is, 10 cons
 
 | Difficulty | Rounds | Own groups now | Target | Must add |
 | --- | --- | --- | --- | --- |
-| easy | 3 | 15 | 30 | 15 |
-| easy | 5 | 15 | 50 | 35 |
-| easy | 10 | 15 | 100 | 85 |
-| easy | 20 | 15 | 200 | 185 |
+| easy | 3 | 49 | 30 | 0 |
+| easy | 5 | 49 | 50 | 1 |
+| easy | 10 | 49 | 100 | 51 |
+| easy | 20 | 49 | 200 | 151 |
 | normal | 3 | 48 | 30 | 0 |
 | normal | 5 | 48 | 50 | 2 |
 | normal | 10 | 48 | 100 | 52 |
@@ -118,67 +118,83 @@ Target counts to make every offered round count comfortable — that is, 10 cons
 
 | Continent | Locations | Groups |
 | --- | --- | --- |
-| South America | 22 | 22 |
-| Asia | 20 | 20 |
-| Europe | 20 | 20 |
-| North America | 16 | 16 |
-| Africa | 13 | 13 |
-| Oceania | 9 | 9 |
+| South America | 28 | 28 |
+| Asia | 26 | 26 |
+| Europe | 26 | 26 |
+| North America | 23 | 23 |
+| Africa | 17 | 17 |
+| Oceania | 14 | 14 |
 
 ## By country
 
 | Country | Locations | Groups |
 | --- | --- | --- |
-| New Zealand | 6 | 6 |
-| Argentina | 5 | 5 |
-| Mexico | 5 | 5 |
-| South Africa | 5 | 5 |
-| Brazil | 4 | 4 |
-| Canada | 4 | 4 |
+| New Zealand | 9 | 9 |
+| South Africa | 7 | 7 |
+| Argentina | 6 | 6 |
+| Mexico | 6 | 6 |
+| Australia | 5 | 5 |
+| Brazil | 5 | 5 |
+| Canada | 5 | 5 |
+| Japan | 5 | 5 |
 | Colombia | 4 | 4 |
-| Japan | 4 | 4 |
+| Peru | 4 | 4 |
 | United States | 4 | 4 |
-| Australia | 3 | 3 |
 | Chile | 3 | 3 |
-| Peru | 3 | 3 |
+| Ecuador | 3 | 3 |
 | Portugal | 3 | 3 |
-| Ecuador | 2 | 2 |
+| Thailand | 3 | 3 |
 | Guatemala | 2 | 2 |
+| India | 2 | 2 |
 | Italy | 2 | 2 |
 | Kyrgyzstan | 2 | 2 |
 | Malaysia | 2 | 2 |
 | Rwanda | 2 | 2 |
+| South Korea | 2 | 2 |
 | Spain | 2 | 2 |
 | Sri Lanka | 2 | 2 |
-| Thailand | 2 | 2 |
 | United Kingdom | 2 | 2 |
+| Uruguay | 2 | 2 |
+| Austria | 1 | 1 |
+| Bermuda | 1 | 1 |
+| Bolivia | 1 | 1 |
+| Cambodia | 1 | 1 |
+| Costa Rica | 1 | 1 |
 | Croatia | 1 | 1 |
 | Cuba | 1 | 1 |
 | Czechia | 1 | 1 |
+| Denmark | 1 | 1 |
+| Dominican Republic | 1 | 1 |
 | Egypt | 1 | 1 |
+| Finland | 1 | 1 |
 | France | 1 | 1 |
 | Germany | 1 | 1 |
 | Ghana | 1 | 1 |
 | Greece | 1 | 1 |
 | Hong Kong | 1 | 1 |
+| Hungary | 1 | 1 |
 | Iceland | 1 | 1 |
-| India | 1 | 1 |
 | Indonesia | 1 | 1 |
+| Ireland | 1 | 1 |
 | Israel | 1 | 1 |
 | Kenya | 1 | 1 |
 | Lesotho | 1 | 1 |
 | Morocco | 1 | 1 |
 | Netherlands | 1 | 1 |
+| Nigeria | 1 | 1 |
 | Norway | 1 | 1 |
+| Panama | 1 | 1 |
+| Philippines | 1 | 1 |
+| Poland | 1 | 1 |
+| Puerto Rico | 1 | 1 |
 | Réunion | 1 | 1 |
+| Senegal | 1 | 1 |
 | Singapore | 1 | 1 |
-| South Korea | 1 | 1 |
 | Sweden | 1 | 1 |
 | Switzerland | 1 | 1 |
 | Taiwan | 1 | 1 |
 | Türkiye | 1 | 1 |
 | United Arab Emirates | 1 | 1 |
-| Uruguay | 1 | 1 |
 
 ## By collection
 
@@ -186,18 +202,18 @@ A collection is **shippable** only when it can fill a standard game at least twi
 
 | Collection | Locations | Groups | Easy | Normal | Hard | Shippable |
 | --- | --- | --- | --- | --- | --- | --- |
-| world | 100 | 100 | 15 | 48 | 37 | yes |
-| europe | 20 | 20 | 7 | 8 | 5 | yes |
-| asia | 20 | 20 | 3 | 12 | 5 | yes |
-| africa | 13 | 13 | 1 | 6 | 6 | yes |
-| north-america | 16 | 16 | 2 | 8 | 6 | yes |
-| south-america | 22 | 22 | 1 | 12 | 9 | yes |
-| oceania | 9 | 9 | 1 | 2 | 6 | NO |
-| capitals | 22 | 22 | 7 | 10 | 5 | yes |
-| famous | 23 | 23 | 15 | 6 | 2 | yes |
+| world | 134 | 134 | 49 | 48 | 37 | yes |
+| europe | 26 | 26 | 13 | 8 | 5 | yes |
+| asia | 26 | 26 | 9 | 12 | 5 | yes |
+| africa | 17 | 17 | 5 | 6 | 6 | yes |
+| north-america | 23 | 23 | 9 | 8 | 6 | yes |
+| south-america | 28 | 28 | 7 | 12 | 9 | yes |
+| oceania | 14 | 14 | 6 | 2 | 6 | yes |
+| capitals | 37 | 37 | 22 | 10 | 5 | yes |
+| famous | 40 | 40 | 32 | 6 | 2 | yes |
 | rural | 0 | 0 | 0 | 0 | 0 | NO |
-| islands | 21 | 21 | 3 | 7 | 11 | yes |
-| left-driving | 32 | 32 | 4 | 15 | 13 | yes |
+| islands | 30 | 30 | 12 | 7 | 11 | yes |
+| left-driving | 43 | 43 | 15 | 15 | 13 | yes |
 
 ## Duplicates and near-duplicates
 
@@ -219,8 +235,8 @@ Locations within 25 km of each other. These stay separate places for uniqueness;
 
 | Metric | Value |
 | --- | --- |
-| Verified panoramas | 50 (50.0%) |
-| Unverified | 50 |
+| Verified panoramas | 128 (95.5%) |
+| Unverified | 6 |
 | Stale (re-check recommended) | 0 |
 | Verified but undated | 0 |
 
@@ -228,55 +244,11 @@ Locations within 25 km of each other. These stay separate places for uniqueness;
 
 | Location | Field | Issue |
 | --- | --- | --- |
-| paris-eiffel | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| london-westminster | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| rome-colosseum | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| venice-canal | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| barcelona-sagrada | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| berlin-brandenburg | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| athens-acropolis | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| amsterdam-canal | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| prague-oldtown | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| lisbon-alfama | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| stockholm-gamlastan | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| zurich-lake | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| edinburgh-royalmile | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| reykjavik-center | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| dubrovnik-walls | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| nyc-timessquare | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| sf-goldengate | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| chicago-millennium | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| toronto-downtown | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| vancouver-gastown | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| mexicocity-zocalo | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| neworleans-french | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| oaxaca-center | panoId | No verified Street View panorama id — run the candidate verification workflow. |
 | havana-malecon | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| rio-copacabana | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| buenosaires-obelisco | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| santiago-center | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| cusco-plaza | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| cartagena-oldcity | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| valparaiso-hills | panoId | No verified Street View panorama id — run the candidate verification workflow. |
 | cairo-giza | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| dubai-marina | panoId | No verified Street View panorama id — run the candidate verification workflow. |
 | capetown-waterfront | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| jerusalem-oldcity | panoId | No verified Street View panorama id — run the candidate verification workflow. |
 | marrakech-medina | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| nairobi-center | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| tokyo-shibuya | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| singapore-marina | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| seoul-gyeongbok | panoId | No verified Street View panorama id — run the candidate verification workflow. |
 | bangkok-grandpalace | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| hongkong-tsimshatsui | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| istanbul-sultanahmet | panoId | No verified Street View panorama id — run the candidate verification workflow. |
 | delhi-indiagate | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| kyoto-gion | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| taipei-101 | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| sydney-operahouse | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| melbourne-flinders | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| auckland-viaduct | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| queenstown-lakefront | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| wellington-waterfront | panoId | No verified Street View panorama id — run the candidate verification workflow. |
 
 Audit clean: **NO**

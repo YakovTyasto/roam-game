@@ -228,12 +228,20 @@ candidates coincide. Lead with them.
 Recorded from real verification runs, not assumed. "Proven" means at least one
 candidate in that country actually resolved a panorama.
 
-Hit rate by batch: **001 = 35%** (14/40, coordinates picked near place names),
-**002 = 55%** (22/40, coordinates on named road corridors), **003 = 39%**
-(14/36, mostly city-edge suburban in proven countries). The corridor method beat
-the place-name method, but batch 003 shows neither "proven country" nor
-"suburban" reliably rescues a coordinate — 003 was composed almost entirely of
-both and still missed 61%.
+Hit rate by batch: **001 = 35%** (near place names), **002 = 55%** (named road
+corridors), **003 = 39%** (city-edge suburban), **004 = 85%** (pedestrian
+squares, promenades and named city-centre streets).
+
+Batch 004 settles what the earlier three only hinted at. The variable that
+matters is not the country and not the setting label — it is whether the
+coordinate sits somewhere Google's car or trekker actually stopped. A named
+square, a promenade, a bridge approach or a main shopping street is such a
+place; "the edge of town" and "a road near X" usually are not. Prefer a
+specific, nameable pedestrian location over a plausible-sounding stretch of
+road, and the hit rate roughly doubles.
+
+The recheck of the 50 pre-V4 entries verified 44 (88%), which is consistent:
+those were also authored as specific named places.
 
 | Status | Countries |
 | --- | --- |
@@ -273,6 +281,13 @@ written — the run only produces a report.
 Expect some to fail. A pre-V4 entry that returns `ZERO_RESULTS` is a location
 players may already be seeing without confirmed coverage; those need a nudged
 coordinate or removal, decided per case rather than in bulk.
+
+The first recheck run verified 44 of 50. The six that failed — Havana Malecón,
+Giza, Cape Town V&A Waterfront, Marrakech Jemaa el-Fnaa, Bangkok Grand Palace
+and Delhi India Gate — are all long-standing catalog entries, several of them
+famous. They are deliberately left unmodified and unverified: each needs a
+decision about whether to move the coordinate or retire the location, and
+`verification.streetView` keeps failing until they are resolved.
 
 ## Step 4 — emit and review
 

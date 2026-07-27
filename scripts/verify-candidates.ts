@@ -401,7 +401,7 @@ for (const result of replayAccepted) {
 
 console.log(
   `\n${verified.length} verified, ${unverified.length} could not be verified ` +
-    `of ${report.accepted.length} accepted.`,
+    `of ${replayAccepted.length} checked.`,
 );
 
 if (unverified.length > 0) {
@@ -415,7 +415,7 @@ if (reportPath) {
     verifiedAt: today,
     counts: {
       candidates: report.batchSize,
-      accepted: report.accepted.length,
+      accepted: replayAccepted.length,
       verified: verified.length,
       unverified: unverified.length,
     },
