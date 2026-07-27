@@ -229,13 +229,16 @@ Recorded from real verification runs, not assumed. "Proven" means at least one
 candidate in that country actually resolved a panorama.
 
 Hit rate by batch: **001 = 35%** (14/40, coordinates picked near place names),
-**002 = 55%** (22/40, coordinates placed on named road corridors). The corridor
-method works, but it is not a guarantee.
+**002 = 55%** (22/40, coordinates on named road corridors), **003 = 39%**
+(14/36, mostly city-edge suburban in proven countries). The corridor method beat
+the place-name method, but batch 003 shows neither "proven country" nor
+"suburban" reliably rescues a coordinate — 003 was composed almost entirely of
+both and still missed 61%.
 
 | Status | Countries |
 | --- | --- |
 | **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal |
-| **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Costa Rica |
+| **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Costa Rica, Kenya, Australia (3 misses after 1 hit), New Zealand (1 miss after 2 hits) |
 | **Failed once** — one more attempt on a trunk road is reasonable | Kenya, Sweden, Ireland, Taiwan, South Korea, Philippines, Puerto Rico, Jamaica, Tunisia |
 | **Sparse coverage** — prefer a same-continent proven country | Fiji, American Samoa, Guam, Northern Mariana Islands, Greenland, Bhutan, Mongolia, Madagascar, Tanzania, Uganda, Bolivia, Jordan |
 

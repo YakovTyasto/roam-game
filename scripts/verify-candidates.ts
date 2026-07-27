@@ -176,12 +176,30 @@ for (const result of report.results) {
   }
 }
 
+// When replaying a saved report, a candidate that is ALREADY in the catalog is
+// the expected case, not an error: replay exists to regenerate entries that were
+// integrated earlier. Those two codes are therefore downgraded in that mode
+// only. Every other error still blocks, so a genuinely malformed candidate
+// cannot slip through on the replay path.
+const REPLAY_EXPECTED_CODES = new Set(['id.duplicateCatalog', 'novelty.catalogDuplicate']);
+const replayAccepted = fromReportPath
+  ? report.results.filter((r) =>
+      r.issues.every((i) => i.severity !== 'error' || REPLAY_EXPECTED_CODES.has(i.code)),
+    )
+  : report.accepted;
+
 console.log(
   `\n${report.accepted.length} accepted, ${report.rejected.length} rejected ` +
     `of ${report.batchSize}.`,
 );
+if (fromReportPath && replayAccepted.length !== report.accepted.length) {
+  console.log(
+    `  (replay: ${replayAccepted.length} candidates usable — ` +
+      `${replayAccepted.length - report.accepted.length} already in the catalog)`,
+  );
+}
 
-if (report.accepted.length === 0) {
+if (replayAccepted.length === 0) {
   console.error('\nNothing passed validation. Fix the batch and re-run.');
   process.exit(1);
 }
@@ -220,7 +238,7 @@ if (fromReportPath) {
   // Only candidates the report vouches for are emitted. A candidate absent from
   // the report has no panorama id, and one is never synthesised for it.
   const replayed: VerifiedCandidate[] = [];
-  for (const result of report.accepted) {
+  for (const result of replayAccepted) {
     const record = byId.get(result.candidate.id);
     if (!record) continue;
     if (!record.verifiedAt) {
@@ -236,7 +254,7 @@ if (fromReportPath) {
   }
 
   const missing = [...byId.keys()].filter(
-    (id) => !report.accepted.some((r) => r.candidate.id === id),
+    (id) => !replayAccepted.some((r) => r.candidate.id === id),
   );
   if (missing.length > 0) {
     console.error(
