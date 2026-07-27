@@ -1,0 +1,186 @@
+{
+  "batch": "003",
+  "verifiedAt": "2026-07-27",
+  "counts": {
+    "candidates": 36,
+    "accepted": 36,
+    "verified": 14,
+    "unverified": 22
+  },
+  "verified": [
+    {
+      "id": "rwanda-southern-rural",
+      "panoId": "EjzsDBdG1ipyZzxZox4TDA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.034
+    },
+    {
+      "id": "southafrica-durban-outskirts",
+      "panoId": "T8r1-IKQ48mbMe9_N6PXOA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "ecuador-cuenca-outskirts",
+      "panoId": "qqtqLDvZs3bFycly2fzhDA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "colombia-medellin-outskirts",
+      "panoId": "Ysx94J1kblzJswJ6FxP_Rg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.048
+    },
+    {
+      "id": "brazil-curitiba-outskirts",
+      "panoId": "tCje8N2-JjkXTUgtvwIAEg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "argentina-mendoza-outskirts",
+      "panoId": "1_QqXXbg_ZzQnxrBSvJweg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.027
+    },
+    {
+      "id": "guatemala-quetzaltenango-outskirts",
+      "panoId": "Wi3LdkchdJD7wZLzD2f5Mw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "mexico-queretaro-outskirts",
+      "panoId": "3x5S9EuSO1Yt1blEG1HhBQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.039
+    },
+    {
+      "id": "canada-okanagan-rural",
+      "panoId": "-zzqfqrmzO3oIYDSGUthQw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.013
+    },
+    {
+      "id": "kyrgyzstan-bishkek-outskirts",
+      "panoId": "WfCzMis5XVfaTFgJQMHyOg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "srilanka-kandy-outskirts",
+      "panoId": "7E2L20l03WNINGVuApwwJA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.042
+    },
+    {
+      "id": "malaysia-johor-outskirts",
+      "panoId": "FHY1EjvZBPscAiq_tF91bw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "japan-kanazawa-outskirts",
+      "panoId": "mbrOG8FYHSayRybp-P2rgA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "portugal-douro-rural",
+      "panoId": "pAYQdA9tPUivxYFpf112rA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.008
+    }
+  ],
+  "unverified": [
+    {
+      "id": "rwanda-kigali-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "kenya-mombasa-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "kenya-central-highlands",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "southafrica-n1-freestate",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-perth-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-victoria-farmland",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-eyre-highway-ceduna",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-hamilton-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-manawatu-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-sh8-mackenzie",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "peru-arequipa-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "peru-sacred-valley-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "peru-panamericana-desert-north",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "brazil-goias-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "argentina-ruta9-jujuy",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "guatemala-atitlan-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "guatemala-peten-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "kyrgyzstan-issykkul-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "malaysia-penang-rural",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "malaysia-titiwangsa-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "thailand-chiangrai-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "spain-galicia-rural",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}
