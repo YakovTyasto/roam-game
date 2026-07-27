@@ -253,6 +253,27 @@ Two results worth keeping in mind, because they complicate the simple story:
   Philippines and South Korea. Prefer them for balance reasons, not because they
   are a safe bet.
 
+## Rechecking existing catalog entries
+
+Entries added before this workflow existed carry no `panoId`, so
+`verification.streetView` cannot pass while they remain. Regenerate the input
+and verify it with `--recheck`:
+
+```bash
+npm run catalog:recheck-file      # offline; writes data/candidates/recheck-original-50.json
+npm run catalog:verify -- data/candidates/recheck-original-50.json \
+  --recheck --verify-panoramas --report data/candidates/recheck-original-50.verified.json
+```
+
+`--recheck` changes exactly one thing: "this id/coordinate is already in the
+catalog" stops being an error, because in this mode that is the point. Every
+other validation rule still blocks, no entry is modified, and no `panoId` is
+written — the run only produces a report.
+
+Expect some to fail. A pre-V4 entry that returns `ZERO_RESULTS` is a location
+players may already be seeing without confirmed coverage; those need a nudged
+coordinate or removal, decided per case rather than in bulk.
+
 ## Step 4 — emit and review
 
 ```bash

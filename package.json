@@ -14,7 +14,8 @@
     "audit:dataset": "vite-node scripts/audit-dataset.ts",
     "audit:dataset:check": "vite-node scripts/audit-dataset.ts -- --check",
     "audit:gates": "vite-node scripts/audit-dataset.ts -- --gates",
-    "catalog:verify": "vite-node scripts/verify-candidates.ts --"
+    "catalog:verify": "vite-node scripts/verify-candidates.ts --",
+    "catalog:recheck-file": "vite-node scripts/make-recheck-batch.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.8",

@@ -55,6 +55,7 @@
  *   npm run catalog:verify -- data/candidates/batch-001.json --verify-panoramas
  *   npm run catalog:verify -- data/candidates/batch-001.json --verify-panoramas --emit
  *   npm run catalog:verify -- data/candidates/batch-001.json --verify-panoramas --report out.json
+ *   npm run catalog:verify -- data/candidates/recheck-original-50.json --recheck --verify-panoramas --report out.json
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -84,6 +85,19 @@ const flags = new Set(argv.filter((a) => a.startsWith('--')));
 
 const shouldVerify = flags.has('--verify-panoramas');
 const shouldEmit = flags.has('--emit');
+
+/**
+ * `--recheck` verifies locations that are ALREADY in the catalog, to confirm or
+ * refresh their panorama coverage. Entries added before the verification
+ * workflow existed have no `panoId`, and coverage is withdrawn over time, so the
+ * catalog needs a way to be re-checked rather than only appended to.
+ *
+ * It changes exactly one thing: "this id/coordinate is already in the catalog"
+ * stops being an error, because in this mode that is the entire point. Every
+ * other validation rule still blocks, and no entry is modified — the run only
+ * produces a report.
+ */
+const isRecheck = flags.has('--recheck');
 
 /**
  * `--report <path>` writes the verification outcome to JSON. Verification is
@@ -182,7 +196,7 @@ for (const result of report.results) {
 // only. Every other error still blocks, so a genuinely malformed candidate
 // cannot slip through on the replay path.
 const REPLAY_EXPECTED_CODES = new Set(['id.duplicateCatalog', 'novelty.catalogDuplicate']);
-const replayAccepted = fromReportPath
+const replayAccepted = fromReportPath || isRecheck
   ? report.results.filter((r) =>
       r.issues.every((i) => i.severity !== 'error' || REPLAY_EXPECTED_CODES.has(i.code)),
     )
@@ -192,10 +206,10 @@ console.log(
   `\n${report.accepted.length} accepted, ${report.rejected.length} rejected ` +
     `of ${report.batchSize}.`,
 );
-if (fromReportPath && replayAccepted.length !== report.accepted.length) {
+if ((fromReportPath || isRecheck) && replayAccepted.length !== report.accepted.length) {
   console.log(
-    `  (replay: ${replayAccepted.length} candidates usable — ` +
-      `${replayAccepted.length - report.accepted.length} already in the catalog)`,
+    `  (${isRecheck ? 'recheck' : 'replay'}: ${replayAccepted.length} usable — ` +
+      `${replayAccepted.length - report.accepted.length} already in the catalog, which is expected here)`,
   );
 }
 
@@ -350,7 +364,7 @@ for (const existing of LOCATIONS) {
   if (existing.panoId) seenPanoIds.set(existing.panoId, existing.id);
 }
 
-for (const result of report.accepted) {
+for (const result of replayAccepted) {
   const candidate = result.candidate;
   const outcome = await verifyPanorama(candidate);
   await sleep(REQUEST_INTERVAL_MS);
@@ -421,7 +435,7 @@ if (reportPath) {
 
 if (!shouldEmit) {
   console.log('\nRe-run with --emit to print catalog entries for the verified candidates.');
-  process.exit(verified.length === report.accepted.length ? 0 : 1);
+  process.exit(verified.length === replayAccepted.length ? 0 : 1);
 }
 
 if (verified.length === 0) {
@@ -433,4 +447,4 @@ console.log('\n── Catalog entries ──');
 console.log('Paste into src/data/locations.ts, then run `npm run audit:dataset`.\n');
 console.log(renderCatalogEntries(verified.map(toCatalogLocation)));
 
-process.exit(verified.length === report.accepted.length ? 0 : 1);
+process.exit(verified.length === replayAccepted.length ? 0 : 1);
