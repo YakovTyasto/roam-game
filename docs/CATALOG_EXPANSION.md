@@ -54,7 +54,10 @@ groups, fully verified, with only the four size gates still failing.
 | 005 | Normal suburban + rural, named villages | 35 of 40 |
 | 006 | Normal urban, named central streets | 37 of 40 |
 | repair | The six uncovered pre-V4 entries | 7 of 12; catalog reached 100% verified |
-| 007–009 | The remaining size shortfall, buffered | prepared, not yet verified |
+| 007 | Hard, named settlements and passes | 33 of 50 |
+| 008 | Hard + Normal | 36 of 50 |
+| 009 | Easy + Normal | 38 of 50 |
+| 010 | Easy top-up, 12 candidates for a 2-group gap | prepared, not yet verified |
 
 ### The 007–009 strategy
 
@@ -80,6 +83,37 @@ Hard still passes on its buffer while Easy falls 7 short and Normal 2, needing
 a top-up batch of roughly 16 candidates. That is the trade the shape encodes:
 protect the tier that actually fails, accept a small top-up risk on the tiers
 that do not.
+
+**Outcome: 107 of 150 verified (71.3%), and the shape was right.** Hard came in
+at 66–72%, far below the 85–92.5% the method gets in towns, and the buffer
+absorbed 29 misses to clear the floor with 8 to spare. Normal and Easy cleared
+comfortably and two groups short respectively — the conservative scenario's
+warning, landing better than modelled because Easy verified at 72.5% rather
+than 60%. Batch 010 tops up the two.
+
+### What the hard tier actually taught
+
+Naming the place is necessary but not sufficient out here. The hard misses
+cluster by *kind of place*, not by country:
+
+- **Mountain passes and high plateau roads failed almost completely.** All
+  three Norwegian candidates (Sognefjellet, Dyranut, Ifjord), all three New
+  Zealand ones (Lindis Pass, Arthur's Pass, Wairau Valley) and both Kyrgyz ones
+  returned ZERO_RESULTS — in four countries with dense proven coverage. A pass
+  has a name but often no settlement, so the coordinate is still a guess about
+  where the road runs.
+- **Named towns on long-distance routes worked.** Camooweal, Coober Pedy,
+  Norseman, Hughenden, Ranfurly, Matehuala, Wawa, Malta and Van Horn all
+  verified. The rule that survives: the name has to belong to a *place people
+  live in*, not to a stretch of road or a summit.
+- **Some countries have no usable coverage at all.** Namibia, Botswana (three
+  misses now), Kazakhstan, Morocco (four misses across four batches), Cuba (two)
+  and Uzbekistan should be treated as closed until there is new evidence.
+
+Easy's misses tell the same story from the other side: Curaçao, Belize, Guyana,
+Venezuela, Ethiopia and Fiji are small-country coverage gaps, while Rovinj,
+Essaouira, Bhaktapur and Eger are pedestrian precincts — the same failure mode
+that defeated the repair batch.
 
 ---
 
@@ -266,7 +300,14 @@ Hit rate by batch: **001 = 35%** (near place names), **002 = 55%** (named road
 corridors), **003 = 39%** (city-edge suburban), **004 = 85%** (pedestrian
 squares, promenades and named city-centre streets), **005 = 87.5%** (the same
 method applied to deliberately unrecognisable places), **006 = 92.5%** (named
-central streets in mid-sized cities).
+central streets in mid-sized cities), **007 = 66%** (hard: remote named
+settlements and passes), **008 = 72%**, **009 = 76%** (easy, reaching into
+small countries with thin coverage).
+
+The three-way split in 007–009 is the clearest signal in the data: the method's
+hit rate tracks **how built-up the named place is**, not the tier label. Town
+and city streets verify at 85–92.5%; remote settlements at 66–72%; passes,
+plateaus and small-country capitals below that.
 
 Batch 004 settles what the earlier three only hinted at. The variable that
 matters is not the country and not the setting label — it is whether the
@@ -319,9 +360,9 @@ them, plus one African city-centre avenue.
 
 | Status | Countries |
 | --- | --- |
-| **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal, Taiwan, South Korea, Philippines, France, Germany, Italy, Czechia, Poland, Estonia, Costa Rica, Dominican Republic |
-| **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Kenya (2 misses, 0 hits) |
-| **Failed once** — one more attempt on a named street is reasonable | Sweden, Ireland, Romania, Panama, Puerto Rico, Jamaica, Tunisia |
+| **Proven** | 79 countries are now represented in the catalog, including every country that has ever verified. Batches 007–009 added Mongolia, Nepal, Paraguay, Bulgaria, Slovakia, Slovenia, Latvia, Lithuania, Belgium, Switzerland, Netherlands, Austria, Finland, Sweden, Denmark, Ireland, Greece, Tanzania, Kenya and Vietnam, several of them after an earlier miss — Sweden, Ireland, Romania, Jamaica, Tunisia and Kenya all recovered once the coordinate named a town street. |
+| **Closed** — repeated misses across different coordinate types, treat as uncovered until there is new evidence | Iceland, Botswana (3), Morocco (4), Cuba (2), Eswatini, Namibia, Kazakhstan, Uzbekistan, Ethiopia, Guyana, Belize, Curaçao, Venezuela, Fiji (3), mainland China (no car coverage at all) |
+| **Failed once** — one more attempt on a named town street is reasonable | Panama, Puerto Rico |
 
 **The hard tier gets the same treatment, with the tiers read off the view.**
 Hard wants sparse clues, and the instinct is to author a sparse *coordinate* —
