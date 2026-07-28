@@ -292,23 +292,28 @@ describe('the shipped catalog', () => {
     const own = (d: Difficulty) =>
       audit.byDifficulty.find((t) => t.difficulty === d)!.ownGroups;
 
+    // A tier that has met its floor reports 0, not a negative surplus.
+    // Batches 007-009 took normal, hard and the total past their floors, so
+    // this now asserts the clamp as well as the arithmetic.
+    const short = (needed: number, have: number) => Math.max(0, needed - have);
     expect(report.groupsStillNeeded).toEqual({
-      easy: MIN_GROUPS_BY_DIFFICULTY.easy - own('easy'),
-      normal: MIN_GROUPS_BY_DIFFICULTY.normal - own('normal'),
-      hard: MIN_GROUPS_BY_DIFFICULTY.hard - own('hard'),
-      total: MIN_TOTAL_GROUPS - audit.totals.canonicalGroups,
+      easy: short(MIN_GROUPS_BY_DIFFICULTY.easy, own('easy')),
+      normal: short(MIN_GROUPS_BY_DIFFICULTY.normal, own('normal')),
+      hard: short(MIN_GROUPS_BY_DIFFICULTY.hard, own('hard')),
+      total: short(MIN_TOTAL_GROUPS, audit.totals.canonicalGroups),
     });
     for (const value of Object.values(report.groupsStillNeeded)) {
-      expect(value).toBeGreaterThan(0);
+      expect(value).toBeGreaterThanOrEqual(0);
     }
+    // Easy is the last tier short of its floor.
+    expect(report.groupsStillNeeded.easy).toBeGreaterThan(0);
   });
 
-  it('fails on size alone — not on duplication, verification or balance', () => {
+  it('fails on easy size alone — not on duplication, verification or balance', () => {
     const failed = new Set(report.gates.filter((g) => !g.passed).map((g) => g.id));
-    // Catalog size is now the only blocker; every tier is still short.
-    expect(failed).toEqual(
-      new Set(['size.easy', 'size.normal', 'size.hard', 'size.total']),
-    );
+    // Batches 007-009 cleared normal, hard and the total. Easy came in two
+    // groups short of its floor and is the single remaining blocker.
+    expect(failed).toEqual(new Set(['size.easy']));
     // Every other gate is still evaluated. Batch 005 lifted the last continent
     // past its depth floor, batch 006 the last balance floor, and repair-006
     // took verification to 100% — none of them may drop back unnoticed.

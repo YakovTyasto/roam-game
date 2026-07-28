@@ -1,0 +1,280 @@
+{
+  "batch": "007",
+  "verifiedAt": "2026-07-28",
+  "counts": {
+    "candidates": 50,
+    "accepted": 50,
+    "verified": 33,
+    "unverified": 17
+  },
+  "verified": [
+    {
+      "id": "australia-camooweal-barklyhighway",
+      "panoId": "9A1c1CT4nTkn9DWjI3BH6Q",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "australia-cooberpedy-hutchisonstreet",
+      "panoId": "gntGCQaPZ5paXupndTlK3g",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "chile-baquedano-ruta5",
+      "panoId": "yUFBOxjzL0ZN2Hb9iZDJ4w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "argentina-belen-ruta40",
+      "panoId": "Q0PgwTu59m1KSMQ_cTgMqw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "argentina-piedradelaguila-ruta237",
+      "panoId": "PQlwtn00czV3TTIy2sfXvw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "southafrica-victoriawest-n12",
+      "panoId": "8AIxGtXzLBwUwbuhWlPFxA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.058
+    },
+    {
+      "id": "southafrica-kakamas-n14",
+      "panoId": "uV8RHfx2_O9FtsphXg1dPQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.066
+    },
+    {
+      "id": "canada-vanderhoof-highway16",
+      "panoId": "IJHg8g9sZflrO6C080FbMw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "canada-wawa-highway17",
+      "panoId": "aIOiKWauH4lI5uQewcLFqQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.031
+    },
+    {
+      "id": "canada-fortmacleod-highway2",
+      "panoId": "HjJUjp6oXeYfeySmmbt5Cw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.025
+    },
+    {
+      "id": "mexico-matehuala-mex57",
+      "panoId": "zb86PrZRv86m-K_xg6KuUg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "mexico-jimenez-mex45",
+      "panoId": "kr8BfzceypAtCdQUFghBrw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "mexico-tecpan-mex200",
+      "panoId": "zldQiy2D_-ZO1t-52N3AXQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "peru-ayaviri-pe3s",
+      "panoId": "s94LgonzvZdeEZOCvMg7pQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "peru-huarmey-pe1n",
+      "panoId": "g7wVPJtYPYj3jrC39bHihA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "peru-huamachuco-pe3n",
+      "panoId": "lGn3PknLtEpCaWmqpBVZTw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "ecuador-macas-e45",
+      "panoId": "hShEPqDXn6XyX6dATw8xgA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "portugal-mogadouro-n221",
+      "panoId": "p1ufUuSAVMoTpwq_eqWowQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "portugal-odemira-n120",
+      "panoId": "-GBhxVA1ednGJMjTZUh0og",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "spain-alcaniz-n420",
+      "panoId": "KjMupO6a9W8zbyq9nlxcGw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "spain-almazan-n122",
+      "panoId": "hw8Jwt-Cbk9ZBQa3r9Vn5w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "japan-kamishihoro-route273",
+      "panoId": "PX9X8_GhfJkJBahz5nfQ3w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "thailand-chiangkham-route1148",
+      "panoId": "Ti38ckffW74R6OaY-se00w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.009
+    },
+    {
+      "id": "thailand-nakhonthai-route12",
+      "panoId": "oAHA8KB2f8Cr19GsAIGoag",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.024
+    },
+    {
+      "id": "turkiye-nigde-d750",
+      "panoId": "Ey-Sef-WHJWwRhF-d4asOg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "turkiye-sungurlu-d100",
+      "panoId": "X5WwgWrB2DNYRv-T6nh4sg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.017
+    },
+    {
+      "id": "unitedstates-jeffreycity-us287",
+      "panoId": "bcV6xmHkRcDh9VVf-zEJwg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "unitedstates-malta-us2",
+      "panoId": "VlC9AsWmrOyAW4OeS4HHXw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.028
+    },
+    {
+      "id": "rwanda-karongi-rn6",
+      "panoId": "hZAndAzWPTuTPnKT3qK04g",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "srilanka-nuwaraeliya-a5",
+      "panoId": "9ZuJXfWRJkUK5R-dVjYoyQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "colombia-aguachica-ruta45",
+      "panoId": "HwIHBCaJD3KA-P5em1jPIA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "brazil-barreiras-br020",
+      "panoId": "ie3f4Js6f_f5Gr58XTD0og",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.024
+    },
+    {
+      "id": "uruguay-melo-ruta8",
+      "panoId": "XAjEk3XzyxJQaSSpxiLbjA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.011
+    }
+  ],
+  "unverified": [
+    {
+      "id": "australia-quilpie-brolgastreet",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-sh8-lindispass",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-arthurspass-village",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-wairauvalley-village",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "norway-turtagro-sognefjellet",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "norway-dyranut-hardangervidda",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "norway-ifjord-finnmark",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "chile-villacerrocastillo-ruta7",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "argentina-catriel-ruta151",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "southafrica-barrydale-r62",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "kyrgyzstan-kochkor-a367",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "kyrgyzstan-toktogul-ep02",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "ecuador-alausi-e35",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "guatemala-sacapulas-rn7w",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "guatemala-riohondo-ca9",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "japan-oshika-route152",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "unitedstates-eureka-us50",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}
