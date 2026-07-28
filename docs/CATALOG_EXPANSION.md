@@ -44,14 +44,42 @@ reviewable by a human, and the whole point of the workflow is that a person
 checks each location's difficulty, setting and country before it reaches
 players. Expect **8–10 batches** to reach the gates from 50.
 
-Suggested sequencing, worst shortfall first:
+Batches 001–006 and the repair batch are done; the catalog stands at 206
+groups, fully verified, with only the four size gates still failing.
 
-| Batch group | Focus | Why |
+| Batch | Focus | Result |
 | --- | --- | --- |
-| 1–4 | Normal tier, rural + suburban | Largest shortfall (119) and the tier every default game uses |
-| 5–6 | Hard tier, rural + remote | Hard currently has **zero** rural or remote locations |
-| 7–8 | Easy tier, landmarks outside Europe | Easy is landmark-heavy but Europe-concentrated |
-| 9–10 | Continent depth: Africa, South America, Oceania | All three are below the 15-group floor |
+| 001–003 | Normal rural, road corridors, city-edge suburban | 50 verified of 120 — the method was wrong, not the countries |
+| 004 | Easy landmarks and named city-centre streets | 34 of 40 |
+| 005 | Normal suburban + rural, named villages | 35 of 40 |
+| 006 | Normal urban, named central streets | 37 of 40 |
+| repair | The six uncovered pre-V4 entries | 7 of 12; catalog reached 100% verified |
+| 007–009 | The remaining size shortfall, buffered | prepared, not yet verified |
+
+### The 007–009 strategy
+
+Batches 007–009 are sized together rather than one at a time, because the
+remaining shortfall (+31 Easy, +20 Normal, +43 Hard) is small enough to plan
+in one pass and large enough that verification losses matter.
+
+| Batch | Composition | Serves |
+| --- | --- | --- |
+| 007 | 50 Hard (24 remote / 26 rural) | Hard is the worst shortfall and the tier the named-street method serves least well |
+| 008 | 30 Hard + 20 Normal (6 rural / 8 suburban / 6 urban) | Buffers Hard; the Normal split protects the rural+remote floor, the tightest Normal gate |
+| 009 | 40 Easy (16 landmark / 24 urban) + 10 Normal | Easy needs +31, so 40 gives room to lose nine; the urban majority keeps it from being a list of monuments |
+
+**150 candidates for a 94-group shortfall is a 60% buffer, and it is deliberate.**
+Hard is where the buffer sits: 80 Hard candidates against a 43-group need, because
+hard coordinates are remote and remote coordinates are where verification fails.
+Easy and Normal are buffered more thinly (40 for 31, 30 for 20) since both tiers
+have verified at 85–92.5% in every batch that used the named-place method.
+
+The projection bears that out. Under the expected rates every gate passes with
+margin. Under a flat 60% — well below anything Easy or Normal has produced —
+Hard still passes on its buffer while Easy falls 7 short and Normal 2, needing
+a top-up batch of roughly 16 candidates. That is the trade the shape encodes:
+protect the tier that actually fails, accept a small top-up risk on the tiers
+that do not.
 
 ---
 
@@ -294,6 +322,28 @@ them, plus one African city-centre avenue.
 | **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal, Taiwan, South Korea, Philippines, France, Germany, Italy, Czechia, Poland, Estonia, Costa Rica, Dominican Republic |
 | **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Kenya (2 misses, 0 hits) |
 | **Failed once** — one more attempt on a named street is reasonable | Sweden, Ireland, Romania, Panama, Puerto Rico, Jamaica, Tunisia |
+
+**The hard tier gets the same treatment, with the tiers read off the view.**
+Hard wants sparse clues, and the instinct is to author a sparse *coordinate* —
+a point on an empty highway. Batches 001–003 show where that leads: the
+Nullarbor, the Stuart Highway, the Kalahari and the Icelandic highland all
+returned ZERO_RESULTS. Batches 007 and 008 instead name the settlement, pass or
+junction — Camooweal, Lindis Pass, Dyranut, Baquedano, Jeffrey City — and let
+the *view* be empty. A one-street outback township is a precise nameable place
+and still gives the player almost nothing.
+
+**Two candidates in 007–009 had to move because they sat on top of old
+failures.** The per-batch validator only compares against the catalog, so it
+cannot see that a coordinate matches a candidate that failed two batches ago.
+The cross-batch check does: it caught a Botswana candidate 230 m from a
+batch-001 ZERO_RESULTS and a Bolivian one 370 m from another. Run it over every
+new batch together with all previous candidate files, failures included, before
+spending any requests.
+
+**Do not author candidates in countries with no Street View at all.** A Lijiang
+candidate was dropped from batch 009 for this reason: mainland China has no
+Google car coverage, so it was a guaranteed miss. This is different from a
+country that has missed before — Costa Rica missed twice and then verified.
 
 **Moving a coordinate onto the adjacent road is not a reliable repair.** The
 repair-006 batch tested it on the six uncovered pre-V4 entries: five of them

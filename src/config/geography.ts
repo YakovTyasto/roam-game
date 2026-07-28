@@ -107,6 +107,7 @@ export const COUNTRY_CONTINENT: Readonly<Record<string, Continent>> = {
   Bangladesh: 'Asia',
   Bhutan: 'Asia',
   Cambodia: 'Asia',
+  China: 'Asia',
   'Hong Kong': 'Asia',
   India: 'Asia',
   Indonesia: 'Asia',
@@ -129,6 +130,7 @@ export const COUNTRY_CONTINENT: Readonly<Record<string, Continent>> = {
   Taiwan: 'Asia',
   Thailand: 'Asia',
   'United Arab Emirates': 'Asia',
+  Uzbekistan: 'Asia',
   Vietnam: 'Asia',
 
   // ── Africa ────────────────────────────────────────────
@@ -136,11 +138,13 @@ export const COUNTRY_CONTINENT: Readonly<Record<string, Continent>> = {
   // Transcontinental: Egypt's catalog location (Giza) is west of Suez.
   Egypt: 'Africa',
   Eswatini: 'Africa',
+  Ethiopia: 'Africa',
   Ghana: 'Africa',
   Kenya: 'Africa',
   Lesotho: 'Africa',
   Madagascar: 'Africa',
   Morocco: 'Africa',
+  Namibia: 'Africa',
   Nigeria: 'Africa',
   Réunion: 'Africa',
   Rwanda: 'Africa',
@@ -151,6 +155,7 @@ export const COUNTRY_CONTINENT: Readonly<Record<string, Continent>> = {
   Uganda: 'Africa',
 
   // ── North America ─────────────────────────────────────
+  Belize: 'North America',
   Bermuda: 'North America',
   Canada: 'North America',
   'Costa Rica': 'North America',
@@ -172,8 +177,11 @@ export const COUNTRY_CONTINENT: Readonly<Record<string, Continent>> = {
   Chile: 'South America',
   Colombia: 'South America',
   Ecuador: 'South America',
+  Guyana: 'South America',
+  Paraguay: 'South America',
   Peru: 'South America',
   Uruguay: 'South America',
+  Venezuela: 'South America',
 
   // ── Oceania ───────────────────────────────────────────
   'American Samoa': 'Oceania',
@@ -201,6 +209,7 @@ export const LEFT_SIDE_DRIVING_COUNTRIES: ReadonlySet<string> = new Set([
   'Fiji',
   'Hong Kong',
   'India',
+  'Guyana',
   'Indonesia',
   'Ireland',
   'Isle of Man',
@@ -211,6 +220,7 @@ export const LEFT_SIDE_DRIVING_COUNTRIES: ReadonlySet<string> = new Set([
   'Macau',
   'Malaysia',
   'Malta',
+  'Namibia',
   'Nepal',
   'New Zealand',
   'Papua New Guinea',
