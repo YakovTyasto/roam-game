@@ -1,0 +1,244 @@
+{
+  "batch": "005",
+  "verifiedAt": "2026-07-28",
+  "counts": {
+    "candidates": 40,
+    "accepted": 40,
+    "verified": 35,
+    "unverified": 5
+  },
+  "verified": [
+    {
+      "id": "australia-bendigo-pallmall",
+      "panoId": "ehvu2uvYPRc_y5mODTYVXQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.021
+    },
+    {
+      "id": "australia-goulburn-auburnstreet",
+      "panoId": "4WvReNHCZ56aWP8im_RqsA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "newzealand-martinborough-square",
+      "panoId": "1_-PIcwOre95JRr5DA2JjA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "newzealand-oamaru-thamesstreet",
+      "panoId": "4uzloY77CnWbrm2wKS34nQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.013
+    },
+    {
+      "id": "southafrica-knysna-mainstreet",
+      "panoId": "6XpNtGiHKQKGhpJZpnuNTA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "southafrica-clarens-village",
+      "panoId": "zOpXP0PX5BFPrd59bIQBTw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "southafrica-graaffreinet-church",
+      "panoId": "VQy7uTCJtk4xve0LULrbDA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "ghana-kumasi-adumroad",
+      "panoId": "AtJ-WNJuWRjDqb8IMERsjg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.022
+    },
+    {
+      "id": "japan-takayama-sanmachi",
+      "panoId": "64M6AO25kevPYcoFVBR4vg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "japan-shirakawago-village",
+      "panoId": "CAoSFkNJSE0wb2dLRUlDQWdJQ3RrX2Y5TXc.",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "southkorea-gyeongju-hwangnam",
+      "panoId": "1RbaiepuPtyyNKmUZa4ZTA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.039
+    },
+    {
+      "id": "taiwan-lukang-oldstreet",
+      "panoId": "V8CNnxbVy5ysKkFWJ00VZA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "thailand-chiangdao-village",
+      "panoId": "T92aTafAhppxvn0MSEotKQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.03
+    },
+    {
+      "id": "malaysia-melaka-jonker",
+      "panoId": "9-tzSiTooX8_rsGwZQavDA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "indonesia-malang-ijenboulevard",
+      "panoId": "8kgj7ua_m3C3ABRzcUyU_w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.025
+    },
+    {
+      "id": "philippines-vigan-crisologo",
+      "panoId": "2DAfMI4nnASf49vR3E95EQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "france-vezelay-village",
+      "panoId": "CQBnfhbW31M9LyWoinperQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "germany-quedlinburg-markt",
+      "panoId": "CAoSFkNJSE0wb2dLRUlDQWdJRHFfYjdxZUE.",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.025
+    },
+    {
+      "id": "italy-orvieto-corso",
+      "panoId": "EVEuQ3KiNUZVba_c-tB9ZA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "spain-albarracin-village",
+      "panoId": "C5_K37bUeruix-A6bYmMpg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "portugal-monsaraz-village",
+      "panoId": "AXT7R4hyGoFGxwqAmN-sqQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "poland-bialowieza-village",
+      "panoId": "vr7HLNZlKK8TqQwMNWkttA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "czechia-ceskykrumlov-namesti",
+      "panoId": "H5HvzqQNqnBNuvrFJQ6mDw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "norway-flam-village",
+      "panoId": "VZHS4PCqaUtyTtX_Ce9SDA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.042
+    },
+    {
+      "id": "estonia-parnu-ruutli",
+      "panoId": "zIiaMzetEPDDyxTTC1tZ8w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "canada-lunenburg-montague",
+      "panoId": "kGKWaJGJ24ItWIjRYQQOTw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "canada-nelson-bakerstreet",
+      "panoId": "T2gg8yY89fQaFc7Mr7Q3mw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "mexico-tequila-centre",
+      "panoId": "7ujGr6Kd9wVQtdrhsWcH_A",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "guatemala-antigua-quintaavenida",
+      "panoId": "2-Js5Qr04H5Tjbtas4BjJA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "costarica-sarchi-village",
+      "panoId": "-Hu-k7NnzDwOk1CcKUB0lQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.021
+    },
+    {
+      "id": "chile-pucon-ohiggins",
+      "panoId": "y17ZjiGXU9GZULVSLMsslw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "brazil-paraty-centre",
+      "panoId": "Yp6TKpD4yP-uLE9uuAJF7Q",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.033
+    },
+    {
+      "id": "peru-ollantaytambo-village",
+      "panoId": "ZrCRq0AR18N8kuSNbLRJWw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "colombia-barichara-centre",
+      "panoId": "ib2gVkch2SwtAFSUJ7bXtw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "uruguay-colonia-barriohistorico",
+      "panoId": "5YVi-Y5RhPbbJlu-X5UUQA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.001
+    }
+  ],
+  "unverified": [
+    {
+      "id": "kenya-nakuru-kenyattaavenue",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "romania-viscri-village",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "mexico-realdecatorce",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "panama-boquete-centre",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "argentina-cafayate-centre",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

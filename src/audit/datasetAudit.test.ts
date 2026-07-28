@@ -282,14 +282,26 @@ describe('the shipped catalog', () => {
     }
   });
 
-  it('is honest about being too small for the freshness target', () => {
-    // This is the headline diagnosis: the catalog is NOT duplicated, it is
-    // simply too small. If a future catalog expansion fixes it, this test
-    // should be updated deliberately — not silently.
-    expect(report.verdict.sufficient).toBe(false);
-    expect(report.verdict.defaultPoolGroups).toBeLessThan(
-      STANDARD_ROUND_COUNT * TARGET_FRESH_GAMES,
-    );
+  it('reports the freshness verdict from the pool arithmetic, not a stored claim', () => {
+    // Batches 001–005 grew the default pool past the freshness target, so this
+    // assertion was flipped deliberately in that commit. What is pinned now is
+    // the arithmetic itself: the verdict must always follow the pool size, in
+    // either direction, so a later shrink is caught just as loudly.
+    const required = STANDARD_ROUND_COUNT * TARGET_FRESH_GAMES;
+    expect(report.verdict.groupsRequired).toBe(required);
+    expect(report.verdict.sufficient).toBe(report.verdict.defaultPoolGroups >= required);
+    // The freshness target is the selector's floor, not the release bar — the
+    // release gates in releaseGates.test.ts still block on catalog size.
+    expect(report.verdict.sufficient).toBe(true);
+  });
+
+  it('still reports a shortfall for a catalog that is genuinely too small', () => {
+    const tiny = auditDataset([
+      loc({ id: 'a', lat: 48.85, lng: 2.29 }),
+      loc({ id: 'b', lat: 35.65, lng: 139.7, country: 'Japan', continent: 'Asia' }),
+    ]);
+    expect(tiny.verdict.sufficient).toBe(false);
+    expect(tiny.verdict.defaultPoolGroups).toBeLessThan(tiny.verdict.groupsRequired);
   });
 
   it('represents at least five continents', () => {
@@ -317,8 +329,22 @@ describe('formatAuditMarkdown', () => {
     }
   });
 
-  it('states the shortfall rather than claiming the catalog is fine', () => {
-    expect(markdown).toContain('Shortfall:');
+  it('states the shortfall rather than claiming an undersized catalog is fine', () => {
+    const short = formatAuditMarkdown(
+      auditDataset([
+        loc({ id: 'a', lat: 48.85, lng: 2.29 }),
+        loc({ id: 'b', lat: 35.65, lng: 139.7, country: 'Japan', continent: 'Asia' }),
+      ]),
+    );
+    expect(short).toContain('Shortfall:');
+    expect(short).toContain('Meets the freshness target: **NO**');
+  });
+
+  it('does not invent a shortfall once the pool clears the freshness target', () => {
+    // The shipped catalog now clears it; the line must disappear rather than
+    // report a negative number of missing groups.
+    expect(markdown).toContain('Meets the freshness target: **yes**');
+    expect(markdown).not.toContain('Shortfall: -');
   });
 
   it('renders an empty table body instead of a broken table', () => {

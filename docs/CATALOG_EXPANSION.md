@@ -219,9 +219,12 @@ panorama that is not the place under review, quietly detaching the catalog's
 coordinates from what players actually see.
 
 **City-edge suburban locations verify far more reliably than remote roads.**
-That is convenient rather than a compromise — `normal`/`suburban` is currently
-the worst-failing balance gate, so the greatest need and the highest-probability
-candidates coincide. Lead with them.
+That was convenient while `normal`/`suburban` was the worst-failing balance
+gate. After batch 005 it no longer is: 24 suburban and 16 rural Normal entries
+pushed the suburban and rural floors clear, and `balance.normal.urban.min` broke
+instead (18.1% urban against a 25% floor). The next Normal batch must lead with
+**urban** settings — real city-centre streets in mid-sized cities — or the gate
+count will not improve no matter how many groups are added.
 
 ### Coverage evidence
 
@@ -230,7 +233,8 @@ candidate in that country actually resolved a panorama.
 
 Hit rate by batch: **001 = 35%** (near place names), **002 = 55%** (named road
 corridors), **003 = 39%** (city-edge suburban), **004 = 85%** (pedestrian
-squares, promenades and named city-centre streets).
+squares, promenades and named city-centre streets), **005 = 87.5%** (the same
+method applied to deliberately unrecognisable places).
 
 Batch 004 settles what the earlier three only hinted at. The variable that
 matters is not the country and not the setting label — it is whether the
@@ -265,19 +269,32 @@ from signage, architecture and vegetation, which is what Normal should test.
 The recheck of the 50 pre-V4 entries verified 44 (88%), which is consistent:
 those were also authored as specific named places.
 
+Batch 005 confirms the two axes are independent. It used the batch-004 coverage
+method on 40 candidates chosen to be *un*recognisable, and verified 35 of 40 —
+slightly better than batch 004, not worse. Coverage did not care that the places
+were obscure, because the coordinates still named streets and squares Google had
+driven. All five misses were the same failure mode as before: villages named as
+a whole (Viscri, Real de Catorce, Cafayate, Boquete) rather than a street within
+them, plus one African city-centre avenue.
+
 | Status | Countries |
 | --- | --- |
-| **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal |
-| **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Costa Rica, Kenya, Australia (3 misses after 1 hit), New Zealand (1 miss after 2 hits) |
-| **Failed once** — one more attempt on a trunk road is reasonable | Kenya, Sweden, Ireland, Taiwan, South Korea, Philippines, Puerto Rico, Jamaica, Tunisia |
+| **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal, Taiwan, South Korea, Philippines, France, Germany, Italy, Czechia, Poland, Estonia, Costa Rica |
+| **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Kenya (2 misses, 0 hits) |
+| **Failed once** — one more attempt on a named street is reasonable | Sweden, Ireland, Romania, Panama, Puerto Rico, Jamaica, Tunisia |
 | **Sparse coverage** — prefer a same-continent proven country | Fiji, American Samoa, Guam, Northern Mariana Islands, Greenland, Bhutan, Mongolia, Madagascar, Tanzania, Uganda, Bolivia, Jordan |
 
 Two results worth keeping in mind, because they complicate the simple story:
 
 - **A proven country still misses.** Australia verified on the Landsborough
   Highway in batch 001, then failed on all three batch-002 candidates including
-  the Stuart Highway. Country-level evidence raises the odds; it does not settle
+  the Stuart Highway. Mexico and Argentina, both long proven, each lost a
+  batch-005 candidate. Country-level evidence raises the odds; it does not settle
   an individual coordinate.
+- **A twice-failed country can still come good with a better coordinate.** Costa
+  Rica missed twice on approximate countryside points, then verified on Sarchí's
+  central street. "Failed twice" means stop guessing, not that the country is
+  uncovered.
 - **Suburban is not reliably easier.** City-edge candidates verified in Ghana,
   Argentina, Mexico and Indonesia but failed in Australia, Canada, the
   Philippines and South Korea. Prefer them for balance reasons, not because they
