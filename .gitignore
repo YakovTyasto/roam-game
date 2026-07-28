@@ -36,3 +36,9 @@ dist-ssr
 
 # Test / coverage
 coverage
+
+# Playwright browser tests
+test-results
+playwright-report
+blob-report
+.playwright

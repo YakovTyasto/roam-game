@@ -2,15 +2,21 @@
   position: absolute;
   inset: 0;
   z-index: 40;
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: center;
+  /* Same reason as the multiplayer screen: centring a card that is taller than
+     the viewport puts its top above the scroll origin, out of reach. */
+  align-items: flex-start;
   padding: calc(var(--safe-top) + 20px) calc(var(--safe-right) + 20px)
     calc(var(--safe-bottom) + 20px) calc(var(--safe-left) + 20px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .card {
   width: min(560px, 100%);
+  margin: auto;
   background: var(--panel-strong);
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--r-lg);

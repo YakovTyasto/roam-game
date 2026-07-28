@@ -15,7 +15,9 @@
     "audit:dataset:check": "vite-node scripts/audit-dataset.ts -- --check",
     "audit:gates": "vite-node scripts/audit-dataset.ts -- --gates",
     "catalog:verify": "vite-node scripts/verify-candidates.ts --",
-    "catalog:recheck-file": "vite-node scripts/make-recheck-batch.ts"
+    "catalog:recheck-file": "vite-node scripts/make-recheck-batch.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:mobile": "playwright test --project=iphone-webkit --project=ipad-webkit"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.8",
@@ -26,10 +28,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.62.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/google.maps": "^3.58.1",
     "@types/leaflet": "^1.9.15",
+    "@types/node": "^26.1.2",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

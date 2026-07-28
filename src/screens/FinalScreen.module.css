@@ -3,7 +3,10 @@
   inset: 0;
   z-index: 40;
   display: flex;
-  align-items: center;
+  /* `.card` below carries `margin: auto`, which centres it when there is room
+     and starts it at the top when it overflows — centring here instead would
+     put the top of a tall card out of reach on a phone. */
+  align-items: flex-start;
   justify-content: center;
   padding: calc(var(--safe-top) + 18px) calc(var(--safe-right) + 18px)
     calc(var(--safe-bottom) + 18px) calc(var(--safe-left) + 18px);

@@ -6,7 +6,14 @@
   flex-direction: column;
   padding: calc(var(--safe-top) + 20px) calc(var(--safe-right) + 22px)
     calc(var(--safe-bottom) + 26px) calc(var(--safe-left) + 22px);
-  overflow: hidden;
+  /* Scroll vertically rather than clip: on a short phone viewport the last
+     action button ("Weekly leaderboard") falls below the fold, and `overflow:
+     hidden` here made it permanently unreachable. `overflow-x` stays hidden so
+     the decorative rings never create a sideways scroll. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   background:
     radial-gradient(90% 60% at 15% 0%, rgba(191, 244, 58, 0.1), transparent 55%),
     radial-gradient(80% 60% at 100% 100%, rgba(86, 183, 255, 0.08), transparent 55%),
