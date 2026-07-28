@@ -1,0 +1,290 @@
+{
+  "batch": "009",
+  "verifiedAt": "2026-07-28",
+  "counts": {
+    "candidates": 50,
+    "accepted": 50,
+    "verified": 38,
+    "unverified": 12
+  },
+  "verified": [
+    {
+      "id": "peru-arequipa-plazadearmas",
+      "panoId": "sdjUBgW06toWoxKD5EFjHA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "bolivia-sucre-plaza25demayo",
+      "panoId": "p16nc5CZMVUiIme3NBMJog",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "argentina-ushuaia-sanmartin",
+      "panoId": "5B1jYmlhoR8roGP3MseQQw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "brazil-manaus-teatroamazonas",
+      "panoId": "AoU-NrjBT-4ssjntq-KMRg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.001
+    },
+    {
+      "id": "chile-puntaarenas-plazamunoz",
+      "panoId": "-f5rnRMXfsd7FF9xCSn4Hg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "colombia-guatape-callesdelzocalo",
+      "panoId": "TCxZmv5bnOGOLcBlsxOf4Q",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.028
+    },
+    {
+      "id": "mexico-guanajuato-jardinunion",
+      "panoId": "ZTeHDcbeR9kle6M9LuPNMw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "unitedstates-savannah-bullstreet",
+      "panoId": "Xchz15rKYEm13KS2ZMvBdw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.027
+    },
+    {
+      "id": "canada-victoria-governmentstreet",
+      "panoId": "l-ZcC1jz9HeNfx60m6alxA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "guatemala-flores-callecentroamerica",
+      "panoId": "5XTgcGD95_LUGnOgarz3SA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "portugal-porto-ribeira",
+      "panoId": "zoEc2oRaOyX5mVaA71OYGA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "france-colmar-petitevenise",
+      "panoId": "OT2fnQ0nNE3H75UWAyp4kw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "austria-hallstatt-seestrasse",
+      "panoId": "3FdQXHuufe55_6S2FkIJ0A",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "switzerland-bern-kramgasse",
+      "panoId": "-iiALReBMTi0n5CpwfAMgg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.014
+    },
+    {
+      "id": "netherlands-giethoorn-binnenpad",
+      "panoId": "pe8oMF79kFl7aI6Va9j7qw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "belgium-bruges-markt",
+      "panoId": "uV5DIblODfGEIP5iNQPjYA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "unitedkingdom-bath-royalcrescent",
+      "panoId": "NsLQLDeJHNtmy8En6G_Clg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.016
+    },
+    {
+      "id": "ireland-galway-quaystreet",
+      "panoId": "iPyw9RiHgiGjYGOz_IFOUw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.009
+    },
+    {
+      "id": "norway-bergen-bryggen",
+      "panoId": "vScEy7BmHio62Qd5Q87-5A",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "sweden-visby-stortorget",
+      "panoId": "rK0kjny35JZC5JYdXCishw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.038
+    },
+    {
+      "id": "finland-porvoo-jokikatu",
+      "panoId": "8ykbViTmV_ne8n34a2JpOA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "latvia-riga-livusquare",
+      "panoId": "1wdf68IucFt_o2qGabO_Tw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.009
+    },
+    {
+      "id": "lithuania-vilnius-pilies",
+      "panoId": "lAwWkN3b5bgQ92T5cDOuZw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "slovenia-ljubljana-cankarjevo",
+      "panoId": "tzRxShhpQTP_s1XaMmnRSg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "tanzania-stonetown-kenyattaroad",
+      "panoId": "CAoSF0NJSE0wb2dLRUlDQWdJRDRnLUtuZ3dF",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.044
+    },
+    {
+      "id": "senegal-saintlouis-rueblaisediagne",
+      "panoId": "FtTpO55UB5XZdbKrlmvj3w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "india-jaisalmer-fortroad",
+      "panoId": "8Bdbhno0c7ifCKdPVb8jBQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "srilanka-galle-churchstreet",
+      "panoId": "dV7lgu_64MovJ4VIJY1XSQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.013
+    },
+    {
+      "id": "australia-freemantle-highstreet",
+      "panoId": "91zneialNRZ-arFMYzqWmQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.024
+    },
+    {
+      "id": "poland-zamosc-rynekwielki",
+      "panoId": "4g5yXAkLzYDmIA9hAt-ARA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "portugal-guimaraes-ruadesantamaria",
+      "panoId": "OrnH9Q5Ec5mZcOWizgvN-g",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "mexico-todossantos-calletopete",
+      "panoId": "etylIc0dhQv3zZXbmd2WwQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "unitedstates-marfa-highlandavenue",
+      "panoId": "ClCr9RZlcmJuxjB_I9W1lQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.024
+    },
+    {
+      "id": "southafrica-prince-albert-churchstreet",
+      "panoId": "g7QZs7Nw91h1mwdH-1M2Fw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.025
+    },
+    {
+      "id": "kenya-nanyuki-kenyattaavenue",
+      "panoId": "x40VQDBgaDOAHOpwcoe-FA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.038
+    },
+    {
+      "id": "vietnam-danang-bachdang",
+      "panoId": "fHK73aqDl2z5obCNrc3vMw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.016
+    },
+    {
+      "id": "indonesia-bukittinggi-jalanahmadyani",
+      "panoId": "9hlUs5ZACh_mT7Rgeh8xlw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "philippines-dumaguete-rizalboulevard",
+      "panoId": "mqjweHaxFhuqeqU_cCsZYg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.012
+    }
+  ],
+  "unverified": [
+    {
+      "id": "venezuela-merida-plazabolivar",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "guyana-georgetown-stabroek",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "cuba-trinidad-plazamayor",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "belize-sanignacio-burnsavenue",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "curacao-willemstad-handelskade",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "croatia-rovinj-grisia",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "morocco-essaouira-avenueoqbaibnnafiaa",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "ethiopia-lalibela-mainroad",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "nepal-bhaktapur-durbarsquare",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "uzbekistan-bukhara-lyabihauz",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "fiji-levuka-beachstreet",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "hungary-eger-dobosquare",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

@@ -1,0 +1,597 @@
+{
+  "batch": "004",
+  "notes": "UNVERIFIED CANDIDATES — NOT PLAYABLE. 40 Easy-tier candidates: 17 landmark, 23 urban, 0 remote, which clears all three Easy balance rules by construction. Targets the two remaining continent-depth shortages (Oceania 8, Africa 5) and spreads the rest over 33 countries, max 3 per country. Coordinates are placed on pedestrian squares, promenades and named streets in city centres rather than on open road, since Easy locations are recognisable places rather than roadside views. Every candidate was checked to be outside the 25 km cluster threshold of all 100 catalog entries AND of all 116 earlier candidates including failures — which is why Guam, Saipan, American Samoa, Perth and Havana are absent: every usable point in them falls inside 25 km of an earlier failure or an existing entry.",
+  "candidates": [
+    {
+      "id": "australia-brisbane-southbank",
+      "lat": -27.4748,
+      "lng": 153.0175,
+      "label": "South Bank promenade, Brisbane",
+      "country": "Australia",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "famous"
+      ],
+      "source": "South Bank pedestrian promenade, Brisbane",
+      "rationale": "Oceania is 6 groups below its floor and only Australia and New Zealand have dependable coverage. Riverside promenade with a recognisable skyline."
+    },
+    {
+      "id": "australia-canberra-parliament",
+      "lat": -35.3081,
+      "lng": 149.1245,
+      "label": "Parliament House, Canberra",
+      "country": "Australia",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Federation Mall approach to Parliament House",
+      "rationale": "Easy/landmark and a capital. ~250 km from Sydney, no cluster with any existing entry."
+    },
+    {
+      "id": "australia-goldcoast-surfers",
+      "lat": -28.0024,
+      "lng": 153.43,
+      "label": "Surfers Paradise, Gold Coast",
+      "country": "Australia",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Cavill Avenue, Surfers Paradise",
+      "rationale": "Third and final Australian entry; ~68 km from Brisbane so the two form no cluster."
+    },
+    {
+      "id": "newzealand-christchurch-centre",
+      "lat": -43.5309,
+      "lng": 172.6365,
+      "label": "Cathedral Square, Christchurch",
+      "country": "New Zealand",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Cathedral Square pedestrian area",
+      "rationale": "New Zealand is proven. ~63 km from the verified SH1 Canterbury entry."
+    },
+    {
+      "id": "newzealand-rotorua-gardens",
+      "lat": -38.1368,
+      "lng": 176.2497,
+      "label": "Government Gardens, Rotorua",
+      "country": "New Zealand",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Government Gardens frontage, Rotorua",
+      "rationale": "Easy/landmark with geothermal cues. ~38 km from the failed Hamilton candidate."
+    },
+    {
+      "id": "newzealand-dunedin-octagon",
+      "lat": -45.8742,
+      "lng": 170.5036,
+      "label": "The Octagon, Dunedin",
+      "country": "New Zealand",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "The Octagon, central Dunedin",
+      "rationale": "Third and final New Zealand entry; ~111 km from the verified Alexandra entry."
+    },
+    {
+      "id": "fiji-suva-centre",
+      "lat": -18.1416,
+      "lng": 178.4419,
+      "label": "Central Suva",
+      "country": "Fiji",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Victoria Parade, central Suva",
+      "rationale": "Oceania depth. Fiji failed once on a rural coastal road ~96 km away; a capital city centre is a different proposition, not a nudged retry."
+    },
+    {
+      "id": "papuanewguinea-portmoresby-centre",
+      "lat": -9.4438,
+      "lng": 147.1803,
+      "label": "Downtown Port Moresby",
+      "country": "Papua New Guinea",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Champion Parade, downtown Port Moresby",
+      "rationale": "New country and the only remaining Oceania option not blocked by the 25 km rule — American Samoa, Guam and Saipan are all within 25 km of an earlier failure. Coverage is sparse; flagged as speculative."
+    },
+    {
+      "id": "southafrica-johannesburg-newtown",
+      "lat": -26.2041,
+      "lng": 28.0473,
+      "label": "Newtown, Johannesburg",
+      "country": "South Africa",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Newtown precinct, central Johannesburg",
+      "rationale": "Africa is 2 groups below its floor. South Africa is proven, and this is ~1,300 km from the verified Karoo entry."
+    },
+    {
+      "id": "southafrica-pretoria-union-buildings",
+      "lat": -25.7407,
+      "lng": 28.21,
+      "label": "Union Buildings, Pretoria",
+      "country": "South Africa",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Union Buildings forecourt, Pretoria",
+      "rationale": "Easy/landmark and an administrative capital; ~55 km from Johannesburg, clear of the cluster limit."
+    },
+    {
+      "id": "ghana-accra-independence-square",
+      "lat": 5.548,
+      "lng": -0.1917,
+      "label": "Independence Square, Accra",
+      "country": "Ghana",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Independence Square, Accra",
+      "rationale": "Ghana is proven via Takoradi ~174 km west. West African capital landmark."
+    },
+    {
+      "id": "senegal-dakar-place-independance",
+      "lat": 14.669,
+      "lng": -17.439,
+      "label": "Place de l'Indépendance, Dakar",
+      "country": "Senegal",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Place de l'Indépendance, central Dakar",
+      "rationale": "New country. Africa depth, and Senegal has documented coverage in Dakar."
+    },
+    {
+      "id": "nigeria-lagos-marina",
+      "lat": 6.4498,
+      "lng": 3.396,
+      "label": "Lagos Marina",
+      "country": "Nigeria",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Marina waterfront, Lagos Island",
+      "rationale": "New country and Africa's largest city; adds West African urban density."
+    },
+    {
+      "id": "india-mumbai-gateway",
+      "lat": 18.922,
+      "lng": 72.8347,
+      "label": "Gateway of India, Mumbai",
+      "country": "India",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Gateway of India waterfront plaza",
+      "rationale": "Easy/landmark. India's only entry is New Delhi ~1,150 km north."
+    },
+    {
+      "id": "vietnam-hanoi-hoankiem",
+      "lat": 21.0287,
+      "lng": 105.8524,
+      "label": "Hoàn Kiếm Lake, Hanoi",
+      "country": "Vietnam",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Hoàn Kiếm lakeside promenade",
+      "rationale": "New country; Vietnam has broad urban coverage."
+    },
+    {
+      "id": "philippines-manila-intramuros",
+      "lat": 14.5906,
+      "lng": 120.975,
+      "label": "Intramuros, Manila",
+      "country": "Philippines",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Intramuros walled city, Manila",
+      "rationale": "Philippines failed once in suburban Cebu ~570 km away; a walled colonial quarter in the capital is a different case."
+    },
+    {
+      "id": "cambodia-siemreap-angkor",
+      "lat": 13.4125,
+      "lng": 103.867,
+      "label": "Angkor Wat causeway",
+      "country": "Cambodia",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Angkor Wat western causeway",
+      "rationale": "New country; one of the most recognisable landmarks on the continent."
+    },
+    {
+      "id": "uae-abudhabi-corniche",
+      "lat": 24.475,
+      "lng": 54.339,
+      "label": "Abu Dhabi Corniche",
+      "country": "United Arab Emirates",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Corniche Road promenade, Abu Dhabi",
+      "rationale": "~120 km from the existing Dubai Marina entry, so no cluster."
+    },
+    {
+      "id": "japan-osaka-dotonbori",
+      "lat": 34.6687,
+      "lng": 135.5013,
+      "label": "Dōtonbori, Osaka",
+      "country": "Japan",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "famous"
+      ],
+      "source": "Dōtonbori canal-side pedestrian street",
+      "rationale": "Japan is proven. ~45 km from the Kyoto entry — outside the 25 km cluster limit but deliberately checked."
+    },
+    {
+      "id": "southkorea-busan-haeundae",
+      "lat": 35.1587,
+      "lng": 129.1604,
+      "label": "Haeundae, Busan",
+      "country": "South Korea",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Haeundae beachfront road, Busan",
+      "rationale": "South Korea failed once on rural Jeju ~300 km away; a major coastal city is far better covered."
+    },
+    {
+      "id": "thailand-chiangmai-oldcity",
+      "lat": 18.7883,
+      "lng": 98.9853,
+      "label": "Old City, Chiang Mai",
+      "country": "Thailand",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Tha Phae Gate area, Chiang Mai old city",
+      "rationale": "Thailand is proven via Pai ~64 km north."
+    },
+    {
+      "id": "austria-vienna-schonbrunn",
+      "lat": 48.1849,
+      "lng": 16.3122,
+      "label": "Schönbrunn Palace, Vienna",
+      "country": "Austria",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Schönbrunn Palace forecourt",
+      "rationale": "New country. Only six European candidates because Europe is already well above its floor."
+    },
+    {
+      "id": "hungary-budapest-chainbridge",
+      "lat": 47.4986,
+      "lng": 19.0435,
+      "label": "Chain Bridge, Budapest",
+      "country": "Hungary",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Széchenyi Chain Bridge, Pest side",
+      "rationale": "New country; a globally recognisable river crossing."
+    },
+    {
+      "id": "ireland-dublin-oconnell",
+      "lat": 53.3498,
+      "lng": -6.2603,
+      "label": "O'Connell Street, Dublin",
+      "country": "Ireland",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "O'Connell Street, central Dublin",
+      "rationale": "Ireland failed once in rural Connemara ~245 km away; the capital's main thoroughfare is comprehensively covered."
+    },
+    {
+      "id": "denmark-copenhagen-nyhavn",
+      "lat": 55.6797,
+      "lng": 12.5913,
+      "label": "Nyhavn, Copenhagen",
+      "country": "Denmark",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Nyhavn quayside, Copenhagen",
+      "rationale": "New country; instantly recognisable painted quayside."
+    },
+    {
+      "id": "poland-krakow-mainsquare",
+      "lat": 50.0616,
+      "lng": 19.9373,
+      "label": "Main Market Square, Kraków",
+      "country": "Poland",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Rynek Główny, Kraków",
+      "rationale": "New country; ~250 km from Warsaw and one of Europe's largest medieval squares."
+    },
+    {
+      "id": "finland-helsinki-senatesquare",
+      "lat": 60.1699,
+      "lng": 24.9524,
+      "label": "Senate Square, Helsinki",
+      "country": "Finland",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Senate Square, Helsinki",
+      "rationale": "New country; adds the Nordic capital that Sweden's failed inland candidate did not."
+    },
+    {
+      "id": "dominicanrepublic-santodomingo-zona",
+      "lat": 18.473,
+      "lng": -69.884,
+      "label": "Zona Colonial, Santo Domingo",
+      "country": "Dominican Republic",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Calle El Conde, Zona Colonial",
+      "rationale": "New country; the oldest European-built city in the Americas."
+    },
+    {
+      "id": "panama-city-cascoviejo",
+      "lat": 8.953,
+      "lng": -79.535,
+      "label": "Casco Viejo, Panama City",
+      "country": "Panama",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Casco Viejo pedestrian streets",
+      "rationale": "New country; Central American capital."
+    },
+    {
+      "id": "costarica-sanjose-centre",
+      "lat": 9.9333,
+      "lng": -84.08,
+      "label": "Central San José",
+      "country": "Costa Rica",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Avenida Central pedestrian boulevard",
+      "rationale": "Costa Rica failed twice, both times on rural roads (Monteverde ~89 km, Guanacaste ~165 km). A capital's pedestrianised centre is a genuinely different bet, not a nudge."
+    },
+    {
+      "id": "puertorico-oldsanjuan",
+      "lat": 18.4663,
+      "lng": -66.1057,
+      "label": "Old San Juan",
+      "country": "Puerto Rico",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Calle del Cristo, Old San Juan",
+      "rationale": "Failed once in the Cordillera ~58 km away; the colonial quarter is heavily covered."
+    },
+    {
+      "id": "canada-quebeccity-chateau",
+      "lat": 46.8123,
+      "lng": -71.205,
+      "label": "Château Frontenac, Québec City",
+      "country": "Canada",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Terrasse Dufferin, Québec City",
+      "rationale": "Canada is proven. North America needs the depth and this is ~800 km from every existing Canadian entry."
+    },
+    {
+      "id": "mexico-guadalajara-centro",
+      "lat": 20.6767,
+      "lng": -103.3475,
+      "label": "Centro Histórico, Guadalajara",
+      "country": "Mexico",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Plaza de Armas, Guadalajara",
+      "rationale": "Mexico is proven; ~305 km from the verified Querétaro entry."
+    },
+    {
+      "id": "bermuda-hamilton-frontstreet",
+      "lat": 32.2949,
+      "lng": -64.782,
+      "label": "Front Street, Hamilton",
+      "country": "Bermuda",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Front Street, Hamilton",
+      "rationale": "New territory; adds the North Atlantic and another island to the derived Islands collection."
+    },
+    {
+      "id": "bolivia-lapaz-plaza-murillo",
+      "lat": -16.4955,
+      "lng": -68.1336,
+      "label": "Plaza Murillo, La Paz",
+      "country": "Bolivia",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Plaza Murillo, central La Paz",
+      "rationale": "Bolivia failed once on the Uyuni altiplano ~460 km away; a dense capital is a far better bet."
+    },
+    {
+      "id": "brazil-salvador-pelourinho",
+      "lat": -12.9714,
+      "lng": -38.5124,
+      "label": "Pelourinho, Salvador",
+      "country": "Brazil",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Largo do Pelourinho, Salvador",
+      "rationale": "Brazil is proven. ~210 km from the failed Ilhéus candidate and a completely different setting."
+    },
+    {
+      "id": "peru-lima-plaza-mayor",
+      "lat": -12.0464,
+      "lng": -77.0428,
+      "label": "Plaza Mayor, Lima",
+      "country": "Peru",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Plaza Mayor, central Lima",
+      "rationale": "Peru is proven twice over; ~310 km from the verified Nazca entry."
+    },
+    {
+      "id": "argentina-cordoba-centre",
+      "lat": -31.4201,
+      "lng": -64.1888,
+      "label": "Centre of Córdoba",
+      "country": "Argentina",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Plaza San Martín, Córdoba",
+      "rationale": "Argentina is proven twice over; ~370 km from the verified Rosario entry."
+    },
+    {
+      "id": "uruguay-montevideo-ciudadvieja",
+      "lat": -34.908,
+      "lng": -56.211,
+      "label": "Ciudad Vieja, Montevideo",
+      "country": "Uruguay",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Plaza Independencia, Montevideo",
+      "rationale": "Uruguay is proven via Ruta 9 ~171 km east."
+    },
+    {
+      "id": "ecuador-quito-plaza-grande",
+      "lat": -0.2201,
+      "lng": -78.5123,
+      "label": "Plaza Grande, Quito",
+      "country": "Ecuador",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals",
+        "famous"
+      ],
+      "source": "Plaza Grande, Quito old town",
+      "rationale": "Ecuador is proven; ~130 km from the verified Baños entry and a UNESCO old town."
+    }
+  ]
+}

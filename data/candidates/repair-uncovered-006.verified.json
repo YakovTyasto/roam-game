@@ -1,0 +1,76 @@
+{
+  "batch": "repair-uncovered-006",
+  "verifiedAt": "2026-07-28",
+  "counts": {
+    "candidates": 12,
+    "accepted": 12,
+    "verified": 7,
+    "unverified": 5
+  },
+  "verified": [
+    {
+      "id": "jamaica-kingston-halfwaytree",
+      "panoId": "CAoSF0NJSE0wb2dLRUlDQWdJREh3OF92MlFF",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "senegal-dakar-renaissance",
+      "panoId": "pL4UnKrWYtbLaAsAaR0WMA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.022
+    },
+    {
+      "id": "capetown-waterfront",
+      "panoId": "ms6bMOM7FRyDuFfOSVnBEg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.034
+    },
+    {
+      "id": "nigeria-abuja-ahmadubello",
+      "panoId": "nf2S9T-8VVXNijA1fWA2yg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "tunisia-tunis-bourguiba",
+      "panoId": "MjKnKP0TQ-DoKdcdQft1xQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "laos-vientiane-lanexang",
+      "panoId": "eRuLM_7C9kpuJt0FS0S92g",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.018
+    },
+    {
+      "id": "srilanka-colombo-independence",
+      "panoId": "O_Kb1wSlIfu5BDlMt3inyQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    }
+  ],
+  "unverified": [
+    {
+      "id": "havana-malecon",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "cairo-giza",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "marrakech-medina",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "bangkok-grandpalace",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "delhi-indiagate",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

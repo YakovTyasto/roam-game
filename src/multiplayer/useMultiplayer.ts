@@ -3,7 +3,8 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { hasGoogleMapsKey, hasSupabaseConfig } from '../config/env';
 import type { Difficulty } from '../config/difficulty';
 import { locationProvider } from '../providers/LocationProvider';
-import { buildDifficultyPool } from '../utils/difficultyPool';
+import { selectRounds } from '../diversity/engine';
+import { commitRoundStarted, groupIdOf, readDiversityState } from '../diversity/store';
 import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
 import { getSupabase, getSupabaseConfigError } from './supabaseClient';
 import { ensureAnonymousSession } from './auth';
@@ -15,6 +16,12 @@ import { buildManifest } from './manifest';
 import { isRoundExpired, remainingSeconds, toEpochMs } from './timer';
 import { validatePlayerName } from './playerName';
 import { isValidRoomCode, normalizeRoomCode } from './roomCode';
+import {
+  EMPTY_ROOM_RECENT,
+  buildRoomRecentKeys,
+  parseRoomRecentGroups,
+} from './roomDiversity';
+import { withTimeout } from '../utils/withTimeout';
 import type { MpRoom, MultiplayerStatus, RoomSnapshot } from './types';
 import { toFriendlyErrorMessage } from '../utils/rateLimit';
 
@@ -67,6 +74,14 @@ function errorMessage(e: unknown): string {
 
 // Persist the active room id so a page refresh can resume the same match.
 const SAVED_ROOM_KEY = 'roam-mp-room';
+
+/**
+ * How long the host waits for the room-wide novelty aggregate before starting
+ * the match without it. Short on purpose: this is a *nice-to-have* ranking
+ * input, and nothing about starting a game may sit behind a network call that
+ * might never answer.
+ */
+const ROOM_DIVERSITY_TIMEOUT_MS = 2500;
 
 function readSavedRoomId(): string | null {
   try {
@@ -127,6 +142,32 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     [snapshot, userId],
   );
   const room = snapshot?.room ?? null;
+
+  // ── Diversity: record what this player actually played ────────────────
+  // Every player keeps their own history, not just the host, so a guest's
+  // future solo games avoid the places they saw in someone else's room.
+  //
+  // The trigger is the round's *reveal*: `currentTarget` is null until the
+  // round completes (RLS hides it), which is precisely the "round has
+  // successfully started/completed" point the recording rule requires. It also
+  // means a room that is created and abandoned before any round completes
+  // costs nobody any freshness.
+  const committedRoundsRef = useRef(new Set<string>());
+  const revealedTarget = view?.currentTarget ?? null;
+  useEffect(() => {
+    if (!revealedTarget || !room) return;
+    if (committedRoundsRef.current.has(revealedTarget.roundId)) return;
+    committedRoundsRef.current.add(revealedTarget.roundId);
+    void (async () => {
+      const all = await locationProvider.getAll();
+      commitRoundStarted({
+        all,
+        groupId: groupIdOf(all, revealedTarget.locationId),
+        count: room.totalRounds,
+        difficulty: room.difficulty,
+      });
+    })();
+  }, [revealedTarget, room]);
 
   // Refs mirror derived state so the 1s interval can read them without needing
   // to re-subscribe every render.
@@ -413,14 +454,40 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     try {
       const google = await ensureGoogleMaps();
       const all = await locationProvider.getAll();
-      // Shared difficulty-aware pool (with adjacent-tier fallback) so solo and
-      // multiplayer draw from the same place for a given difficulty.
-      const { locations: pool } = buildDifficultyPool(
+
+      // Weight selection by what the whole room has played recently, not just
+      // the host. Strictly best-effort and bounded: a slow or failing lookup
+      // must never delay or block a match start, so on any problem we fall
+      // straight back to the host's own history. The aggregate carries no
+      // identities — see multiplayer/roomDiversity.ts.
+      const { bag, recentGroupIds } = readDiversityState(room.difficulty);
+      let roomRecent = EMPTY_ROOM_RECENT;
+      try {
+        roomRecent = parseRoomRecentGroups(
+          await withTimeout(api.getRoomRecentGroups(supabase, roomId), ROOM_DIVERSITY_TIMEOUT_MS),
+        );
+      } catch {
+        /* host-only history is a perfectly good fallback */
+      }
+
+      // One shared selection path with solo (diversity/engine.ts), so the two
+      // modes cannot drift: same collection filter, same difficulty pool with
+      // adjacent-tier fallback, same canonical grouping and shuffle-bag
+      // cycling. The picks come first and the ranked spares follow, so
+      // buildManifest can skip any candidate whose panorama won't resolve.
+      const selection = selectRounds({
         all,
-        room.difficulty,
+        count: room.totalRounds,
+        difficulty: room.difficulty,
+        bag,
+        recentGroupIds: buildRoomRecentKeys(roomRecent, recentGroupIds),
+        backupCount: all.length,
+      });
+      const manifest = await buildManifest(
+        google,
+        [...selection.locations, ...selection.backups],
         room.totalRounds,
       );
-      const manifest = await buildManifest(google, pool, room.totalRounds);
       await api.startMatch(supabase, roomId, manifest);
       await doRefetch(roomId);
     } catch (e) {

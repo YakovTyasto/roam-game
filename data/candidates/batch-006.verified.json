@@ -1,0 +1,248 @@
+{
+  "batch": "006",
+  "verifiedAt": "2026-07-28",
+  "counts": {
+    "candidates": 40,
+    "accepted": 40,
+    "verified": 37,
+    "unverified": 3
+  },
+  "verified": [
+    {
+      "id": "taiwan-hsinchu-zhongzhengroad",
+      "panoId": "t630iRZPwjI7kkUiOH9y_A",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "taiwan-chiayi-wenhuaroad",
+      "panoId": "JVtt2YQsPM5ea8iXQLXqOQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.001
+    },
+    {
+      "id": "taiwan-hualien-zhongshan",
+      "panoId": "1ioDN6kjaxj3LXjF7CmNZQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "southkorea-daegu-dongseongno",
+      "panoId": "BSD4923al3sAQe5cp-hviQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.047
+    },
+    {
+      "id": "southkorea-jeonju-gaeksa",
+      "panoId": "XjcxxeOwbQ2F_sczkDcLqg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.036
+    },
+    {
+      "id": "philippines-iloilo-jmbasa",
+      "panoId": "f4eN_lYwP-3GgDccMYDtkQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "philippines-bacolod-lacson",
+      "panoId": "-2jD8yagiTskrBUwRbPifw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.043
+    },
+    {
+      "id": "philippines-baguio-sessionroad",
+      "panoId": "naeA6eAbZdx8EtsaD1lxGg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "czechia-olomouc-horninamesti",
+      "panoId": "gePFoFoW6S2GL2XGHQvUnw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "czechia-plzen-namestirepubliky",
+      "panoId": "nz6WZ40eM4fVqyVmLruhyA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.036
+    },
+    {
+      "id": "czechia-hradeckralove-velkenamesti",
+      "panoId": "xbpVjxBImSgBQo-mNVJd_w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.018
+    },
+    {
+      "id": "poland-lodz-piotrkowska",
+      "panoId": "FCLl2owDyp4xqfFu3F6l0A",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.001
+    },
+    {
+      "id": "poland-bydgoszcz-gdanska",
+      "panoId": "iZAZyP2QNaKKyPEe4QIVfA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.032
+    },
+    {
+      "id": "poland-lublin-krakowskie",
+      "panoId": "P5iyNT7KAHKtgCmrrHSh7Q",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "estonia-tartu-raekojaplats",
+      "panoId": "veCUrFqyM2EyXb7ZrFSXhA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "estonia-narva-puskini",
+      "panoId": "38x15XcQYneaPR5Jiwy0BQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "spain-logrono-granvia",
+      "panoId": "xwXGPZ-SseMOz9rRgTf2eA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.017
+    },
+    {
+      "id": "costarica-cartago-avenida2",
+      "panoId": "sYTpKzGsmINaw-H-FLefhA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "costarica-liberia-avenidacentral",
+      "panoId": "Nqv6A8WqeBXBkR7DqVuooA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "mexico-puebla-avenidajuarez",
+      "panoId": "DG-Odt8QBwd8FCvy5iK_Dw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.033
+    },
+    {
+      "id": "dominicanrepublic-santiago-calledelsol",
+      "panoId": "_-aUCTfvfbIz9LR3DZXtjA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.016
+    },
+    {
+      "id": "canada-moncton-mainstreet",
+      "panoId": "_BKS-Nbk_dWzTl4L-dRorg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.009
+    },
+    {
+      "id": "brazil-londrina-higienopolis",
+      "panoId": "KTC75cYPGT3vc9Rcv3rVvg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "brazil-joinville-ruadoprincipe",
+      "panoId": "Jj0Q6XIj9HA5eYPRq-jWGA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "argentina-salta-balcarce",
+      "panoId": "CAoSFkNJSE0wb2dLRUlDQWdJQ1UyWUhyTGc.",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.025
+    },
+    {
+      "id": "chile-temuco-avenidaalemania",
+      "panoId": "i85YHuem5FdrC_I98TJ3hQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.05
+    },
+    {
+      "id": "colombia-bucaramanga-carrera27",
+      "panoId": "lubYvTMqNpD7Cz0XbwIwYg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "peru-trujillo-avenidaespana",
+      "panoId": "yw3Hg0nFOyvwj6NIMNgxwA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.023
+    },
+    {
+      "id": "ecuador-loja-callebolivar",
+      "panoId": "kajlacNxKv4X_Wbq7TIPCg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.021
+    },
+    {
+      "id": "southafrica-bloemfontein-maitland",
+      "panoId": "oSSrs6-7bg7Enmpt3ZbdWQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.039
+    },
+    {
+      "id": "southafrica-eastlondon-oxfordstreet",
+      "panoId": "Zxucq47qdaWlzrID7g7Xdg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "rwanda-kigali-kn4avenue",
+      "panoId": "3cNof41mpaM9YlkhzjIHgw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.044
+    },
+    {
+      "id": "reunion-saintdenis-marechalleclerc",
+      "panoId": "jED_vxMueBJ12lXG-gW9hw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.035
+    },
+    {
+      "id": "australia-ballarat-sturtstreet",
+      "panoId": "d3KA17rBxs56Vp6o3W03DQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.022
+    },
+    {
+      "id": "australia-townsville-flindersstreet",
+      "panoId": "TjTi0J7i-CR5_KAm9bLG6A",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "australia-launceston-charlesstreet",
+      "panoId": "yzBfGo6uWCCtAnEw8ioJCQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "newzealand-napier-marineparade",
+      "panoId": "vswDdjdrV62uGOrnhWf4rQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.005
+    }
+  ],
+  "unverified": [
+    {
+      "id": "southkorea-chuncheon-myeongdong",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "estonia-viljandi-tallinna",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "ghana-capecoast-commercialstreet",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

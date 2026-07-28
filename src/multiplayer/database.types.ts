@@ -163,6 +163,20 @@ export type Database = {
         };
         Returns: Json;
       };
+      // ── Diversity Engine V2: durable location history (migration 0011) ──
+      roam_record_location_history: {
+        Args: {
+          p_group_ids: string[];
+          p_difficulty?: string;
+          p_collection?: string;
+          p_mode?: string;
+        };
+        Returns: Json;
+      };
+      roam_get_location_history: { Args: { p_limit?: number | null }; Returns: Json };
+      roam_reset_location_history: { Args: Record<PropertyKey, never>; Returns: Json };
+      // ── Room-wide novelty for host-side selection (migration 0012) ──────
+      roam_room_recent_groups: { Args: { p_room_id: string }; Returns: Json };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

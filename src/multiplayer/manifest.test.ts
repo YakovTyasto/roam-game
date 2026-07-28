@@ -2,7 +2,7 @@ import { afterEach, describe, it, expect } from 'vitest';
 import { buildManifest, validateManifest } from './manifest';
 import type { ManifestRound } from './types';
 import type { GameLocation } from '../types';
-import { readLocationHistory, recordPlayedLocations } from '../utils/locationHistory';
+import { readLocationHistory } from '../utils/locationHistory';
 
 const round = (i: number, overrides: Partial<ManifestRound> = {}): ManifestRound => ({
   location_id: `loc${i}`,
@@ -77,15 +77,15 @@ function makeFakeGoogle(resolvableIds: ReadonlySet<string>, byLatLng: Map<string
   } as unknown as typeof window.google;
 }
 
-describe('buildManifest — recent-location cooldown', () => {
+describe('buildManifest — candidate ordering and recording', () => {
   afterEach(() => {
     window.localStorage.clear();
   });
 
   const pool: GameLocation[] = Array.from({ length: 6 }, (_, i) => ({
     id: `loc-${i}`,
-    lat: i,
-    lng: i,
+    lat: i * 10,
+    lng: i * 12,
     label: `Location ${i}`,
     country: 'Nowhere',
     difficulty: 'normal',
@@ -93,23 +93,30 @@ describe('buildManifest — recent-location cooldown', () => {
   const byLatLng = new Map(pool.map((l) => [`${l.lat},${l.lng}`, l.id]));
   const seeded = () => 0;
 
-  it('prefers locations outside recent history', async () => {
-    recordPlayedLocations(['loc-0', 'loc-1', 'loc-2', 'loc-3']);
+  it('honours the caller-supplied candidate order', async () => {
+    // Ordering is the Diversity Engine's job; buildManifest must not re-order,
+    // or the engine's bag/history guarantees would be silently discarded.
     const google = makeFakeGoogle(new Set(pool.map((l) => l.id)), byLatLng);
+    const candidates = [pool[4], pool[5], pool[0], pool[1]];
+    const rounds = await buildManifest(google, candidates, 2, { rng: seeded });
+    expect(rounds.map((r) => r.location_id)).toEqual(['loc-4', 'loc-5']);
+  });
+
+  it('skips candidates without a panorama and uses the next ones in order', async () => {
+    const google = makeFakeGoogle(new Set(['loc-2', 'loc-5']), byLatLng);
     const rounds = await buildManifest(google, pool, 2, { rng: seeded });
-    expect(rounds.map((r) => r.location_id).sort()).toEqual(['loc-4', 'loc-5']);
+    expect(rounds.map((r) => r.location_id)).toEqual(['loc-2', 'loc-5']);
   });
 
-  it('records the chosen locations to history only after a successful build', async () => {
+  it('records nothing — history advances only when a round starts', async () => {
+    // A manifest that the start RPC then rejects must not cost the player any
+    // freshness, so buildManifest deliberately has no side effects.
     const google = makeFakeGoogle(new Set(pool.map((l) => l.id)), byLatLng);
-    const rounds = await buildManifest(google, pool, 3, { rng: seeded });
-    const ids = rounds.map((r) => r.location_id);
-    expect(readLocationHistory()).toHaveLength(3);
-    expect(readLocationHistory().sort()).toEqual(ids.sort());
+    await buildManifest(google, pool, 3, { rng: seeded });
+    expect(readLocationHistory()).toEqual([]);
   });
 
-  it('does not record history when the manifest build fails', async () => {
-    // Only 2 of 6 locations resolve a panorama — not enough for 3 rounds.
+  it('throws when not enough panoramas resolve', async () => {
     const google = makeFakeGoogle(new Set(['loc-0', 'loc-1']), byLatLng);
     await expect(buildManifest(google, pool, 3, { rng: seeded })).rejects.toThrow();
     expect(readLocationHistory()).toEqual([]);

@@ -1,0 +1,202 @@
+{
+  "batch": "001",
+  "verifiedAt": "2026-07-26",
+  "counts": {
+    "candidates": 40,
+    "accepted": 40,
+    "verified": 14,
+    "unverified": 26
+  },
+  "verified": [
+    {
+      "id": "southafrica-karoo-highway",
+      "panoId": "6XcgSnZYKCaqmpiHezLY2A",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.041
+    },
+    {
+      "id": "reunion-cilaos-road",
+      "panoId": "qW7KV42pmtSv-_exOSCPwg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "rwanda-musanze-hills",
+      "panoId": "kWJVmwr36D8qB5M5xdUttw",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "australia-winton-landsborough",
+      "panoId": "cg9R2KlxLFxE7-GirlU0kQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.03
+    },
+    {
+      "id": "newzealand-alexandra-otago",
+      "panoId": "K0WHDxl2l3XzLaHfyju3Zg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "argentina-ruta40-patagonia",
+      "panoId": "iCMjk39lJgxck7sqG-0hbg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "peru-altiplano-juliaca",
+      "panoId": "WHn8qkLSijnBWHnnfYmVLA",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "ecuador-banos-andes",
+      "panoId": "G5pXZSn45H9TZkJ2caal1Q",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.033
+    },
+    {
+      "id": "colombia-salento-coffee",
+      "panoId": "XY2nmz3Vy1G6PjhCxz7oTQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "brazil-gramado-serra",
+      "panoId": "P10LY2LFq2Kk17HOlb707g",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "kyrgyzstan-naryn-pass",
+      "panoId": "Hqd7TGGxGMBBhm_TX0uAGw",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "srilanka-ella-hills",
+      "panoId": "BX4aUMb_Mvb6RX9BMz_laQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.075
+    },
+    {
+      "id": "malaysia-ipoh-outskirts",
+      "panoId": "xmOzOqLby_a4jZzLHNXbDQ",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "guatemala-chichicastenango",
+      "panoId": "l91IdZPdPl11WLPNqLlaVg",
+      "verifiedAt": "2026-07-26",
+      "offsetKm": 0.039
+    }
+  ],
+  "unverified": [
+    {
+      "id": "botswana-kalahari-highway",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "lesotho-moteng-pass",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "tunisia-douz-desert-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "madagascar-rn7-isalo",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "eswatini-malkerns-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "tanzania-kilimanjaro-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "uganda-fortportal-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "ghana-capecoast-outskirts",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-nullarbor-eyre",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "australia-ross-tasmania",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-coromandel-coast",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "fiji-sigatoka-queens-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "americansamoa-tutuila-coast",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "guam-tumon-coastal",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "northernmariana-saipan-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "bolivia-altiplano-uyuni",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "chile-atacama-inland",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "uruguay-tacuarembo-campo",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "mongolia-kharkhorin-steppe",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "jordan-maan-desert-highway",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "bhutan-punakha-valley",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "costarica-monteverde-road",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "jamaica-blue-mountains",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "greenland-nuuk-streets",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "iceland-modrudalur-highland",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "norway-geiranger-village",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

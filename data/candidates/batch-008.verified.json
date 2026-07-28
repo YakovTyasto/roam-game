@@ -1,0 +1,286 @@
+{
+  "batch": "008",
+  "verifiedAt": "2026-07-28",
+  "counts": {
+    "candidates": 50,
+    "accepted": 50,
+    "verified": 36,
+    "unverified": 14
+  },
+  "verified": [
+    {
+      "id": "lesotho-mokhotlong-a1",
+      "panoId": "izoNq7FiNFr30T5KXsyTsg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "mongolia-tsetserleg-a0501",
+      "panoId": "r34r5tGTl25za7VGlQnIYg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "japan-kutchan-route5",
+      "panoId": "kgqeIAmBf2JfVxZj9HWebA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "indonesia-bajawa-transflores",
+      "panoId": "AOta7arSVrP1dfuZjEegFQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.046
+    },
+    {
+      "id": "philippines-bontoc-halsemahighway",
+      "panoId": "CZTNBac5D3eKJKKrLfyEgA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "india-leh-nh3",
+      "panoId": "mhj7a6-nfYl1ZQ6iHqsqkQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.026
+    },
+    {
+      "id": "nepal-besisahar-prithvihighway",
+      "panoId": "cgI2ZRhXDmKK5oqg1IPpww",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.069
+    },
+    {
+      "id": "unitedstates-shoshoni-us20",
+      "panoId": "RonSf9QUYr06cXUJEabyxw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "unitedstates-vanhorn-us90",
+      "panoId": "MadTAqrIdt_LLUCV5rV_6w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.018
+    },
+    {
+      "id": "canada-hearst-highway11",
+      "panoId": "M4CAB17_zOeNQjkaiUSuLA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.052
+    },
+    {
+      "id": "mexico-guerreronegro-mex1",
+      "panoId": "5I1PBbBgj6j58u3ij6QckA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.027
+    },
+    {
+      "id": "peru-abancay-pe3s",
+      "panoId": "ZdDnWVCx413wOlmvnxaSKg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.037
+    },
+    {
+      "id": "colombia-mocoa-ruta45",
+      "panoId": "CdDYptZ4-NsgKqno3ubWVg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.025
+    },
+    {
+      "id": "brazil-alcantara-ma106",
+      "panoId": "CAoSF0NJSE0wb2dLRUlDQWdJQ20tZW1EX2dF",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.064
+    },
+    {
+      "id": "paraguay-filadelfia-ruta9",
+      "panoId": "NDsIX-pP8CM29NK-hmfQsw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.032
+    },
+    {
+      "id": "australia-norseman-eyrehighway",
+      "panoId": "aUJy1wEJj8C1vYzZry0xog",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.018
+    },
+    {
+      "id": "australia-hughenden-brodiestreet",
+      "panoId": "wYbfS0n_YfQ8HHM9vUZ-eQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "newzealand-sh85-ranfurly",
+      "panoId": "r07kIKwFScBwM_aOcP9TlA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "vietnam-hoian-tranphu",
+      "panoId": "qjeDW5AXcOHOsnuPyGPvEA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.014
+    },
+    {
+      "id": "cambodia-battambang-street2",
+      "panoId": "yjI-K7cqEJcAfurVK2nUiQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.051
+    },
+    {
+      "id": "laos-luangprabang-sisavangvong",
+      "panoId": "F4yKKcoh4S0MrlRq-sH1Bg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.016
+    },
+    {
+      "id": "turkiye-safranbolu-carsi",
+      "panoId": "kmSADOfUIeKEMExnNRgwFg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "greece-nafplio-vasileos",
+      "panoId": "9GullHpJH3B-2UQ0-Y1WsQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.008
+    },
+    {
+      "id": "italy-ascolipiceno-corsomazzini",
+      "panoId": "W4QUADB_QQCzI3SL-cJnhQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "france-figeac-ruegambetta",
+      "panoId": "AfhQIlHL98r1LjnXhDslSg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "germany-goerlitz-obermarkt",
+      "panoId": "1I8X9Yvxi9u3owezFy8JxA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "romania-sibiu-strananicolae",
+      "panoId": "Usx3Udz45oIGbWDUGcQDCQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.001
+    },
+    {
+      "id": "bulgaria-veliko-tarnovo-stefan",
+      "panoId": "m4Tlxd6cvaxs7rszPmA_gw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.024
+    },
+    {
+      "id": "slovakia-banskabystrica-namestie",
+      "panoId": "6wtPJsH_4NKeDwysDaRUqA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.014
+    },
+    {
+      "id": "canada-charlottetown-greatgeorge",
+      "panoId": "VU4m3IFCPUqc42CGTSJCTA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "unitedstates-bisbee-mainstreet",
+      "panoId": "7WmbKY0grNzp3t2k8kVmlg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.03
+    },
+    {
+      "id": "argentina-tilcara-belgrano",
+      "panoId": "aXMcshzcNKKCsgqSsUQTmw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "brazil-tiradentes-ruadireita",
+      "panoId": "CAoSFkNJSE0wb2dLRUlDQWdJQ2szTmZlUlE.",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "southafrica-hermanus-mainroad",
+      "panoId": "LVZMAlDc8PvX9nQtLicSyA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.027
+    },
+    {
+      "id": "newzealand-greymouth-mackaystreet",
+      "panoId": "jsm_ympQwLnfb9rPMq8m7Q",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "australia-katoomba-katoombastreet",
+      "panoId": "zTesNsHE4MoTtPecygto7A",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.002
+    }
+  ],
+  "unverified": [
+    {
+      "id": "namibia-solitaire-c14",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "botswana-ghanzi-a2",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "southafrica-calvinia-hoopstraat",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "morocco-midelt-n13",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "kazakhstan-kegen-a351",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "southkorea-jeongseon-route42",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "taiwan-fenqihu-route169",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "malaysia-tanahrata-route59",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "chile-chaiten-ruta7",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "argentina-gobernadorgregores-ruta40",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "bolivia-tupiza-avenidaregimiento",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "newzealand-sh6-murchison",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "chile-frutillar-philippi",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "morocco-chefchaouen-hassanii",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

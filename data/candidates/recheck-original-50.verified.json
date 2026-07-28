@@ -1,0 +1,302 @@
+{
+  "batch": "recheck-original-50",
+  "verifiedAt": "2026-07-27",
+  "counts": {
+    "candidates": 50,
+    "accepted": 50,
+    "verified": 44,
+    "unverified": 6
+  },
+  "verified": [
+    {
+      "id": "paris-eiffel",
+      "panoId": "Xta4ugN_QRTIo3XDFLujgw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "london-westminster",
+      "panoId": "ZmsI43WwTX2x8c_UcLF7jw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.017
+    },
+    {
+      "id": "rome-colosseum",
+      "panoId": "Z47FwC7ICZVNc2M7rWmIMg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.028
+    },
+    {
+      "id": "venice-canal",
+      "panoId": "CAoSFkNJSE0wb2dLRUlDQWdJQ0V1Wlg5ZWc.",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.001
+    },
+    {
+      "id": "barcelona-sagrada",
+      "panoId": "95Ttwo22PlsJM3ZuWJ8Hkw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "berlin-brandenburg",
+      "panoId": "7V_Y88lkp1msmQxuqoeq7g",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "athens-acropolis",
+      "panoId": "M3rDCliijGd7f2TaAwnf6A",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.133
+    },
+    {
+      "id": "amsterdam-canal",
+      "panoId": "3gx1wLT77IUdNdpDHayyKA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.002
+    },
+    {
+      "id": "prague-oldtown",
+      "panoId": "8BXNrpb9N4m3_IpoGnD9zw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "lisbon-alfama",
+      "panoId": "s3OZJNePIM5megzeJxEAXA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "stockholm-gamlastan",
+      "panoId": "322ejJ013uJRMpDoqfjUFw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "zurich-lake",
+      "panoId": "gFGRJ98gime-4cNxarn4nA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "edinburgh-royalmile",
+      "panoId": "d0IQvWZjwLzrpNPA03ESSQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.018
+    },
+    {
+      "id": "reykjavik-center",
+      "panoId": "gMrLMqGZfjtaPBNwOHRgmw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "dubrovnik-walls",
+      "panoId": "uGpyiwiz2yHYtUVFdpV0lg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "nyc-timessquare",
+      "panoId": "ywskIOsAFskiKHt5fwIUWA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "sf-goldengate",
+      "panoId": "pWtT7jOIWZtEQm-KDcgqrQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.028
+    },
+    {
+      "id": "chicago-millennium",
+      "panoId": "QZFXb5I7gYZegqvmi7kYOQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.014
+    },
+    {
+      "id": "toronto-downtown",
+      "panoId": "uZJI93W2K-JS1I67-YS_7Q",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "vancouver-gastown",
+      "panoId": "q8WdYOVlreNiwWoDx_g15w",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.01
+    },
+    {
+      "id": "mexicocity-zocalo",
+      "panoId": "x2KyfopAtV3pg_Tcx7_YKw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "neworleans-french",
+      "panoId": "OhgO3V1TU-wSM0A8IBjZWw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "oaxaca-center",
+      "panoId": "RCcXsMXf3iwecLySwQBF1w",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "rio-copacabana",
+      "panoId": "7qjBV14agwlgVc6KCtXMVQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.092
+    },
+    {
+      "id": "buenosaires-obelisco",
+      "panoId": "T32SqZE3NkYZDJhnIy4gpA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "santiago-center",
+      "panoId": "zvrEwnaFCc5oJLwYibj4ag",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.011
+    },
+    {
+      "id": "cusco-plaza",
+      "panoId": "8853zU5s8QMu-oKS6BPLcw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.035
+    },
+    {
+      "id": "cartagena-oldcity",
+      "panoId": "vTBz6H2NUIAmnvomh0XFRw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.038
+    },
+    {
+      "id": "valparaiso-hills",
+      "panoId": "nZYP43hfaUQzaCiIfowMnA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "dubai-marina",
+      "panoId": "qhIFoM83XAvR0_t4v8iXMw",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "jerusalem-oldcity",
+      "panoId": "zpdcMsH1hKsThQQoTVFd2g",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.043
+    },
+    {
+      "id": "nairobi-center",
+      "panoId": "Lz4-whHVErwA98oXe1lpDA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "tokyo-shibuya",
+      "panoId": "XlVh96-Z9lAI5tKrU2O4Yg",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.001
+    },
+    {
+      "id": "singapore-marina",
+      "panoId": "PCa_v3w-GEdKE5krOd5nbQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "seoul-gyeongbok",
+      "panoId": "tT6O77Wv_Y1ct91PTPfXrA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "hongkong-tsimshatsui",
+      "panoId": "D7Ks7DJsNg_WMdROzEp40A",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.013
+    },
+    {
+      "id": "istanbul-sultanahmet",
+      "panoId": "j_q4DCQ1r347av7gcWcrCA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.005
+    },
+    {
+      "id": "kyoto-gion",
+      "panoId": "io_PwbaaDBtlORhfh4rJpA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.048
+    },
+    {
+      "id": "taipei-101",
+      "panoId": "mkvLcZYsKZhJhutMsVU4HA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.007
+    },
+    {
+      "id": "sydney-operahouse",
+      "panoId": "cFou_FaIrbvqN0kcS5QuxA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.012
+    },
+    {
+      "id": "melbourne-flinders",
+      "panoId": "JExXU33eyq-qP-l1vRyExQ",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.061
+    },
+    {
+      "id": "auckland-viaduct",
+      "panoId": "3I6loqin1YB7uKhliDZlfA",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.028
+    },
+    {
+      "id": "queenstown-lakefront",
+      "panoId": "_BapbaakU-zbJaDzkwkZ_w",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "wellington-waterfront",
+      "panoId": "WomWNQ3SF_MVZrF-bkqT8Q",
+      "verifiedAt": "2026-07-27",
+      "offsetKm": 0.017
+    }
+  ],
+  "unverified": [
+    {
+      "id": "havana-malecon",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "cairo-giza",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "capetown-waterfront",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "marrakech-medina",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "bangkok-grandpalace",
+      "reason": "ZERO_RESULTS"
+    },
+    {
+      "id": "delhi-indiagate",
+      "reason": "ZERO_RESULTS"
+    }
+  ]
+}

@@ -4,7 +4,6 @@ import type { Difficulty } from '../config/difficulty';
 import type { GameConfig } from '../config/gameConfig';
 import { hasGoogleMapsKey, hasSupabaseConfig } from '../config/env';
 import { locationProvider } from '../providers/LocationProvider';
-import { buildDifficultyPool } from '../utils/difficultyPool';
 import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
 import { buildManifest } from '../multiplayer/manifest';
 import type { ManifestRound } from '../multiplayer/types';
@@ -89,9 +88,15 @@ export function useSoloRun(): SoloRunController {
     if (hasSupabaseConfig() && hasGoogleMapsKey()) {
       try {
         const google = await ensureGoogleMaps();
-        const all = await locationProvider.getAll();
-        const { locations: pool } = buildDifficultyPool(all, difficulty, roundCount);
-        const manifest = await buildManifest(google, pool, roundCount);
+        // Ask the Diversity Engine for an ordered candidate list: the first
+        // `roundCount` are the intended rounds and the rest are ranked spares
+        // for candidates whose panorama can't be resolved. buildManifest walks
+        // the list in order, so the manifest inherits the engine's guarantees.
+        const { locations, backups } = await locationProvider.getGameLocations(
+          roundCount,
+          difficulty,
+        );
+        const manifest = await buildManifest(google, [...locations, ...backups], roundCount);
         const { createSoloRun } = await import('./soloRunApi');
         runIdRef.current = await createSoloRun(difficulty, manifest, timerSeconds);
         roundsRef.current = roundCount;

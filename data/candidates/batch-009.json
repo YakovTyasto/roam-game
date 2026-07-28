@@ -1,0 +1,692 @@
+{
+  "batch": "009",
+  "notes": "40 Easy + 10 Normal. Easy is 16 landmark / 24 urban, which holds the easy tier's landmark share near 48% against a 35% floor and keeps landmark+urban at 100% against an 80% floor, with no remote entries at all. The 24 urban Easy candidates are distinctive city centres rather than world landmarks, so the batch is geographically diverse instead of being a list of famous monuments. The 10 Normal are 4 rural / 3 suburban / 3 urban, continuing to protect the Normal rural+remote floor. No panoId appears here: one may only come from a real verification run.",
+  "candidates": [
+    {
+      "id": "peru-arequipa-plazadearmas",
+      "lat": -16.3985,
+      "lng": -71.5365,
+      "label": "Plaza de Armas, Arequipa",
+      "country": "Peru",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Plaza de Armas, Arequipa, arcaded in white sillar volcanic stone.",
+      "rationale": "Easy: a white volcanic-stone colonnade under a snow-capped volcano is unmistakable once seen. 1000 km from the Cusco entry."
+    },
+    {
+      "id": "bolivia-sucre-plaza25demayo",
+      "lat": -19.0475,
+      "lng": -65.2595,
+      "label": "Plaza 25 de Mayo, Sucre",
+      "country": "Bolivia",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Plaza 25 de Mayo, the central square of Sucre.",
+      "rationale": "Easy: uniformly whitewashed colonial arcades around a formal plaza — visually striking and easy to reason to Andean South America."
+    },
+    {
+      "id": "argentina-ushuaia-sanmartin",
+      "lat": -54.8025,
+      "lng": -68.3035,
+      "label": "Avenida San Martín, Ushuaia",
+      "country": "Argentina",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Avenida San Martín, the main street of Ushuaia, Tierra del Fuego.",
+      "rationale": "Easy: a Spanish-signed town beneath snow peaks at the end of the continent — the combination of latitude cues and language makes it solvable quickly."
+    },
+    {
+      "id": "brazil-manaus-teatroamazonas",
+      "lat": -3.1305,
+      "lng": -60.0235,
+      "label": "Teatro Amazonas, Manaus",
+      "country": "Brazil",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "The square in front of the Teatro Amazonas opera house, Manaus.",
+      "rationale": "Easy: a pink Belle Époque opera house in the middle of the Amazon. 2700 km from any other Brazilian entry."
+    },
+    {
+      "id": "chile-puntaarenas-plazamunoz",
+      "lat": -53.1625,
+      "lng": -70.9105,
+      "label": "Plaza Muñoz Gamero, Punta Arenas",
+      "country": "Chile",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Plaza Muñoz Gamero, central Punta Arenas, Magallanes.",
+      "rationale": "Easy: grand Patagonian mansions around a cypress-planted square — distinctive and clearly far south. 2000 km from Valparaíso."
+    },
+    {
+      "id": "colombia-guatape-callesdelzocalo",
+      "lat": 6.2325,
+      "lng": -75.1585,
+      "label": "Calle del Recuerdo, Guatapé",
+      "country": "Colombia",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Calle del Recuerdo, Guatapé, Antioquia, with its painted zócalo panels.",
+      "rationale": "Easy: every building base is covered in coloured relief panels — one of the most visually distinctive streetscapes anywhere, and not a monument."
+    },
+    {
+      "id": "venezuela-merida-plazabolivar",
+      "lat": 8.5945,
+      "lng": -71.1445,
+      "label": "Plaza Bolívar, Mérida",
+      "country": "Venezuela",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Plaza Bolívar, central Mérida, Venezuelan Andes.",
+      "rationale": "Easy: a colonial plaza under high Andean peaks. Venezuela's first catalog entry, which is why it belongs in the easy tier rather than the hard one."
+    },
+    {
+      "id": "guyana-georgetown-stabroek",
+      "lat": 6.8145,
+      "lng": -58.1635,
+      "label": "Stabroek Market, Georgetown",
+      "country": "Guyana",
+      "continent": "South America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Water Street at Stabroek Market, Georgetown.",
+      "rationale": "Easy: a cast-iron colonial market hall with a clock tower, English signage, tropical light. Distinctive, and Guyana is a new country for the catalog."
+    },
+    {
+      "id": "mexico-guanajuato-jardinunion",
+      "lat": 21.0175,
+      "lng": -101.2525,
+      "label": "Jardín de la Unión, Guanajuato",
+      "country": "Mexico",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Jardín de la Unión, the central plaza of Guanajuato.",
+      "rationale": "Easy: laurel-shaded plaza against a baroque theatre and coloured hillside houses. 350 km from Querétaro."
+    },
+    {
+      "id": "cuba-trinidad-plazamayor",
+      "lat": 21.8025,
+      "lng": -79.9845,
+      "label": "Plaza Mayor, Trinidad",
+      "country": "Cuba",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Plaza Mayor, Trinidad, Sancti Spíritus.",
+      "rationale": "Easy if it exists at all: pastel colonial facades and cobbles. Cuba lost its only entry when the Malecón failed, and official coverage there is doubtful — this is a deliberate second and final test of the country."
+    },
+    {
+      "id": "unitedstates-savannah-bullstreet",
+      "lat": 32.0765,
+      "lng": -81.0925,
+      "label": "Bull Street, Savannah",
+      "country": "United States",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Bull Street through the historic squares of Savannah, Georgia.",
+      "rationale": "Easy: live oaks hung with Spanish moss over antebellum townhouses — a look that exists in one part of one country."
+    },
+    {
+      "id": "canada-victoria-governmentstreet",
+      "lat": 48.4255,
+      "lng": -123.3665,
+      "label": "Government Street, Victoria",
+      "country": "Canada",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Government Street through downtown Victoria, British Columbia.",
+      "rationale": "Easy: hanging flower baskets, Edwardian stone and a harbour full of floatplanes — visibly Canadian-Pacific. Replaces a Petit-Champlain candidate the collision check found 120 m from the Château Frontenac entry."
+    },
+    {
+      "id": "guatemala-flores-callecentroamerica",
+      "lat": 16.9285,
+      "lng": -89.8925,
+      "label": "Calle Centro América, Flores",
+      "country": "Guatemala",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Calle Centro América on the island town of Flores, Petén.",
+      "rationale": "Easy: brightly painted low houses on a lake island, all visibly surrounded by water. Distinctive without being a monument."
+    },
+    {
+      "id": "belize-sanignacio-burnsavenue",
+      "lat": 17.1585,
+      "lng": -89.0705,
+      "label": "Burns Avenue, San Ignacio",
+      "country": "Belize",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Burns Avenue, San Ignacio, Cayo District.",
+      "rationale": "Easy: English signage in a Central American tropical town is a giveaway combination found essentially only in Belize. New country for the catalog."
+    },
+    {
+      "id": "curacao-willemstad-handelskade",
+      "lat": 12.1085,
+      "lng": -68.9335,
+      "label": "Handelskade, Willemstad",
+      "country": "Curaçao",
+      "continent": "North America",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Handelskade waterfront, Punda, Willemstad.",
+      "rationale": "Easy: Dutch gabled facades painted in pastel on a Caribbean harbour. Unambiguous, and a new country for the catalog."
+    },
+    {
+      "id": "portugal-porto-ribeira",
+      "lat": 41.1405,
+      "lng": -8.6135,
+      "label": "Cais da Ribeira, Porto",
+      "country": "Portugal",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Cais da Ribeira on the Douro waterfront, Porto.",
+      "rationale": "Easy: tiled riverfront houses under the Dom Luís bridge. 300 km from Lisbon."
+    },
+    {
+      "id": "france-colmar-petitevenise",
+      "lat": 48.0735,
+      "lng": 7.3585,
+      "label": "Quai de la Poissonnerie, Colmar",
+      "country": "France",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Quai de la Poissonnerie, the Petite Venise quarter of Colmar, Alsace.",
+      "rationale": "Easy: half-timbered coloured houses over a canal, with French signage — the German-looking architecture plus French text is a strong, solvable combination."
+    },
+    {
+      "id": "austria-hallstatt-seestrasse",
+      "lat": 47.5625,
+      "lng": 13.6485,
+      "label": "Seestraße, Hallstatt",
+      "country": "Austria",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Seestraße along the lakefront at Hallstatt, Upper Austria.",
+      "rationale": "Easy: timber houses stacked between a lake and a cliff. 250 km from the Schönbrunn entry."
+    },
+    {
+      "id": "switzerland-bern-kramgasse",
+      "lat": 46.9475,
+      "lng": 7.4515,
+      "label": "Kramgasse, Bern",
+      "country": "Switzerland",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Kramgasse, the arcaded main street of Bern's old town.",
+      "rationale": "Easy: 6 km of sandstone arcades with painted fountains down the middle. 100 km from the Zurich entry."
+    },
+    {
+      "id": "netherlands-giethoorn-binnenpad",
+      "lat": 52.7405,
+      "lng": 6.0785,
+      "label": "Binnenpad, Giethoorn",
+      "country": "Netherlands",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Binnenpad, the canal path through Giethoorn, Overijssel.",
+      "rationale": "Easy: thatched cottages, footbridges and no roads. Distinctly Dutch and 120 km from Amsterdam."
+    },
+    {
+      "id": "belgium-bruges-markt",
+      "lat": 51.2085,
+      "lng": 3.2245,
+      "label": "Markt, Bruges",
+      "country": "Belgium",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "The Markt square below the belfry, Bruges.",
+      "rationale": "Easy: stepped gables around a square under a leaning belfry. Belgium's first catalog entry."
+    },
+    {
+      "id": "unitedkingdom-bath-royalcrescent",
+      "lat": 51.3865,
+      "lng": -2.3705,
+      "label": "Royal Crescent, Bath",
+      "country": "United Kingdom",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Royal Crescent, Bath, Somerset.",
+      "rationale": "Easy: a 150 m sweep of identical Georgian stone terraces. 170 km from London."
+    },
+    {
+      "id": "ireland-galway-quaystreet",
+      "lat": 53.2715,
+      "lng": -9.0545,
+      "label": "Quay Street, Galway",
+      "country": "Ireland",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Quay Street, the Latin Quarter of Galway.",
+      "rationale": "Easy: brightly painted pub frontage with bilingual Irish and English signage — the bilingual signs settle the country outright. Ireland missed once on a Connemara road 60 km west."
+    },
+    {
+      "id": "norway-bergen-bryggen",
+      "lat": 60.3975,
+      "lng": 5.3235,
+      "label": "Bryggen, Bergen",
+      "country": "Norway",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "The Bryggen wharf frontage, Bergen.",
+      "rationale": "Easy: a row of leaning wooden gabled warehouses on a harbour. 300 km from Flåm."
+    },
+    {
+      "id": "sweden-visby-stortorget",
+      "lat": 57.6405,
+      "lng": 18.2955,
+      "label": "Stora Torget, Visby",
+      "country": "Sweden",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Stora Torget in the walled town of Visby, Gotland.",
+      "rationale": "Easy: a medieval walled Baltic town with ruined stone churches. 200 km from Stockholm, and Sweden's second attempt after a highland road failed."
+    },
+    {
+      "id": "finland-porvoo-jokikatu",
+      "lat": 60.3945,
+      "lng": 25.6635,
+      "label": "Jokikatu, Porvoo",
+      "country": "Finland",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Jokikatu along the old town riverside, Porvoo.",
+      "rationale": "Easy: ochre timber warehouses on a river bank with Finnish and Swedish signage. 50 km from Helsinki — outside the cluster radius."
+    },
+    {
+      "id": "latvia-riga-livusquare",
+      "lat": 56.9495,
+      "lng": 24.1075,
+      "label": "Līvu laukums, Riga",
+      "country": "Latvia",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Līvu laukums in Riga's old town.",
+      "rationale": "Easy: art-nouveau and Hanseatic facades around a broad square. Latvia's first catalog entry."
+    },
+    {
+      "id": "lithuania-vilnius-pilies",
+      "lat": 54.6805,
+      "lng": 25.2895,
+      "label": "Pilies gatvė, Vilnius",
+      "country": "Lithuania",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Pilies gatvė, the main old-town street of Vilnius.",
+      "rationale": "Easy: baroque church facades along a curving cobbled street. Lithuania's first catalog entry."
+    },
+    {
+      "id": "slovenia-ljubljana-cankarjevo",
+      "lat": 46.0505,
+      "lng": 14.5065,
+      "label": "Cankarjevo nabrežje, Ljubljana",
+      "country": "Slovenia",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [
+        "capitals"
+      ],
+      "source": "Cankarjevo nabrežje along the Ljubljanica river.",
+      "rationale": "Easy: pastel riverfront terraces under a castle hill, with distinctive Plečnik bridges. Slovenia's first catalog entry."
+    },
+    {
+      "id": "croatia-rovinj-grisia",
+      "lat": 45.0815,
+      "lng": 13.6375,
+      "label": "Grisia street, Rovinj",
+      "country": "Croatia",
+      "continent": "Europe",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Grisia, the stepped street climbing the Rovinj peninsula, Istria.",
+      "rationale": "Easy: Venetian-Istrian stone lanes rising to a campanile. 700 km from the Dubrovnik entry."
+    },
+    {
+      "id": "morocco-essaouira-avenueoqbaibnnafiaa",
+      "lat": 31.5125,
+      "lng": -9.7695,
+      "label": "Avenue Oqba Ibn Nafiaa, Essaouira",
+      "country": "Morocco",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Avenue Oqba Ibn Nafiaa along the Essaouira ramparts.",
+      "rationale": "Easy: blue-and-white medina walls on an Atlantic seafront. Distinctive, and 400 km from the Midelt hard candidate."
+    },
+    {
+      "id": "tanzania-stonetown-kenyattaroad",
+      "lat": -6.1625,
+      "lng": 39.1905,
+      "label": "Kenyatta Road, Stone Town",
+      "country": "Tanzania",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Kenyatta Road, Stone Town, Zanzibar.",
+      "rationale": "Easy: coral-stone Swahili architecture with carved doors. Tanzania missed once on a Kilimanjaro road 500 km away; Stone Town is a dense named urban area."
+    },
+    {
+      "id": "senegal-saintlouis-rueblaisediagne",
+      "lat": 16.0285,
+      "lng": -16.5085,
+      "label": "Rue Blaise Diagne, Saint-Louis",
+      "country": "Senegal",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Rue Blaise Diagne on the island of Saint-Louis, Senegal.",
+      "rationale": "Easy: colonial balconied townhouses in faded ochre with French signage in West Africa — a specific, readable combination. 250 km from Dakar."
+    },
+    {
+      "id": "ethiopia-lalibela-mainroad",
+      "lat": 12.0315,
+      "lng": 39.0435,
+      "label": "Lalibela town road, Amhara",
+      "country": "Ethiopia",
+      "continent": "Africa",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "The main town road through Lalibela, Amhara region.",
+      "rationale": "Easy in the sense the tier requires — Amharic script is unique to Ethiopia and Eritrea, so the view is quickly solvable. Ethiopia's first catalog entry."
+    },
+    {
+      "id": "nepal-bhaktapur-durbarsquare",
+      "lat": 27.672,
+      "lng": 85.428,
+      "label": "Durbar Square, Bhaktapur",
+      "country": "Nepal",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "The vehicle-accessible edge of Bhaktapur Durbar Square, Kathmandu valley.",
+      "rationale": "Easy: tiered pagoda temples and carved brick — visually unique to the Kathmandu valley. Replaces a Lijiang candidate: mainland China has no Google Street View car coverage, so it was a near-certain ZERO_RESULTS. The coordinate is on the square edge rather than inside it, because pedestrian precincts are what defeated the repair batch."
+    },
+    {
+      "id": "uzbekistan-bukhara-lyabihauz",
+      "lat": 39.7745,
+      "lng": 64.4185,
+      "label": "Lyab-i Hauz, Bukhara",
+      "country": "Uzbekistan",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "The Lyab-i Hauz pool and madrasas, Bukhara.",
+      "rationale": "Easy: tiled madrasa portals around a stone pool. Uzbekistan's first catalog entry, and visually unlike anywhere else in Asia."
+    },
+    {
+      "id": "india-jaisalmer-fortroad",
+      "lat": 26.9125,
+      "lng": 70.9125,
+      "label": "Fort Road, Jaisalmer",
+      "country": "India",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "landmark",
+      "tags": [
+        "famous"
+      ],
+      "source": "Fort Road below the Jaisalmer fort walls, Rajasthan.",
+      "rationale": "Easy: a golden sandstone fort rising straight out of the desert. India's second entry alongside the Leh hard candidate, 900 km apart."
+    },
+    {
+      "id": "srilanka-galle-churchstreet",
+      "lat": 6.0275,
+      "lng": 80.2175,
+      "label": "Church Street, Galle Fort",
+      "country": "Sri Lanka",
+      "continent": "Asia",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Church Street inside Galle Fort, southern Sri Lanka.",
+      "rationale": "Easy: Dutch colonial verandahs and rampart walls in the tropics. 120 km from Colombo."
+    },
+    {
+      "id": "australia-freemantle-highstreet",
+      "lat": -32.0545,
+      "lng": 115.7445,
+      "label": "High Street, Fremantle",
+      "country": "Australia",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "High Street, Fremantle, Western Australia.",
+      "rationale": "Easy: an intact Victorian port streetscape with wide verandahs and left-hand traffic. 2000 km from any other Australian entry."
+    },
+    {
+      "id": "fiji-levuka-beachstreet",
+      "lat": -17.6825,
+      "lng": 178.8395,
+      "label": "Beach Street, Levuka",
+      "country": "Fiji",
+      "continent": "Oceania",
+      "difficulty": "easy",
+      "setting": "urban",
+      "tags": [],
+      "source": "Beach Street, Levuka, Ovalau island.",
+      "rationale": "Easy: a colonial timber shopfront row facing a Pacific beach. Fiji has missed twice on road coordinates; a named heritage street is the method's proper test."
+    },
+    {
+      "id": "hungary-eger-dobosquare",
+      "lat": 47.9025,
+      "lng": 20.3735,
+      "label": "Dobó tér, Eger",
+      "country": "Hungary",
+      "continent": "Europe",
+      "difficulty": "normal",
+      "setting": "urban",
+      "tags": [],
+      "source": "Dobó tér, the central square of Eger.",
+      "rationale": "Normal, not easy: baroque facades and a Hungarian-signed square that could be Slovakia or Austria at a glance. The Budapest Chain Bridge is the easy Hungarian view."
+    },
+    {
+      "id": "poland-zamosc-rynekwielki",
+      "lat": 50.7185,
+      "lng": 23.2525,
+      "label": "Rynek Wielki, Zamość",
+      "country": "Poland",
+      "continent": "Europe",
+      "difficulty": "normal",
+      "setting": "urban",
+      "tags": [],
+      "source": "Rynek Wielki, the arcaded renaissance market square of Zamość.",
+      "rationale": "Normal: an Italianate square in eastern Poland — the architecture argues for Italy and the signage against it. 240 km from Lublin."
+    },
+    {
+      "id": "portugal-guimaraes-ruadesantamaria",
+      "lat": 41.4445,
+      "lng": -8.2915,
+      "label": "Rua de Santa Maria, Guimarães",
+      "country": "Portugal",
+      "continent": "Europe",
+      "difficulty": "normal",
+      "setting": "suburban",
+      "tags": [],
+      "source": "Rua de Santa Maria, the medieval street of Guimarães, Minho.",
+      "rationale": "Normal: granite and whitewash in a narrow northern Portuguese lane. Portuguese signage settles the country; the town does not announce itself. 50 km from Porto."
+    },
+    {
+      "id": "mexico-todossantos-calletopete",
+      "lat": 23.4465,
+      "lng": -110.2265,
+      "label": "Calle Topete, Todos Santos",
+      "country": "Mexico",
+      "continent": "North America",
+      "difficulty": "normal",
+      "setting": "rural",
+      "tags": [],
+      "source": "Calle Topete, Todos Santos, Baja California Sur.",
+      "rationale": "Normal: a low desert town of painted adobe and palms. Mexican but placeable only to 'somewhere on the Pacific side'. 1000 km from Guerrero Negro."
+    },
+    {
+      "id": "unitedstates-marfa-highlandavenue",
+      "lat": 30.3095,
+      "lng": -104.0215,
+      "label": "Highland Avenue, Marfa",
+      "country": "United States",
+      "continent": "North America",
+      "difficulty": "normal",
+      "setting": "rural",
+      "tags": [],
+      "source": "Highland Avenue, Marfa, west Texas.",
+      "rationale": "Normal: a high-desert town with a domed courthouse and wide empty streets. 80 km from the Van Horn hard candidate, so a separate cluster."
+    },
+    {
+      "id": "southafrica-prince-albert-churchstreet",
+      "lat": -33.2255,
+      "lng": 22.0295,
+      "label": "Church Street, Prince Albert",
+      "country": "South Africa",
+      "continent": "Africa",
+      "difficulty": "normal",
+      "setting": "rural",
+      "tags": [],
+      "source": "Church Street, Prince Albert, at the foot of the Swartberg, Western Cape.",
+      "rationale": "Normal: Karoo cottages with white gables under bare mountains. More built form and more signage than the hard Karoo entries, less than a town centre."
+    },
+    {
+      "id": "kenya-nanyuki-kenyattaavenue",
+      "lat": 0.0175,
+      "lng": 37.0735,
+      "label": "Kenyatta Avenue, Nanyuki",
+      "country": "Kenya",
+      "continent": "Africa",
+      "difficulty": "normal",
+      "setting": "rural",
+      "tags": [],
+      "source": "Kenyatta Avenue, Nanyuki, Laikipia, on the equator below Mount Kenya.",
+      "rationale": "Normal: an upcountry Kenyan town street with English and Swahili signage. Kenya has now missed three times on approximate coordinates — this is the first named-street attempt, and if it fails the country should be set aside."
+    },
+    {
+      "id": "vietnam-danang-bachdang",
+      "lat": 16.0715,
+      "lng": 108.2245,
+      "label": "Bạch Đằng, Da Nang",
+      "country": "Vietnam",
+      "continent": "Asia",
+      "difficulty": "normal",
+      "setting": "urban",
+      "tags": [],
+      "source": "Bạch Đằng riverside street, central Da Nang.",
+      "rationale": "Normal: a modern Vietnamese riverfront with heavy scooter traffic. The diacritics settle the country; the city is one of several. 30 km from Hội An — outside the cluster radius."
+    },
+    {
+      "id": "indonesia-bukittinggi-jalanahmadyani",
+      "lat": -0.3055,
+      "lng": 100.3695,
+      "label": "Jalan Ahmad Yani, Bukittinggi",
+      "country": "Indonesia",
+      "continent": "Asia",
+      "difficulty": "normal",
+      "setting": "suburban",
+      "tags": [],
+      "source": "Jalan Ahmad Yani, central Bukittinggi, West Sumatra.",
+      "rationale": "Normal: a highland Sumatran town with Minangkabau roof forms among ordinary shophouses. Indonesian signage narrows the country, the island is the real question."
+    },
+    {
+      "id": "philippines-dumaguete-rizalboulevard",
+      "lat": 9.3095,
+      "lng": 123.3095,
+      "label": "Rizal Boulevard, Dumaguete",
+      "country": "Philippines",
+      "continent": "Asia",
+      "difficulty": "normal",
+      "setting": "suburban",
+      "tags": [],
+      "source": "Rizal Boulevard, the seafront promenade of Dumaguete, Negros Oriental.",
+      "rationale": "Normal: acacia-shaded seafront with English signage. 100 km from Bacolod and visually unremarkable — the tier turns on recognising the Philippines, not the town."
+    }
+  ]
+}

@@ -2,16 +2,21 @@ import { describe, expect, it } from 'vitest';
 import type { GameLocation } from '../types';
 import { pickNextEndlessLocation, shouldWarnEndlessUsage } from './endlessSelection';
 
-function loc(id: string): GameLocation {
-  return { id, lat: 0, lng: 0, label: id, country: 'X', difficulty: 'normal' };
+/**
+ * Fixtures must be geographically distinct: the Diversity Engine works on
+ * canonical groups, so locations sharing coordinates are deliberately treated
+ * as one place and would collapse into a single selectable item.
+ */
+function loc(id: string, index: number): GameLocation {
+  return { id, lat: index * 5, lng: index * 7, label: id, country: 'X', difficulty: 'normal' };
 }
 
-const rng0 = () => 0; // deterministic: always picks index 0 after any shuffle math
+const rng0 = () => 0;
 
 describe('pickNextEndlessLocation', () => {
-  const pool = [loc('a'), loc('b'), loc('c')];
+  const pool = [loc('a', 0), loc('b', 1), loc('c', 2)];
 
-  it('avoids ids already used this session while any remain', () => {
+  it('avoids groups already used this session while any remain', () => {
     const used = new Set(['a']);
     const picked = pickNextEndlessLocation(pool, 'normal', used, [], rng0);
     expect(picked).not.toBeNull();
@@ -36,6 +41,17 @@ describe('pickNextEndlessLocation', () => {
     const picked = pickNextEndlessLocation(pool, 'normal', used, [], rng0);
     expect(picked).not.toBeNull();
     expect(pool.map((l) => l.id)).toContain(picked!.id);
+  });
+
+  it('treats two rows for one place as a single session entry', () => {
+    // Same coordinates → one canonical group. Excluding either excludes both.
+    const twins = [
+      { ...loc('view-north', 3), id: 'view-north' },
+      { ...loc('view-north', 3), id: 'view-south' },
+      loc('elsewhere', 9),
+    ];
+    const picked = pickNextEndlessLocation(twins, 'normal', new Set(['view-north']), [], rng0);
+    expect(picked?.id).toBe('elsewhere');
   });
 
   it('returns null for an empty pool', () => {

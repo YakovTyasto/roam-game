@@ -19,17 +19,25 @@ apply once, in order, per environment.
 | 8 | `0008_solo_run_abandon.sql` | Explicit solo-run abandonment RPC |
 | 9 | `0009_solo_run_resume.sql` | Extends the (already-existing) active-run RPC with server-time resume data |
 | 10 | `0010_rate_limiting.sql` | Server-side rate limiting (generic counter + 4 wired RPCs) |
+| 11 | `0011_location_history.sql` | Durable per-player location history (Diversity Engine V2) |
+| 12 | `0012_room_diversity.sql` | Anonymised room-wide recent locations for host-side selection |
 
-All of 6-10 are additive/backward-compatible: new nullable columns, widened
-check constraints, and new or same-signature functions — verified against a
-database seeded with pre-V3 (0001-0005-only) data, see "Upgrade-path
-verification" below. Never edit an applied migration file; a fix always
-ships as a new incremental migration.
+All of 6-12 are additive/backward-compatible: new nullable columns, widened
+check constraints, one new table, and new or same-signature functions —
+verified against a database seeded with pre-V3 (0001-0005-only) data and
+against one seeded through 0010, see "Upgrade-path verification" below. Never
+edit an applied migration file; a fix always ships as a new incremental
+migration.
+
+`0011` and `0012` touch nothing that already exists. `0011` adds one table, two
+indexes, four functions and one RLS policy; `0012` adds a single read-only RPC.
+Neither modifies an existing table, function, policy or grant, so applying them
+cannot affect an active room, run or leaderboard.
 
 ## Upgrade-path verification
 
-Two upgrade paths were verified against a real local Postgres instance for
-this phase (not just a fresh 0001→latest apply):
+Three upgrade paths were verified against a real local Postgres instance
+(not just a fresh 0001→latest apply):
 
 - **0001→latest (fresh):** every suite below, run after applying all ten
   migrations to an empty database.
@@ -38,6 +46,15 @@ this phase (not just a fresh 0001→latest apply):
   top and re-run every suite — confirming the pre-existing row survives
   unchanged and new nullable columns correctly default to `NULL` rather than
   requiring a backfill.
+- **0010→0011 (deployed V3 production schema):** apply 0001-0010, seed a
+  profile row and a rate-limit row (simulating real V3 production data), then
+  apply `0011` and `0012` on top and run all eight suites — 151 assertions, all
+  passing, with the pre-existing rows intact.
+
+> The verification scripts are **not idempotent across repeated runs on the
+> same database** (e.g. `03_theme_locale_verify.sql` asserts that a profile
+> starts with `NULL` preferences, which is only true the first time). Run each
+> suite once per freshly-migrated database.
 
 ## Running the suites locally
 
@@ -186,3 +203,68 @@ psql -d roam_mp_test -f supabase/tests/05_resume_verify.sql
 ```
 
 Ends with `ALL RESUME TESTS PASSED`.
+
+## Durable location history (`07_location_history_verify.sql`)
+
+Verifies migration `0011` after applying `0001`→`0011`:
+
+- **Recording** — rounds are recorded and read back newest-first; replaying a
+  place moves its timestamp and updates its difficulty/mode rather than
+  duplicating the row; duplicate ids inside one call collapse to one row.
+- **Privacy** — a player reads only their own history; nothing exposes another
+  player's places, and no RPC returns a user id.
+- **Bounded storage** — history is capped at `roam_location_history_limit()`
+  (250) rows per player, trimmed oldest-first, and reads cannot exceed the cap
+  even when a larger limit is requested.
+- **Argument validation** — unknown difficulty/mode and oversized batches are
+  rejected; empty/`NULL` ids are skipped without failing the whole call (a
+  partially corrupt local cache must still sync its good part).
+- **Signed-out behaviour** — reads return an empty history rather than an
+  error (solo play must work with no account); writes are rejected.
+- **Reset** — scoped to the caller; another player's history is untouched.
+- **Rate limiting** — recording is limited with the stable `RATE_LIMITED:`
+  prefix, reusing the 0010 counter.
+- **Grants and RLS** — clients hold **no** direct privileges on
+  `location_history`; RLS is enabled with an owner-only select policy; `anon`
+  cannot execute any history RPC; `authenticated` can; every new function pins
+  `search_path = public, pg_temp`; both supporting indexes exist.
+
+```bash
+# after the 0001→0010 apply loop above:
+psql -d roam_mp_test -f supabase/migrations/0011_location_history.sql
+psql -d roam_mp_test -f supabase/tests/07_location_history_verify.sql
+```
+
+Ends with `=== 07_location_history_verify.sql: ALL ASSERTIONS PASSED ===`.
+
+## Room-wide novelty (`08_room_diversity_verify.sql`)
+
+Verifies migration `0012` after applying `0001`→`0012`:
+
+- **Membership** — a non-participant is rejected and learns nothing, not even
+  that the room exists; signed-out callers are rejected.
+- **k-anonymity floor** — a 2-player room returns nothing at all, with an
+  explicit `too_few_participants` reason, because any entry would be
+  attributable to the single other player. Three or more participants apply the
+  aggregate.
+- **Caller exclusion** — the caller's own places never appear, so they cannot
+  subtract themselves out to isolate somebody else. This holds for a guest
+  exactly as it does for the host.
+- **No identities** — the payload contains no user id in any form, and
+  `seen_by` counts range only over the *other* participants.
+- **Scope** — only current participants contribute; a player who left neither
+  counts toward the floor nor contributes rows.
+- **Ordering** — newest-first, so the client can rank by recency.
+- **Idempotent start** — a second `mp_start_match` on a started room is
+  rejected and cannot create a second manifest.
+- **Rate limiting and grants** — limited via the 0010 counter with the stable
+  `RATE_LIMITED:` prefix; `anon` cannot execute it, `authenticated` can;
+  `search_path` is pinned.
+
+```bash
+# after the 0001→0011 apply loop above:
+psql -d roam_mp_test -f supabase/migrations/0012_room_diversity.sql
+psql -d roam_mp_test -f supabase/tests/08_room_diversity_verify.sql
+```
+
+Ends with `=== 08_room_diversity_verify.sql: ALL ASSERTIONS PASSED ===`.

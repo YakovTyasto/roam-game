@@ -24,7 +24,61 @@ export interface GameLocation {
    * nearest available panorama. Defaults are applied by the Street View hook.
    */
   radius?: number;
+  /**
+   * Continent / macro-region. Optional on the shared type so runtime data from
+   * older manifests and stored snapshots stays valid; the curated catalog
+   * (`CatalogLocation`) requires it, and `continentForCountry()` derives it as
+   * a fallback. Drives in-match geographic diversity and continent collections.
+   */
+  continent?: import('../config/geography').Continent;
+  /**
+   * Curated collection tags (see `config/collections.ts`). Derived collections
+   * — continents, Islands, Left-Side Driving — are computed from metadata and
+   * must NOT appear here.
+   */
+  tags?: readonly import('../config/collections').CuratedTag[];
+  /**
+   * Explicit canonical group override. Set this when two entries are
+   * *intentionally* different panoramas of the same place (e.g. two viewpoints
+   * of one landmark) so the Diversity Engine treats them as one item and never
+   * serves both to a player in quick succession. Leave unset for genuinely
+   * distinct places — see `utils/canonicalGroup.ts`.
+   */
+  locationGroupId?: string;
+  /**
+   * Optionally pre-verified Street View panorama id. When present the Street
+   * View layer can skip the nearest-panorama lookup; when absent the existing
+   * radius-based resolution is used. Only ever populated by the verified
+   * catalog import workflow, never guessed.
+   */
+  panoId?: string;
+  /**
+   * ISO date (YYYY-MM-DD) on which `panoId` was confirmed to exist via the
+   * Street View metadata endpoint. Street View coverage is withdrawn and
+   * re-shot over time, so a verification has an age; the audit reports stale
+   * ones so they can be re-checked.
+   */
+  panoVerifiedAt?: string;
+  /**
+   * Physical character of the location. Drives the per-difficulty balance
+   * gates — a "Hard" tier made entirely of famous city centres is not actually
+   * hard. See `config/releaseGates.ts`.
+   */
+  setting?: import('../config/releaseGates').LocationSetting;
 }
+
+/**
+ * A curated catalog entry. Identical to `GameLocation` except the diversity
+ * metadata is *mandatory*, so a new location cannot be added to
+ * `src/data/locations.ts` without a continent and an explicit (possibly empty)
+ * tag list. Keeping `GameLocation` lenient preserves backwards compatibility
+ * with stored runs and multiplayer manifests created before V4.
+ */
+export type CatalogLocation = GameLocation & {
+  continent: import('../config/geography').Continent;
+  tags: readonly import('../config/collections').CuratedTag[];
+  setting: import('../config/releaseGates').LocationSetting;
+};
 
 /** Result of a single completed round. */
 export interface RoundResult {
