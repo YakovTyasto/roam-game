@@ -220,11 +220,14 @@ coordinates from what players actually see.
 
 **City-edge suburban locations verify far more reliably than remote roads.**
 That was convenient while `normal`/`suburban` was the worst-failing balance
-gate. After batch 005 it no longer is: 24 suburban and 16 rural Normal entries
-pushed the suburban and rural floors clear, and `balance.normal.urban.min` broke
-instead (18.1% urban against a 25% floor). The next Normal batch must lead with
-**urban** settings — real city-centre streets in mid-sized cities — or the gate
-count will not improve no matter how many groups are added.
+gate. Batch 005 cleared the suburban and rural floors and broke
+`balance.normal.urban.min` instead (18.1% against a 25% floor); batch 006's 37
+urban entries cleared that in turn. **Every balance gate now passes**, so
+setting mix is no longer what to optimise for. What remains is raw size, and
+`hard` is the tier furthest from its floor — which is also the tier the
+named-street method serves worst, because hard wants sparse clues and named
+streets supply clues. Expect hit rates to fall back toward the batch-002 range
+when hard candidates resume.
 
 ### Coverage evidence
 
@@ -234,7 +237,8 @@ candidate in that country actually resolved a panorama.
 Hit rate by batch: **001 = 35%** (near place names), **002 = 55%** (named road
 corridors), **003 = 39%** (city-edge suburban), **004 = 85%** (pedestrian
 squares, promenades and named city-centre streets), **005 = 87.5%** (the same
-method applied to deliberately unrecognisable places).
+method applied to deliberately unrecognisable places), **006 = 92.5%** (named
+central streets in mid-sized cities).
 
 Batch 004 settles what the earlier three only hinted at. The variable that
 matters is not the country and not the setting label — it is whether the
@@ -269,6 +273,14 @@ from signage, architecture and vegetation, which is what Normal should test.
 The recheck of the 50 pre-V4 entries verified 44 (88%), which is consistent:
 those were also authored as specific named places.
 
+Batch 006 ran the sharpest test of the method available. Three of its
+candidates sat within 5 km of an earlier `ZERO_RESULTS` — same city, different
+kind of coordinate. Bloemfontein (2.6 km from a failed N1 point) and Kigali
+(3.1 km from a failed "outskirts" point) both verified; Cape Coast (4.1 km from
+a failed outskirts point) did not. Two out of three recovered a city the older
+method had written off, which is strong evidence that a miss condemns the
+coordinate rather than the city — and a reminder that it is not a guarantee.
+
 Batch 005 confirms the two axes are independent. It used the batch-004 coverage
 method on 40 candidates chosen to be *un*recognisable, and verified 35 of 40 —
 slightly better than batch 004, not worse. Coverage did not care that the places
@@ -279,9 +291,15 @@ them, plus one African city-centre avenue.
 
 | Status | Countries |
 | --- | --- |
-| **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal, Taiwan, South Korea, Philippines, France, Germany, Italy, Czechia, Poland, Estonia, Costa Rica |
+| **Proven** | South Africa, Réunion, Rwanda, Australia, New Zealand, Argentina, Peru, Ecuador, Colombia, Brazil, Kyrgyzstan, Sri Lanka, Malaysia, Guatemala, Lesotho, Ghana, Chile, Uruguay, Canada, Mexico, Japan, Thailand, Indonesia, Norway, Spain, Portugal, Taiwan, South Korea, Philippines, France, Germany, Italy, Czechia, Poland, Estonia, Costa Rica, Dominican Republic |
 | **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Kenya (2 misses, 0 hits) |
 | **Failed once** — one more attempt on a named street is reasonable | Sweden, Ireland, Romania, Panama, Puerto Rico, Jamaica, Tunisia |
+
+Coverage is not uniform below the country level. Batch 006's three misses were
+all in proven countries — Chuncheon, Viljandi and Cape Coast — and all three
+are small cities. South Korea, Estonia and Ghana each verified elsewhere in the
+same batch. Town size, not the country, is the better predictor of the
+remaining gaps.
 | **Sparse coverage** — prefer a same-continent proven country | Fiji, American Samoa, Guam, Northern Mariana Islands, Greenland, Bhutan, Mongolia, Madagascar, Tanzania, Uganda, Bolivia, Jordan |
 
 Two results worth keeping in mind, because they complicate the simple story:
