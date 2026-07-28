@@ -277,24 +277,24 @@ describe('the full gate report', () => {
 describe('the shipped catalog', () => {
   const report = gatesFor([...LOCATIONS]);
 
-  it('is blocked from release, and says so', () => {
-    // The catalog is far below the V4 release gates. This test exists to make
-    // that impossible to forget: if the catalog is expanded to clear the gates,
-    // update it deliberately.
-    expect(report.passed).toBe(false);
+  it('clears every release gate', () => {
+    // Batch 010 took easy past its floor, the last tier to get there, so the
+    // shipped catalog now passes. This assertion was inverted deliberately in
+    // that commit — it used to pin the blocked state so it could not be
+    // forgotten. It now guards the other direction: nothing may quietly drop
+    // the catalog back below a gate.
+    expect(report.passed).toBe(true);
+    expect(report.summary.failed).toBe(0);
   });
 
-  it('reports the exact expansion still required', () => {
+  it('reports no expansion still required', () => {
     // Derived from the catalog rather than hard-coded, so a verified batch
-    // landing does not require editing this test — but the arithmetic itself
-    // is still asserted, and every tier must still be short.
+    // landing does not require editing this test. Every tier has met its
+    // floor, and a met floor reports 0 rather than a negative surplus.
     const audit = auditDataset([...LOCATIONS]);
     const own = (d: Difficulty) =>
       audit.byDifficulty.find((t) => t.difficulty === d)!.ownGroups;
 
-    // A tier that has met its floor reports 0, not a negative surplus.
-    // Batches 007-009 took normal, hard and the total past their floors, so
-    // this now asserts the clamp as well as the arithmetic.
     const short = (needed: number, have: number) => Math.max(0, needed - have);
     expect(report.groupsStillNeeded).toEqual({
       easy: short(MIN_GROUPS_BY_DIFFICULTY.easy, own('easy')),
@@ -302,26 +302,27 @@ describe('the shipped catalog', () => {
       hard: short(MIN_GROUPS_BY_DIFFICULTY.hard, own('hard')),
       total: short(MIN_TOTAL_GROUPS, audit.totals.canonicalGroups),
     });
-    for (const value of Object.values(report.groupsStillNeeded)) {
-      expect(value).toBeGreaterThanOrEqual(0);
-    }
-    // Easy is the last tier short of its floor.
-    expect(report.groupsStillNeeded.easy).toBeGreaterThan(0);
+    expect(report.groupsStillNeeded).toEqual({ easy: 0, normal: 0, hard: 0, total: 0 });
+    // Each tier clears its floor on its own groups, not on the total.
+    expect(own('easy')).toBeGreaterThanOrEqual(MIN_GROUPS_BY_DIFFICULTY.easy);
+    expect(own('normal')).toBeGreaterThanOrEqual(MIN_GROUPS_BY_DIFFICULTY.normal);
+    expect(own('hard')).toBeGreaterThanOrEqual(MIN_GROUPS_BY_DIFFICULTY.hard);
+    expect(audit.totals.canonicalGroups).toBeGreaterThanOrEqual(MIN_TOTAL_GROUPS);
   });
 
-  it('fails on easy size alone — not on duplication, verification or balance', () => {
+  it('fails no gate — and every gate is still evaluated', () => {
     const failed = new Set(report.gates.filter((g) => !g.passed).map((g) => g.id));
-    // Batches 007-009 cleared normal, hard and the total. Easy came in two
-    // groups short of its floor and is the single remaining blocker.
-    expect(failed).toEqual(new Set(['size.easy']));
-    // Every other gate is still evaluated. Batch 005 lifted the last continent
-    // past its depth floor, batch 006 the last balance floor, and repair-006
-    // took verification to 100% — none of them may drop back unnoticed.
+    expect(failed).toEqual(new Set());
+    // A gate that passes must still be *checked*. Each of these was the last
+    // blocker at some point — continent depth (batch 005), normal urban
+    // balance (006), verification (repair-006), easy size (010) — and none of
+    // them may silently stop being enforced.
     const evaluated = report.gates.map((g) => g.id);
     expect(evaluated).toContain('breadth.continentDepth');
     expect(evaluated).toContain('balance.normal.urban.min');
     expect(evaluated).toContain('verification.streetView');
     expect(evaluated).toContain('integrity.metadata');
+    expect(evaluated).toContain('size.easy');
     // Deduplication was never the problem, and still isn't.
     expect(failed).not.toContain('integrity.duplicatePanoIds');
     expect(failed).not.toContain('integrity.nearDuplicates');

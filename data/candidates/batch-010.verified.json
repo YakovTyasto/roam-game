@@ -1,0 +1,85 @@
+{
+  "batch": "010",
+  "verifiedAt": "2026-07-28",
+  "counts": {
+    "candidates": 12,
+    "accepted": 12,
+    "verified": 12,
+    "unverified": 0
+  },
+  "verified": [
+    {
+      "id": "netherlands-delft-markt",
+      "panoId": "HGuit6R7zE05-E87aPp6gg",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.003
+    },
+    {
+      "id": "germany-bamberg-obere-bruecke",
+      "panoId": "bJKb_0quhTfcbrQI9_G5xw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.017
+    },
+    {
+      "id": "czechia-telc-namesti",
+      "panoId": "8aOZkkRDnrQvdPykazEGeA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.032
+    },
+    {
+      "id": "mexico-sanmigueldeallende-jardin",
+      "panoId": "GD5xXWGEfiKQPt_vcNzh4w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.004
+    },
+    {
+      "id": "denmark-aarhus-aaboulevarden",
+      "panoId": "CAoSFkNJSE0wb2dLRUlDQWdJQzRoNG4yUVE.",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.032
+    },
+    {
+      "id": "poland-torun-rynek",
+      "panoId": "evKm7IC0noQ1TZBeeRxVFQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.028
+    },
+    {
+      "id": "sweden-malmo-lillatorg",
+      "panoId": "NqZslmRlkBiQCeAoyOMgng",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.015
+    },
+    {
+      "id": "japan-kanazawa-higashichaya",
+      "panoId": "N9eSOQCUG8MZBG_a7kW7IQ",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.006
+    },
+    {
+      "id": "taiwan-tainan-shennongstreet",
+      "panoId": "29mBmhCgMpxA5qEIesiEDw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.021
+    },
+    {
+      "id": "southkorea-incheon-chinatown",
+      "panoId": "h6_drORiI0ZOFJZV2q5tiw",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.019
+    },
+    {
+      "id": "brazil-olinda-ruadoamparo",
+      "panoId": "HDi9jhno17wPJloVJXVT7w",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.027
+    },
+    {
+      "id": "southafrica-simonstown-stgeorges",
+      "panoId": "mVN6KXjvbHTMNdg__vq8GA",
+      "verifiedAt": "2026-07-28",
+      "offsetKm": 0.034
+    }
+  ],
+  "unverified": []
+}

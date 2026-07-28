@@ -1,8 +1,10 @@
 # Catalog expansion workflow
 
 The V4 release gates require a validated catalog of **80 Easy / 140 Normal /
-80 Hard / 300 total** canonical location groups. The catalog currently holds
-**50**. This document is the safe, reviewable process for closing that gap.
+80 Hard / 300 total** canonical location groups. The catalog started at **50**
+and now holds **325** — 90 Easy, 147 Normal, 88 Hard, across 79 countries, all
+Street View verified. This document is the safe, reviewable process that got it
+there, and the process any further expansion must follow.
 
 > **Shuffle-bag cycling guarantees full coverage of whatever exists. It cannot
 > manufacture places.** No amount of algorithmic reshuffling substitutes for
@@ -42,10 +44,13 @@ Consequences, enforced in code rather than by convention:
 This is a *review* constraint, not a technical one. A 300-location dump is not
 reviewable by a human, and the whole point of the workflow is that a person
 checks each location's difficulty, setting and country before it reaches
-players. Expect **8–10 batches** to reach the gates from 50.
+players. It took **eleven batches** to reach the gates from 50 — ten expansion
+batches plus one repair batch — for 612 candidates and 325 verified locations.
 
-Batches 001–006 and the repair batch are done; the catalog stands at 206
-groups, fully verified, with only the four size gates still failing.
+**All ten expansion batches are done. The catalog stands at 325 canonical
+groups across 79 countries, 100% Street View verified, and passes 25 of 25
+release gates.** What follows is the record of how it got there, kept because
+the failure modes are the reusable part.
 
 | Batch | Focus | Result |
 | --- | --- | --- |
@@ -57,7 +62,7 @@ groups, fully verified, with only the four size gates still failing.
 | 007 | Hard, named settlements and passes | 33 of 50 |
 | 008 | Hard + Normal | 36 of 50 |
 | 009 | Easy + Normal | 38 of 50 |
-| 010 | Easy top-up, 12 candidates for a 2-group gap | prepared, not yet verified |
+| 010 | Easy top-up, 12 candidates for a 2-group gap | **12 of 12** — the only clean sweep |
 
 ### The 007–009 strategy
 

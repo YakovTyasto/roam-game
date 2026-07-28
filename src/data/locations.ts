@@ -411,4 +411,22 @@ export const LOCATIONS: CatalogLocation[] = [
   { id: 'vietnam-danang-bachdang', lat: 16.0715, lng: 108.2245, label: 'Bạch Đằng, Da Nang', country: 'Vietnam', continent: 'Asia', difficulty: 'normal', tags: [], setting: 'urban', panoId: 'fHK73aqDl2z5obCNrc3vMw', panoVerifiedAt: '2026-07-28' },
   { id: 'indonesia-bukittinggi-jalanahmadyani', lat: -0.3055, lng: 100.3695, label: 'Jalan Ahmad Yani, Bukittinggi', country: 'Indonesia', continent: 'Asia', difficulty: 'normal', tags: [], setting: 'suburban', panoId: '9hlUs5ZACh_mT7Rgeh8xlw', panoVerifiedAt: '2026-07-28' },
   { id: 'philippines-dumaguete-rizalboulevard', lat: 9.3095, lng: 123.3095, label: 'Rizal Boulevard, Dumaguete', country: 'Philippines', continent: 'Asia', difficulty: 'normal', tags: [], setting: 'suburban', panoId: 'mqjweHaxFhuqeqU_cCsZYg', panoVerifiedAt: '2026-07-28' },
+
+  // ── Batch 010 (verified 2026-07-28) ────────────────────────
+  // Easy top-up that cleared the last release gate. 12 of 12 verified — the
+  // only clean sweep, and the clearest confirmation that the method works
+  // best on built-up named places in countries with proven coverage.
+  // See data/candidates/batch-010.verified.json.
+  { id: 'netherlands-delft-markt', lat: 52.0115, lng: 4.3595, label: 'Markt, Delft', country: 'Netherlands', continent: 'Europe', difficulty: 'easy', tags: ['famous'], setting: 'landmark', panoId: 'HGuit6R7zE05-E87aPp6gg', panoVerifiedAt: '2026-07-28' },
+  { id: 'germany-bamberg-obere-bruecke', lat: 49.8925, lng: 10.8865, label: 'Obere Brücke, Bamberg', country: 'Germany', continent: 'Europe', difficulty: 'easy', tags: ['famous'], setting: 'landmark', panoId: 'bJKb_0quhTfcbrQI9_G5xw', panoVerifiedAt: '2026-07-28' },
+  { id: 'czechia-telc-namesti', lat: 49.1845, lng: 15.4525, label: 'náměstí Zachariáše z Hradce, Telč', country: 'Czechia', continent: 'Europe', difficulty: 'easy', tags: [], setting: 'landmark', panoId: '8aOZkkRDnrQvdPykazEGeA', panoVerifiedAt: '2026-07-28' },
+  { id: 'mexico-sanmigueldeallende-jardin', lat: 20.9145, lng: -100.7435, label: 'El Jardín, San Miguel de Allende', country: 'Mexico', continent: 'North America', difficulty: 'easy', tags: ['famous'], setting: 'landmark', panoId: 'GD5xXWGEfiKQPt_vcNzh4w', panoVerifiedAt: '2026-07-28' },
+  { id: 'denmark-aarhus-aaboulevarden', lat: 56.1545, lng: 10.2085, label: 'Åboulevarden, Aarhus', country: 'Denmark', continent: 'Europe', difficulty: 'easy', tags: [], setting: 'urban', panoId: 'CAoSFkNJSE0wb2dLRUlDQWdJQzRoNG4yUVE.', panoVerifiedAt: '2026-07-28' },
+  { id: 'poland-torun-rynek', lat: 53.0105, lng: 18.6045, label: 'Rynek Staromiejski, Toruń', country: 'Poland', continent: 'Europe', difficulty: 'easy', tags: [], setting: 'urban', panoId: 'evKm7IC0noQ1TZBeeRxVFQ', panoVerifiedAt: '2026-07-28' },
+  { id: 'sweden-malmo-lillatorg', lat: 55.6055, lng: 13.0005, label: 'Lilla Torg, Malmö', country: 'Sweden', continent: 'Europe', difficulty: 'easy', tags: [], setting: 'urban', panoId: 'NqZslmRlkBiQCeAoyOMgng', panoVerifiedAt: '2026-07-28' },
+  { id: 'japan-kanazawa-higashichaya', lat: 36.5725, lng: 136.6675, label: 'Higashi Chaya district, Kanazawa', country: 'Japan', continent: 'Asia', difficulty: 'easy', tags: [], setting: 'urban', panoId: 'N9eSOQCUG8MZBG_a7kW7IQ', panoVerifiedAt: '2026-07-28' },
+  { id: 'taiwan-tainan-shennongstreet', lat: 22.9955, lng: 120.1935, label: 'Shennong Street, Tainan', country: 'Taiwan', continent: 'Asia', difficulty: 'easy', tags: [], setting: 'urban', panoId: '29mBmhCgMpxA5qEIesiEDw', panoVerifiedAt: '2026-07-28' },
+  { id: 'southkorea-incheon-chinatown', lat: 37.4745, lng: 126.6175, label: 'Chinatown, Incheon', country: 'South Korea', continent: 'Asia', difficulty: 'easy', tags: [], setting: 'urban', panoId: 'h6_drORiI0ZOFJZV2q5tiw', panoVerifiedAt: '2026-07-28' },
+  { id: 'brazil-olinda-ruadoamparo', lat: -8.0125, lng: -34.8455, label: 'Rua do Amparo, Olinda', country: 'Brazil', continent: 'South America', difficulty: 'easy', tags: [], setting: 'urban', panoId: 'HDi9jhno17wPJloVJXVT7w', panoVerifiedAt: '2026-07-28' },
+  { id: 'southafrica-simonstown-stgeorges', lat: -34.1935, lng: 18.4315, label: 'St George\'s Street, Simon\'s Town', country: 'South Africa', continent: 'Africa', difficulty: 'easy', tags: [], setting: 'urban', panoId: 'mVN6KXjvbHTMNdg__vq8GA', panoVerifiedAt: '2026-07-28' },
 ];
