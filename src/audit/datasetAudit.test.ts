@@ -237,17 +237,28 @@ describe('the shipped catalog', () => {
     expect(descriptive).toEqual([]);
   });
 
-  it('is honest that the catalog is only partly verified', () => {
-    // The pre-V4 catalog was authored without a verification step, so its
-    // original entries carry no confirmed panorama id; entries added by the
-    // expansion workflow all do. Until every entry is verified this stays a
-    // release blocker, tracked by the `verification.streetView` gate — not
-    // something to quietly tolerate.
+  it('reports every catalog entry as verified, and stays honest if that lapses', () => {
+    // The pre-V4 catalog was authored without a verification step. The last
+    // six unverified entries were repaired or replaced in the repair-006
+    // batch, so the shipped catalog is now fully verified and this assertion
+    // was flipped deliberately in that commit. The counting is what is pinned:
+    // if an entry ever lands without a confirmed panorama id, `ok` must go
+    // false again rather than quietly tolerate it.
     const verified = LOCATIONS.filter((l) => l.panoId).length;
     expect(report.verification.verified).toBe(verified);
     expect(report.verification.unverified).toBe(LOCATIONS.length - verified);
     expect(report.verification.undatedVerification).toBe(0);
-    expect(report.ok).toBe(false);
+    expect(report.verification.unverified).toBe(0);
+    expect(report.ok).toBe(true);
+  });
+
+  it('goes not-ok as soon as one entry lacks a verified panorama', () => {
+    const withGap = auditDataset([
+      loc({ id: 'a', lat: 48.85, lng: 2.29, panoId: 'P1', panoVerifiedAt: '2026-07-28' }),
+      loc({ id: 'b', lat: 35.65, lng: 139.7, country: 'Japan', continent: 'Asia' }),
+    ]);
+    expect(withGap.verification.unverified).toBe(1);
+    expect(withGap.ok).toBe(false);
   });
 
   it('never carries a panorama id without a verification date', () => {

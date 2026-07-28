@@ -253,11 +253,6 @@
       "groups": 4
     },
     {
-      "key": "Thailand",
-      "locations": 4,
-      "groups": 4
-    },
-    {
       "key": "United States",
       "locations": 4,
       "groups": 4
@@ -288,6 +283,16 @@
       "groups": 3
     },
     {
+      "key": "Sri Lanka",
+      "locations": 3,
+      "groups": 3
+    },
+    {
+      "key": "Thailand",
+      "locations": 3,
+      "groups": 3
+    },
+    {
       "key": "Uruguay",
       "locations": 3,
       "groups": 3
@@ -313,11 +318,6 @@
       "groups": 2
     },
     {
-      "key": "India",
-      "locations": 2,
-      "groups": 2
-    },
-    {
       "key": "Indonesia",
       "locations": 2,
       "groups": 2
@@ -338,7 +338,7 @@
       "groups": 2
     },
     {
-      "key": "Sri Lanka",
+      "key": "Senegal",
       "locations": 2,
       "groups": 2
     },
@@ -373,17 +373,7 @@
       "groups": 1
     },
     {
-      "key": "Cuba",
-      "locations": 1,
-      "groups": 1
-    },
-    {
       "key": "Denmark",
-      "locations": 1,
-      "groups": 1
-    },
-    {
-      "key": "Egypt",
       "locations": 1,
       "groups": 1
     },
@@ -413,6 +403,11 @@
       "groups": 1
     },
     {
+      "key": "India",
+      "locations": 1,
+      "groups": 1
+    },
+    {
       "key": "Ireland",
       "locations": 1,
       "groups": 1
@@ -423,17 +418,22 @@
       "groups": 1
     },
     {
+      "key": "Jamaica",
+      "locations": 1,
+      "groups": 1
+    },
+    {
       "key": "Kenya",
       "locations": 1,
       "groups": 1
     },
     {
-      "key": "Lesotho",
+      "key": "Laos",
       "locations": 1,
       "groups": 1
     },
     {
-      "key": "Morocco",
+      "key": "Lesotho",
       "locations": 1,
       "groups": 1
     },
@@ -458,11 +458,6 @@
       "groups": 1
     },
     {
-      "key": "Senegal",
-      "locations": 1,
-      "groups": 1
-    },
-    {
       "key": "Singapore",
       "locations": 1,
       "groups": 1
@@ -474,6 +469,11 @@
     },
     {
       "key": "Switzerland",
+      "locations": 1,
+      "groups": 1
+    },
+    {
+      "key": "Tunisia",
       "locations": 1,
       "groups": 1
     },
@@ -838,12 +838,57 @@
     },
     {
       "collection": "capitals",
+      "locations": 38,
+      "groups": 38,
+      "groupsByDifficulty": {
+        "easy": 23,
+        "normal": 10,
+        "hard": 5
+      },
+      "sufficiency": [
+        {
+          "roundCount": 3,
+          "groups": 38,
+          "playable": true,
+          "comfortable": true,
+          "shortfall": 0,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 5,
+          "groups": 38,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 12,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 10,
+          "groups": 38,
+          "playable": true,
+          "comfortable": false,
+          "shortfall": 62,
+          "usedFallback": false
+        },
+        {
+          "roundCount": 20,
+          "groups": 38,
+          "playable": false,
+          "comfortable": false,
+          "shortfall": 162,
+          "usedFallback": false
+        }
+      ],
+      "shippable": true
+    },
+    {
+      "collection": "famous",
       "locations": 37,
       "groups": 37,
       "groupsByDifficulty": {
-        "easy": 22,
-        "normal": 10,
-        "hard": 5
+        "easy": 32,
+        "normal": 4,
+        "hard": 1
       },
       "sufficiency": [
         {
@@ -876,51 +921,6 @@
           "playable": false,
           "comfortable": false,
           "shortfall": 163,
-          "usedFallback": false
-        }
-      ],
-      "shippable": true
-    },
-    {
-      "collection": "famous",
-      "locations": 40,
-      "groups": 40,
-      "groupsByDifficulty": {
-        "easy": 32,
-        "normal": 6,
-        "hard": 2
-      },
-      "sufficiency": [
-        {
-          "roundCount": 3,
-          "groups": 40,
-          "playable": true,
-          "comfortable": true,
-          "shortfall": 0,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 5,
-          "groups": 40,
-          "playable": true,
-          "comfortable": false,
-          "shortfall": 10,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 10,
-          "groups": 40,
-          "playable": true,
-          "comfortable": false,
-          "shortfall": 60,
-          "usedFallback": false
-        },
-        {
-          "roundCount": 20,
-          "groups": 40,
-          "playable": true,
-          "comfortable": false,
-          "shortfall": 160,
           "usedFallback": false
         }
       ],
@@ -973,17 +973,17 @@
     },
     {
       "collection": "islands",
-      "locations": 46,
-      "groups": 46,
+      "locations": 47,
+      "groups": 47,
       "groupsByDifficulty": {
         "easy": 12,
-        "normal": 23,
+        "normal": 24,
         "hard": 11
       },
       "sufficiency": [
         {
           "roundCount": 3,
-          "groups": 46,
+          "groups": 47,
           "playable": true,
           "comfortable": true,
           "shortfall": 0,
@@ -991,26 +991,26 @@
         },
         {
           "roundCount": 5,
-          "groups": 46,
+          "groups": 47,
           "playable": true,
           "comfortable": false,
-          "shortfall": 4,
+          "shortfall": 3,
           "usedFallback": false
         },
         {
           "roundCount": 10,
-          "groups": 46,
+          "groups": 47,
           "playable": true,
           "comfortable": false,
-          "shortfall": 54,
+          "shortfall": 53,
           "usedFallback": false
         },
         {
           "roundCount": 20,
-          "groups": 46,
+          "groups": 47,
           "playable": true,
           "comfortable": false,
-          "shortfall": 154,
+          "shortfall": 153,
           "usedFallback": false
         }
       ],
@@ -1022,8 +1022,8 @@
       "groups": 61,
       "groupsByDifficulty": {
         "easy": 15,
-        "normal": 33,
-        "hard": 13
+        "normal": 32,
+        "hard": 14
       },
       "sufficiency": [
         {
@@ -1077,47 +1077,24 @@
         "costarica-sanjose-centre"
       ],
       "spanKm": 19.19569670571656
+    },
+    {
+      "id": "senegal-dakar-place-independance",
+      "members": [
+        "senegal-dakar-place-independance",
+        "senegal-dakar-renaissance"
+      ],
+      "spanKm": 7.782651967528633
     }
   ],
   "verification": {
-    "verified": 200,
-    "unverified": 6,
+    "verified": 206,
+    "unverified": 0,
     "stale": 0,
     "undatedVerification": 0,
-    "verifiedPercent": 97.0873786407767
+    "verifiedPercent": 100
   },
-  "metadataIssues": [
-    {
-      "locationId": "havana-malecon",
-      "field": "panoId",
-      "message": "No verified Street View panorama id — run the candidate verification workflow."
-    },
-    {
-      "locationId": "cairo-giza",
-      "field": "panoId",
-      "message": "No verified Street View panorama id — run the candidate verification workflow."
-    },
-    {
-      "locationId": "capetown-waterfront",
-      "field": "panoId",
-      "message": "No verified Street View panorama id — run the candidate verification workflow."
-    },
-    {
-      "locationId": "marrakech-medina",
-      "field": "panoId",
-      "message": "No verified Street View panorama id — run the candidate verification workflow."
-    },
-    {
-      "locationId": "bangkok-grandpalace",
-      "field": "panoId",
-      "message": "No verified Street View panorama id — run the candidate verification workflow."
-    },
-    {
-      "locationId": "delhi-indiagate",
-      "field": "panoId",
-      "message": "No verified Street View panorama id — run the candidate verification workflow."
-    }
-  ],
+  "metadataIssues": [],
   "verdict": {
     "standardRoundCount": 5,
     "targetFreshGames": 10,
@@ -1128,5 +1105,5 @@
     "freshGamesSupported": 24,
     "sufficient": true
   },
-  "ok": false
+  "ok": true
 }

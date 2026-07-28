@@ -6,7 +6,7 @@ A **canonical group** is one distinct *place*. Several catalog rows collapse int
 
 ## Release gates
 
-**BLOCKED** — 6 of 25 release gates fail. The catalog must not ship to production in this state.
+**BLOCKED** — 4 of 25 release gates fail. The catalog must not ship to production in this state.
 
 Still required: **+31 Easy, +20 Normal, +43 Hard** (**+94 total** canonical groups).
 
@@ -26,8 +26,8 @@ These are validated canonical *groups*, not rows. Shuffle-bag cycling guarantees
 | `integrity.duplicatePanoIds` | no duplicate panorama ids | 0 duplicate pano id(s) | pass |
 | `integrity.nearDuplicates` | no identical or near-duplicate coordinates | 0 identical, 0 near-duplicate pair(s) | pass |
 | `integrity.redundantGroups` | no catalog row collapses into another row's canonical group | 0 redundant row(s) | pass |
-| `integrity.metadata` | every location has reviewed difficulty, country, continent, setting and collection metadata | 6 metadata issue(s) | **FAIL** |
-| `verification.streetView` | 100% of locations have a verified Street View panorama | 97.1% (200/206) | **FAIL** |
+| `integrity.metadata` | every location has reviewed difficulty, country, continent, setting and collection metadata | 0 metadata issue(s) | pass |
+| `verification.streetView` | 100% of locations have a verified Street View panorama | 100.0% (206/206) | pass |
 | `verification.dated` | every verified panorama records when it was checked | 0 undated verification(s) | pass |
 | `balance.easy.landmark.min` | easy: at least 35% landmark | 55.1% (27/49) | pass |
 | `balance.easy.landmark-urban.min` | easy: at least 80% landmark + urban | 100.0% (49/49) | pass |
@@ -148,51 +148,51 @@ Target counts to make every offered round count comfortable — that is, 10 cons
 | Ecuador | 4 | 4 |
 | Portugal | 4 | 4 |
 | Spain | 4 | 4 |
-| Thailand | 4 | 4 |
 | United States | 4 | 4 |
 | Estonia | 3 | 3 |
 | Guatemala | 3 | 3 |
 | Italy | 3 | 3 |
 | Malaysia | 3 | 3 |
 | Rwanda | 3 | 3 |
+| Sri Lanka | 3 | 3 |
+| Thailand | 3 | 3 |
 | Uruguay | 3 | 3 |
 | Dominican Republic | 2 | 2 |
 | France | 2 | 2 |
 | Germany | 2 | 2 |
 | Ghana | 2 | 2 |
-| India | 2 | 2 |
 | Indonesia | 2 | 2 |
 | Kyrgyzstan | 2 | 2 |
 | Norway | 2 | 2 |
 | Réunion | 2 | 2 |
-| Sri Lanka | 2 | 2 |
+| Senegal | 2 | 2 |
 | United Kingdom | 2 | 2 |
 | Austria | 1 | 1 |
 | Bermuda | 1 | 1 |
 | Bolivia | 1 | 1 |
 | Cambodia | 1 | 1 |
 | Croatia | 1 | 1 |
-| Cuba | 1 | 1 |
 | Denmark | 1 | 1 |
-| Egypt | 1 | 1 |
 | Finland | 1 | 1 |
 | Greece | 1 | 1 |
 | Hong Kong | 1 | 1 |
 | Hungary | 1 | 1 |
 | Iceland | 1 | 1 |
+| India | 1 | 1 |
 | Ireland | 1 | 1 |
 | Israel | 1 | 1 |
+| Jamaica | 1 | 1 |
 | Kenya | 1 | 1 |
+| Laos | 1 | 1 |
 | Lesotho | 1 | 1 |
-| Morocco | 1 | 1 |
 | Netherlands | 1 | 1 |
 | Nigeria | 1 | 1 |
 | Panama | 1 | 1 |
 | Puerto Rico | 1 | 1 |
-| Senegal | 1 | 1 |
 | Singapore | 1 | 1 |
 | Sweden | 1 | 1 |
 | Switzerland | 1 | 1 |
+| Tunisia | 1 | 1 |
 | Türkiye | 1 | 1 |
 | United Arab Emirates | 1 | 1 |
 
@@ -209,11 +209,11 @@ A collection is **shippable** only when it can fill a standard game at least twi
 | north-america | 33 | 33 | 9 | 18 | 6 | yes |
 | south-america | 40 | 40 | 7 | 24 | 9 | yes |
 | oceania | 22 | 22 | 6 | 10 | 6 | yes |
-| capitals | 37 | 37 | 22 | 10 | 5 | yes |
-| famous | 40 | 40 | 32 | 6 | 2 | yes |
+| capitals | 38 | 38 | 23 | 10 | 5 | yes |
+| famous | 37 | 37 | 32 | 4 | 1 | yes |
 | rural | 0 | 0 | 0 | 0 | 0 | NO |
-| islands | 46 | 46 | 12 | 23 | 11 | yes |
-| left-driving | 61 | 61 | 15 | 33 | 13 | yes |
+| islands | 47 | 47 | 12 | 24 | 11 | yes |
+| left-driving | 61 | 61 | 15 | 32 | 14 | yes |
 
 ## Duplicates and near-duplicates
 
@@ -230,13 +230,14 @@ Locations within 25 km of each other. These stay separate places for uniqueness;
 | Cluster | Members | Span (km) |
 | --- | --- | --- |
 | costarica-cartago-avenida2 | costarica-cartago-avenida2, costarica-sanjose-centre | 19.2 |
+| senegal-dakar-place-independance | senegal-dakar-place-independance, senegal-dakar-renaissance | 7.8 |
 
 ## Street View verification
 
 | Metric | Value |
 | --- | --- |
-| Verified panoramas | 200 (97.1%) |
-| Unverified | 6 |
+| Verified panoramas | 206 (100.0%) |
+| Unverified | 0 |
 | Stale (re-check recommended) | 0 |
 | Verified but undated | 0 |
 
@@ -244,11 +245,6 @@ Locations within 25 km of each other. These stay separate places for uniqueness;
 
 | Location | Field | Issue |
 | --- | --- | --- |
-| havana-malecon | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| cairo-giza | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| capetown-waterfront | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| marrakech-medina | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| bangkok-grandpalace | panoId | No verified Street View panorama id — run the candidate verification workflow. |
-| delhi-indiagate | panoId | No verified Street View panorama id — run the candidate verification workflow. |
+| _none_ |
 
-Audit clean: **NO**
+Audit clean: **yes**

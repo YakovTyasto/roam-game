@@ -303,19 +303,20 @@ describe('the shipped catalog', () => {
     }
   });
 
-  it('fails on size and verification — not on duplication', () => {
+  it('fails on size alone — not on duplication, verification or balance', () => {
     const failed = new Set(report.gates.filter((g) => !g.passed).map((g) => g.id));
-    // Catalog size is the standing blocker; every tier is still short.
-    expect(failed).toContain('size.easy');
-    expect(failed).toContain('size.normal');
-    expect(failed).toContain('size.hard');
-    expect(failed).toContain('size.total');
-    // Six original entries still have no Street View coverage.
-    expect(failed).toContain('verification.streetView');
-    // Batch 005 lifted every continent past the depth floor, so this gate now
-    // passes. It is still evaluated — a later batch must not be able to drop a
-    // continent below the floor unnoticed.
-    expect(report.gates.map((g) => g.id)).toContain('breadth.continentDepth');
+    // Catalog size is now the only blocker; every tier is still short.
+    expect(failed).toEqual(
+      new Set(['size.easy', 'size.normal', 'size.hard', 'size.total']),
+    );
+    // Every other gate is still evaluated. Batch 005 lifted the last continent
+    // past its depth floor, batch 006 the last balance floor, and repair-006
+    // took verification to 100% — none of them may drop back unnoticed.
+    const evaluated = report.gates.map((g) => g.id);
+    expect(evaluated).toContain('breadth.continentDepth');
+    expect(evaluated).toContain('balance.normal.urban.min');
+    expect(evaluated).toContain('verification.streetView');
+    expect(evaluated).toContain('integrity.metadata');
     // Deduplication was never the problem, and still isn't.
     expect(failed).not.toContain('integrity.duplicatePanoIds');
     expect(failed).not.toContain('integrity.nearDuplicates');

@@ -295,6 +295,16 @@ them, plus one African city-centre avenue.
 | **Failed twice** — stop spending requests here without new evidence | Iceland, Botswana, Eswatini, Kenya (2 misses, 0 hits) |
 | **Failed once** — one more attempt on a named street is reasonable | Sweden, Ireland, Romania, Panama, Puerto Rico, Jamaica, Tunisia |
 
+**Moving a coordinate onto the adjacent road is not a reliable repair.** The
+repair-006 batch tested it on the six uncovered pre-V4 entries: five of them
+were pedestrian precincts, and the fix was to move 200–550 m onto the named
+public road beside them. Only Cape Town's Dock Road verified. Al Haram Street,
+Na Phra Lan Road, the India Gate hexagon and the Marrakech ramparts avenue all
+returned ZERO_RESULTS — and Thailand and India are both proven countries, so
+the likely cause is that a road named from memory is not precise to 50 m, not
+that coverage is absent. Author a replacement candidate the same way as any
+other; do not assume a nearby street will rescue a known-bad coordinate.
+
 Coverage is not uniform below the country level. Batch 006's three misses were
 all in proven countries — Chuncheon, Viljandi and Cape Coast — and all three
 are small cities. South Korea, Estonia and Ghana each verified elsewhere in the

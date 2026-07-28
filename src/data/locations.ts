@@ -67,7 +67,7 @@ export const LOCATIONS: CatalogLocation[] = [
   { id: 'mexicocity-zocalo', lat: 19.4326, lng: -99.1332, label: 'Zócalo, Mexico City', country: 'Mexico', continent: 'North America', difficulty: 'normal', tags: ['capitals'], setting: 'urban', panoId: 'x2KyfopAtV3pg_Tcx7_YKw', panoVerifiedAt: '2026-07-27' },
   { id: 'neworleans-french', lat: 29.9584, lng: -90.0644, label: 'French Quarter, New Orleans', country: 'United States', continent: 'North America', difficulty: 'hard', tags: [], setting: 'urban', panoId: 'OhgO3V1TU-wSM0A8IBjZWw', panoVerifiedAt: '2026-07-27' },
   { id: 'oaxaca-center', lat: 17.0654, lng: -96.7237, label: 'Historic centre, Oaxaca', country: 'Mexico', continent: 'North America', difficulty: 'hard', tags: [], setting: 'urban', panoId: 'RCcXsMXf3iwecLySwQBF1w', panoVerifiedAt: '2026-07-27' },
-  { id: 'havana-malecon', lat: 23.1400, lng: -82.3600, label: 'El Malecón, Havana', country: 'Cuba', continent: 'North America', difficulty: 'hard', tags: ['capitals'], setting: 'urban' },
+  { id: 'jamaica-kingston-halfwaytree', lat: 18.01, lng: -76.79, label: 'Half Way Tree Road, Kingston', country: 'Jamaica', continent: 'North America', difficulty: 'hard', tags: ['capitals'], setting: 'urban', panoId: 'CAoSF0NJSE0wb2dLRUlDQWdJREh3OF92MlFF', panoVerifiedAt: '2026-07-28' },
 
   // ── South America ──────────────────────────────────────
   { id: 'rio-copacabana', lat: -22.9711, lng: -43.1822, label: 'Copacabana, Rio de Janeiro', country: 'Brazil', continent: 'South America', difficulty: 'easy', tags: ['famous'], setting: 'urban', panoId: '7qjBV14agwlgVc6KCtXMVQ', panoVerifiedAt: '2026-07-27' },
@@ -78,21 +78,21 @@ export const LOCATIONS: CatalogLocation[] = [
   { id: 'valparaiso-hills', lat: -33.0472, lng: -71.6127, label: 'Cerro Concepción, Valparaíso', country: 'Chile', continent: 'South America', difficulty: 'hard', tags: [], setting: 'urban', panoId: 'nZYP43hfaUQzaCiIfowMnA', panoVerifiedAt: '2026-07-27' },
 
   // ── Africa & Middle East ───────────────────────────────
-  { id: 'cairo-giza', lat: 29.9765, lng: 31.1325, label: 'Giza Plateau, Cairo', country: 'Egypt', continent: 'Africa', difficulty: 'easy', tags: ['famous'], setting: 'landmark' },
+  { id: 'senegal-dakar-renaissance', lat: 14.7205, lng: -17.488, label: 'Monument de la Renaissance Africaine, Dakar', country: 'Senegal', continent: 'Africa', difficulty: 'easy', tags: ['capitals', 'famous'], setting: 'landmark', panoId: 'pL4UnKrWYtbLaAsAaR0WMA', panoVerifiedAt: '2026-07-28' },
   { id: 'dubai-marina', lat: 25.0805, lng: 55.1403, label: 'Dubai Marina', country: 'United Arab Emirates', continent: 'Asia', difficulty: 'easy', tags: ['famous'], setting: 'urban', panoId: 'qhIFoM83XAvR0_t4v8iXMw', panoVerifiedAt: '2026-07-27' },
-  { id: 'capetown-waterfront', lat: -33.9036, lng: 18.4200, label: 'V&A Waterfront, Cape Town', country: 'South Africa', continent: 'Africa', difficulty: 'normal', tags: [], setting: 'urban' },
+  { id: 'capetown-waterfront', lat: -33.9083, lng: 18.4185, label: 'Dock Road, V&A Waterfront, Cape Town', country: 'South Africa', continent: 'Africa', difficulty: 'normal', tags: [], setting: 'urban', panoId: 'ms6bMOM7FRyDuFfOSVnBEg', panoVerifiedAt: '2026-07-28' },
   { id: 'jerusalem-oldcity', lat: 31.7767, lng: 35.2345, label: 'Old City, Jerusalem', country: 'Israel', continent: 'Asia', difficulty: 'normal', tags: ['famous'], setting: 'landmark', panoId: 'zpdcMsH1hKsThQQoTVFd2g', panoVerifiedAt: '2026-07-27' },
-  { id: 'marrakech-medina', lat: 31.6258, lng: -7.9891, label: 'Jemaa el-Fnaa, Marrakech', country: 'Morocco', continent: 'Africa', difficulty: 'hard', tags: ['famous'], setting: 'urban' },
+  { id: 'tunisia-tunis-bourguiba', lat: 36.8, lng: 10.183, label: 'Avenue Habib Bourguiba, Tunis', country: 'Tunisia', continent: 'Africa', difficulty: 'hard', tags: [], setting: 'urban', panoId: 'MjKnKP0TQ-DoKdcdQft1xQ', panoVerifiedAt: '2026-07-28' },
   { id: 'nairobi-center', lat: -1.2864, lng: 36.8172, label: 'Central Nairobi', country: 'Kenya', continent: 'Africa', difficulty: 'hard', tags: ['capitals'], setting: 'urban', panoId: 'Lz4-whHVErwA98oXe1lpDA', panoVerifiedAt: '2026-07-27' },
 
   // ── Asia ───────────────────────────────────────────────
   { id: 'tokyo-shibuya', lat: 35.6595, lng: 139.7005, label: 'Shibuya Crossing, Tokyo', country: 'Japan', continent: 'Asia', difficulty: 'easy', tags: ['capitals', 'famous'], setting: 'urban', panoId: 'XlVh96-Z9lAI5tKrU2O4Yg', panoVerifiedAt: '2026-07-27' },
   { id: 'singapore-marina', lat: 1.283, lng: 103.8607, label: 'Marina Bay, Singapore', country: 'Singapore', continent: 'Asia', difficulty: 'easy', tags: ['capitals', 'famous'], setting: 'urban', panoId: 'PCa_v3w-GEdKE5krOd5nbQ', panoVerifiedAt: '2026-07-27' },
   { id: 'seoul-gyeongbok', lat: 37.5796, lng: 126.977, label: 'Gyeongbokgung, Seoul', country: 'South Korea', continent: 'Asia', difficulty: 'normal', tags: ['capitals', 'famous'], setting: 'landmark', panoId: 'tT6O77Wv_Y1ct91PTPfXrA', panoVerifiedAt: '2026-07-27' },
-  { id: 'bangkok-grandpalace', lat: 13.7500, lng: 100.4914, label: 'Grand Palace area, Bangkok', country: 'Thailand', continent: 'Asia', difficulty: 'normal', tags: ['capitals', 'famous'], setting: 'landmark' },
+  { id: 'laos-vientiane-lanexang', lat: 17.974, lng: 102.6132, label: 'Lane Xang Avenue, Vientiane', country: 'Laos', continent: 'Asia', difficulty: 'normal', tags: ['capitals'], setting: 'landmark', panoId: 'eRuLM_7C9kpuJt0FS0S92g', panoVerifiedAt: '2026-07-28' },
   { id: 'hongkong-tsimshatsui', lat: 22.294, lng: 114.1722, label: 'Tsim Sha Tsui, Hong Kong', country: 'Hong Kong', continent: 'Asia', difficulty: 'normal', tags: [], setting: 'urban', panoId: 'D7Ks7DJsNg_WMdROzEp40A', panoVerifiedAt: '2026-07-27' },
   { id: 'istanbul-sultanahmet', lat: 41.0058, lng: 28.9769, label: 'Sultanahmet, Istanbul', country: 'Türkiye', continent: 'Europe', difficulty: 'normal', tags: ['famous'], setting: 'landmark', panoId: 'j_q4DCQ1r347av7gcWcrCA', panoVerifiedAt: '2026-07-27' },
-  { id: 'delhi-indiagate', lat: 28.6129, lng: 77.2295, label: 'India Gate, New Delhi', country: 'India', continent: 'Asia', difficulty: 'normal', tags: ['capitals', 'famous'], setting: 'landmark' },
+  { id: 'srilanka-colombo-independence', lat: 6.901, lng: 79.8685, label: 'Independence Avenue, Colombo', country: 'Sri Lanka', continent: 'Asia', difficulty: 'normal', tags: ['capitals'], setting: 'landmark', panoId: 'O_Kb1wSlIfu5BDlMt3inyQ', panoVerifiedAt: '2026-07-28' },
   { id: 'kyoto-gion', lat: 35.0037, lng: 135.7788, label: 'Gion, Kyoto', country: 'Japan', continent: 'Asia', difficulty: 'hard', tags: [], setting: 'urban', panoId: 'io_PwbaaDBtlORhfh4rJpA', panoVerifiedAt: '2026-07-27' },
   { id: 'taipei-101', lat: 25.0338, lng: 121.5636, label: 'Xinyi District, Taipei', country: 'Taiwan', continent: 'Asia', difficulty: 'hard', tags: ['capitals'], setting: 'urban', panoId: 'mkvLcZYsKZhJhutMsVU4HA', panoVerifiedAt: '2026-07-27' },
 
