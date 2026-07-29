@@ -1,18 +1,32 @@
 /* Shared multiplayer styles: menu, lobby, final. Reuses the app design tokens
    (dark, cinematic, warm-lime accent) so multiplayer feels native. */
 
+/* Bounded to the viewport on purpose. `#root` is `height: 100dvh; overflow:
+   hidden`, so a `min-height` container in normal flow just grows past the clip
+   — `overflow-y: auto` never engages, nothing scrolls, and any content below
+   the fold is unreachable by touch. That is what broke "Start game" on phones.
+   `height: 100%` makes this a real scroll container; `min-height` stays as a
+   floor for the case where an ancestor is not itself viewport-height. */
 .screen {
   position: relative;
+  height: 100%;
   min-height: 100dvh;
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: center;
+  /* Never centre with `align-items` here: when the card is taller than the
+     viewport, centring pushes its top above the scroll origin where it cannot
+     be reached. `margin: auto` on the card centres only when there is room. */
+  align-items: flex-start;
   padding: calc(var(--safe-top) + 20px) calc(var(--safe-right) + 18px)
     calc(var(--safe-bottom) + 24px) calc(var(--safe-left) + 18px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .card {
   width: min(520px, 100%);
+  margin: auto;
   background: var(--panel-strong);
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--r-lg);
