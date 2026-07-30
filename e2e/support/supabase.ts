@@ -158,11 +158,74 @@ function b64url(value: unknown): string {
     .replace(/=+$/, '');
 }
 
+interface StubOfficialRun {
+  runId: string;
+  difficulty: string;
+  totalRounds: number;
+  timerSeconds: number;
+  /** Highest round number that has been guessed. */
+  played: number;
+  totalScore: number;
+}
+
+/**
+ * The current stubbed official run. Module-scoped so the handler set below stays
+ * a plain object; each `installSupabaseStub` call resets it by starting fresh.
+ */
+let officialRun: StubOfficialRun | null = null;
+
+/** Mirror of `roam_run_payload` (migration 0015), including its reveal gate. */
+function runPayload(): Record<string, unknown> {
+  const run = officialRun!;
+  const rounds = Array.from({ length: run.totalRounds }, (_, i) => {
+    const n = i + 1;
+    const complete = n <= run.played;
+    return {
+      round_number: n,
+      status: complete ? 'complete' : n === run.played + 1 ? 'active' : 'pending',
+      pano_id: `STUB_PANO_${n}`,
+      heading: (n * 47) % 360,
+      pitch: 0,
+      zoom: 0,
+      started_at: complete || n === run.played + 1 ? new Date().toISOString() : null,
+      expires_at:
+        n === run.played + 1
+          ? new Date(Date.now() + run.timerSeconds * 1000).toISOString()
+          : null,
+      // The gate: answers exist only for completed rounds.
+      location_id: complete ? `stub-location-${n}` : null,
+      label: complete ? 'Stub Place' : null,
+      country: complete ? 'France' : null,
+      lat: complete ? 48.8584 : null,
+      lng: complete ? 2.2945 : null,
+      guess_lat: complete ? 48.85 : null,
+      guess_lng: complete ? 2.3 : null,
+      distance_km: complete ? 42.5 : null,
+      score: complete ? 4200 : null,
+    };
+  });
+  return {
+    found: true,
+    run_id: run.runId,
+    mode: 'solo',
+    difficulty: run.difficulty,
+    total_rounds: run.totalRounds,
+    round_duration_seconds: run.timerSeconds,
+    current_round: Math.min(run.played + 1, run.totalRounds),
+    total_score: run.totalScore,
+    status: 'active',
+    server_selected: true,
+    server_now: new Date().toISOString(),
+    rounds,
+  };
+}
+
 /**
  * Defaults describe a brand-new player on a healthy backend: no profile yet, no
  * active run, no history. Specs override only what they care about.
  */
 function defaultHandlers(): Record<string, RpcHandler> {
+  officialRun = null;
   return {
     roam_get_profile: () => ({ exists: false }),
     roam_upsert_profile: (p) => ({ display_name: String(p.p_name ?? 'Player') }),
@@ -197,6 +260,66 @@ function defaultHandlers(): Record<string, RpcHandler> {
       difficulty: 'normal',
       entries: [],
       self: null,
+    }),
+
+    // ── Official, server-selected runs (migration 0015) ──────────────────
+    // A tiny in-memory version of the real run machine, faithful in the one way
+    // that matters to the UI: an un-played round carries a panorama and NOTHING
+    // else, and the answer appears only in the response to that round's guess.
+    roam_catalog_summary: () => ({
+      total: 325,
+      easy: 90,
+      normal: 147,
+      hard: 88,
+      countries: 79,
+      continents: 6,
+    }),
+    roam_start_official_run_v2: (p, stub) => {
+      const rounds = Number(p.p_total_rounds ?? 5);
+      officialRun = {
+        runId: 'aaaa1111-2222-4333-8444-555555555555',
+        difficulty: String(p.p_difficulty ?? 'normal'),
+        totalRounds: rounds,
+        timerSeconds: Number(p.p_timer_seconds ?? 120),
+        played: 0,
+        totalScore: 0,
+      };
+      void stub;
+      return runPayload();
+    },
+    roam_get_official_run_v2: () => (officialRun ? runPayload() : { found: false }),
+    roam_submit_official_guess_v2: (p) => {
+      if (!officialRun) return { message: 'Run not found.', code: 'P0001' };
+      const roundNumber = Number(p.p_round_number ?? 1);
+      officialRun.played = Math.max(officialRun.played, roundNumber);
+      officialRun.totalScore += 4200;
+      return {
+        score: 4200,
+        distance_km: 42.5,
+        location_id: `stub-location-${roundNumber}`,
+        lat: 48.8584,
+        lng: 2.2945,
+        label: 'Stub Place',
+        country: 'France',
+        already: false,
+      };
+    },
+    roam_finalize_official_run_v2: () => {
+      const total = officialRun?.totalScore ?? 0;
+      const rounds = officialRun?.totalRounds ?? 5;
+      officialRun = null;
+      return {
+        total_score: total,
+        max_score: rounds * 5000,
+        total_distance_km: 42.5 * rounds,
+        eligible: rounds === 5,
+        already: false,
+      };
+    },
+    mp_start_match_v2: () => ({
+      room_id: '77777777-6666-4555-8444-333333333333',
+      code: 'ABC234',
+      server_selected: true,
     }),
 
     mp_create_room: () => ({ room_id: '77777777-6666-4555-8444-333333333333', code: 'ABC234' }),

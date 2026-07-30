@@ -224,6 +224,28 @@ export async function joinRoom(
   return parseRoomRef(data);
 }
 
+/**
+ * Start a match with a SERVER-selected manifest (migration 0015).
+ *
+ * The host sends nothing but the room id. The server picks the locations from
+ * the protected catalog, applies room-wide novelty from every participant's
+ * history, and stores the hidden targets — so a modified host client can no
+ * longer choose easy locations, and cannot know an answer before its own guess.
+ *
+ * `startMatch` below is the pre-V5 path and is retained deliberately: the old
+ * RPC is still granted for the rollout window, so reverting the client to it is
+ * a working rollback if this path ever needs to be pulled. See
+ * docs/ENGAGEMENT_CORE_V5.md.
+ */
+export async function startMatchServerSelected(
+  supabase: TypedSupabaseClient,
+  roomId: string,
+): Promise<void> {
+  const { error } = await supabase.rpc('mp_start_match_v2', { p_room_id: roomId });
+  if (error) fail(toUserMessage(error));
+}
+
+/** @deprecated Pre-V5 client-manifest start. Kept as the documented rollback. */
 export async function startMatch(
   supabase: TypedSupabaseClient,
   roomId: string,

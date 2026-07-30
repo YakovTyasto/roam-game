@@ -9,8 +9,14 @@ import { hasGoogleMapsKey, hasSupabaseConfig } from './config/env';
 import { gameReducer } from './game/reducer';
 import { initialGameState } from './game/state';
 import { useSoloRun } from './solo/useSoloRun';
-import type { SoloResumeData } from './solo/resume';
-import { buildResumeData, parseActiveSoloRun } from './solo/resume';
+import type { OfficialRun } from './official/officialRun';
+import {
+  awaitingFinalize,
+  hiddenPanoramasOf,
+  nextRoundIndex,
+  remainingSeconds,
+  resultsOf,
+} from './official/officialRun';
 import type { LocalRunSnapshot } from './solo/localRunSnapshot';
 import {
   clearLocalRunSnapshot,
@@ -108,6 +114,13 @@ export default function App() {
   const [showSetup, setShowSetup] = useState(false);
   const [isBest, setIsBest] = useState(false);
   const [startingSolo, setStartingSolo] = useState(false);
+  /**
+   * Whether the game in progress is an official, server-scored run. Drives the
+   * "this game isn't ranked" messaging — a local fallback must never be
+   * presented as a leaderboard result.
+   */
+  const [officialGame, setOfficialGame] = useState(false);
+  const [localOnlyNotice, setLocalOnlyNotice] = useState<'offline' | 'unavailable' | null>(null);
   const [activeConfig, setActiveConfig] = useState<GameConfig>(() =>
     quickConfig(toDifficulty(soloDifficulty), APP.roundsPerGame),
   );
@@ -184,8 +197,10 @@ export default function App() {
 
   const hasKey = hasGoogleMapsKey();
 
-  // ── Solo run resume (server-tracked runs only — see solo/resume.ts) ────
-  const [resumeCandidate, setResumeCandidate] = useState<SoloResumeData | null>(null);
+  // ── Official run resume ────────────────────────────────────────────────
+  // Works for any active run in the table, including one started by a
+  // pre-V5 client, because the v2 read is over the same rows.
+  const [resumeCandidate, setResumeCandidate] = useState<OfficialRun | null>(null);
   const [resumeBusy, setResumeBusy] = useState(false);
   const resumeRemainingRef = useRef<number | undefined>(undefined);
 
@@ -194,19 +209,19 @@ export default function App() {
     let cancelled = false;
     void (async () => {
       try {
-        const { fetchActiveSoloRun, finalizeSoloRun } = await import('./solo/soloRunApi');
-        const raw = await withTimeout(fetchActiveSoloRun(), RESUME_CHECK_TIMEOUT_MS);
-        const parsed = parseActiveSoloRun(raw);
-        if (cancelled || !parsed) return;
-        const data = buildResumeData(parsed);
-        if (data.awaitingFinalize) {
-          // Every round was already guessed but the app closed before
-          // finalize ran — finish it silently rather than re-prompting for
-          // a round that's already fully scored (never scored twice).
-          await finalizeSoloRun(data.runId).catch(() => {});
+        const { fetchOfficialRun, finalizeOfficialRun } = await import(
+          './official/officialRunApi'
+        );
+        const run = await withTimeout(fetchOfficialRun(), RESUME_CHECK_TIMEOUT_MS);
+        if (cancelled || !run) return;
+        if (awaitingFinalize(run)) {
+          // Every round was already guessed but the app closed before finalize
+          // ran — finish it silently rather than re-prompting for a round that
+          // is already fully scored (and never score it twice).
+          await finalizeOfficialRun(run.runId).catch(() => {});
           return;
         }
-        setResumeCandidate(data);
+        setResumeCandidate(run);
       } catch {
         // No reachable active run — a normal cold start, not an error to surface.
       }
@@ -217,37 +232,31 @@ export default function App() {
   }, [profile.status, hasKey]);
 
   const resumeGame = useCallback(() => {
-    if (!resumeCandidate) return;
+    const run = resumeCandidate;
+    if (!run) return;
     setResumeBusy(true);
-    soloRun.adoptResumedRun(resumeCandidate.runId, resumeCandidate.roundCount, resumeCandidate.results.length);
+    const results = resultsOf(run);
+    const roundIndex = nextRoundIndex(run);
+    soloRun.adopt(run, results.length);
     setActiveConfig({
-      difficulty: resumeCandidate.difficulty,
-      roundCount: resumeCandidate.roundCount,
-      timerSeconds: resumeCandidate.timerSeconds,
+      difficulty: run.difficulty,
+      roundCount: run.roundCount,
+      timerSeconds: run.timerSeconds,
       movementRule: 'default',
     });
-    setSoloDifficulty(resumeCandidate.difficulty);
-    resumeRemainingRef.current = resumeCandidate.remainingSeconds;
+    setSoloDifficulty(run.difficulty);
+    setOfficialGame(true);
+    // The remaining time comes from the server's own clock on both ends, so a
+    // skewed device clock cannot extend a round (see officialRun.ts).
+    resumeRemainingRef.current = remainingSeconds(run, roundIndex) ?? undefined;
 
-    const locations: GameLocation[] = resumeCandidate.results.map((r) => r.location);
-    if (resumeCandidate.currentPanorama) {
-      locations.push({
-        id: resumeCandidate.currentPanorama.locationId,
-        lat: NaN,
-        lng: NaN,
-        label: '',
-        country: '',
-        difficulty: resumeCandidate.difficulty,
-      });
-    }
     dispatch({
-      type: 'RESUME_GAME',
-      locations,
-      results: resumeCandidate.results,
-      roundIndex: resumeCandidate.roundIndex,
-      roundCount: resumeCandidate.roundCount,
-      timerSeconds: resumeCandidate.timerSeconds,
-      resumePanorama: resumeCandidate.currentPanorama,
+      type: 'START_OFFICIAL_GAME',
+      hiddenPanoramas: hiddenPanoramasOf(run),
+      results,
+      roundIndex,
+      roundCount: run.roundCount,
+      timerSeconds: run.timerSeconds,
     });
     setResumeCandidate(null);
     setScreen('home');
@@ -292,7 +301,8 @@ export default function App() {
       roundIndex: localResumeCandidate.roundIndex,
       roundCount: localResumeCandidate.roundCount,
       timerSeconds: localResumeCandidate.timerSeconds,
-      resumePanorama: null,
+      // A local snapshot always knows its own answers, so nothing is hidden.
+      hiddenPanoramas: {},
     });
     setLocalResumeCandidate(null);
     setScreen('home');
@@ -303,7 +313,7 @@ export default function App() {
   // above), so this only runs while soloRun isn't tracking this game.
   useEffect(() => {
     if (state.status !== 'roundResult') return;
-    if (soloRun.isServerTracked()) return;
+    if (soloRun.isOfficial()) return;
     writeLocalRunSnapshot({
       difficulty: activeConfig.difficulty,
       roundCount: state.roundCount,
@@ -316,7 +326,7 @@ export default function App() {
 
   // Clear the local snapshot once a local-only game actually finishes.
   useEffect(() => {
-    if (state.status === 'finalResult' && !soloRun.isServerTracked()) {
+    if (state.status === 'finalResult' && !soloRun.isOfficial()) {
       clearLocalRunSnapshot();
     }
   }, [state.status, soloRun]);
@@ -336,14 +346,33 @@ export default function App() {
       committedRoundsRef.current.clear();
       clearLocalRunSnapshot();
       try {
-        const { locations, backups } = await soloRun.begin(config);
-        dispatch({
-          type: 'START_GAME',
-          locations,
-          backups,
-          roundCount: config.roundCount,
-          timerSeconds: config.timerSeconds,
-        });
+        const begun = await soloRun.begin(config);
+        resumeRemainingRef.current = undefined;
+        if (begun.kind === 'official') {
+          setOfficialGame(true);
+          setLocalOnlyNotice(null);
+          dispatch({
+            type: 'START_OFFICIAL_GAME',
+            hiddenPanoramas: hiddenPanoramasOf(begun.run),
+            results: [],
+            roundIndex: 0,
+            roundCount: begun.run.roundCount,
+            timerSeconds: begun.run.timerSeconds,
+          });
+        } else {
+          setOfficialGame(false);
+          // Say so, rather than letting a local game look like a ranked one.
+          // Endless is local by design, so it is not a "couldn't reach the
+          // server" message.
+          setLocalOnlyNotice(begun.degradedReason ?? null);
+          dispatch({
+            type: 'START_GAME',
+            locations: begun.locations,
+            backups: begun.backups,
+            roundCount: config.roundCount,
+            timerSeconds: config.timerSeconds,
+          });
+        }
         setScreen('home');
       } finally {
         setStartingSolo(false);
@@ -506,9 +535,9 @@ export default function App() {
     return (
       <ResumePromptScreen
         difficulty={resumeCandidate.difficulty}
-        roundIndex={resumeCandidate.roundIndex}
+        roundIndex={nextRoundIndex(resumeCandidate)}
         roundCount={resumeCandidate.roundCount}
-        roundsPlayed={resumeCandidate.results.length}
+        roundsPlayed={resultsOf(resumeCandidate).length}
         busy={resumeBusy}
         onResume={resumeGame}
         onAbandon={() => void abandonResume()}
@@ -559,6 +588,15 @@ export default function App() {
           units={preferences.units}
           difficultyLabel={difficultyLabel(activeDifficulty)}
           endlessStats={state.roundCount === null ? computeEndlessStats(state.results) : undefined}
+          unranked={
+            officialGame
+              ? undefined
+              : state.roundCount === null
+                ? 'endless'
+                : !hasSupabaseConfig()
+                  ? 'not-configured'
+                  : (localOnlyNotice ?? 'unavailable')
+          }
           onPlayAgain={() => void startSolo(activeConfig)}
           onHome={goHome}
         />

@@ -177,6 +177,26 @@ export type Database = {
       roam_reset_location_history: { Args: Record<PropertyKey, never>; Returns: Json };
       // ── Room-wide novelty for host-side selection (migration 0012) ──────
       roam_room_recent_groups: { Args: { p_room_id: string }; Returns: Json };
+      // ── Server-authoritative catalog + official runs (0013-0015) ─────────
+      // The `_v2` names are deliberate: the legacy manifest RPCs above stay in
+      // place for the duration of the rollout so an older deployed client keeps
+      // working. See docs/ENGAGEMENT_CORE_V5.md.
+      roam_catalog_summary: { Args: Record<PropertyKey, never>; Returns: Json };
+      roam_start_official_run_v2: {
+        Args: {
+          p_difficulty: string;
+          p_total_rounds?: number;
+          p_timer_seconds?: number | null;
+        };
+        Returns: Json;
+      };
+      roam_get_official_run_v2: { Args: { p_run_id?: string | null }; Returns: Json };
+      roam_submit_official_guess_v2: {
+        Args: { p_run_id: string; p_round_number: number; p_lat: number; p_lng: number };
+        Returns: Json;
+      };
+      roam_finalize_official_run_v2: { Args: { p_run_id: string }; Returns: Json };
+      mp_start_match_v2: { Args: { p_room_id: string }; Returns: Json };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

@@ -9,7 +9,7 @@ import type { Locale } from '../i18n/locale';
 import { haversineDistanceKm } from '../utils/distance';
 import { calculateScore } from '../utils/score';
 import { useIsDesktop, useIsTablet } from '../hooks/useMediaQuery';
-import type { ServerGuessResult } from '../solo/soloRunApi';
+import type { OfficialGuessResult } from '../official/officialRunApi';
 import { StreetView } from '../components/street/StreetView';
 import { HUD } from '../components/hud/HUD';
 import { MapPanel, type Device } from '../components/map/MapPanel';
@@ -26,11 +26,11 @@ interface GameScreenProps {
   /**
    * Called after each guess is submitted, so a server-authoritative solo run
    * can record it. `roundIndex` is 0-based; guess is the placed coordinate.
-   * A resumed round (state.resumePanorama set) has no locally-known answer,
+   * A resumed round (state.hiddenPanorama set) has no locally-known answer,
    * so it awaits this and trusts the server's score/distance instead of
    * computing them locally.
    */
-  onGuessSubmitted?: (roundIndex: number, guess: LatLng) => Promise<ServerGuessResult | null>;
+  onGuessSubmitted?: (roundIndex: number, guess: LatLng) => Promise<OfficialGuessResult | null>;
   onOpenSettings: () => void;
   /** Exit flow: persist resumable state (fixed games only), then leave. */
   onSaveAndExit: () => void;
@@ -39,7 +39,7 @@ interface GameScreenProps {
   /**
    * Resume only: seconds actually left in the resumed round, computed from
    * server time (see solo/resume.ts). Used once, only while
-   * state.resumePanorama is set for the current round.
+   * state.hiddenPanorama is set for the current round.
    */
   resumeRemainingSeconds?: number;
   locale?: Locale;
@@ -100,12 +100,21 @@ export function GameScreen({
       if (!loc) return;
       const effectiveGuess = guess ?? { lat: 0, lng: 0 };
 
-      if (state.resumePanorama) {
-        // A resumed, not-yet-guessed round: the answer was never sent to
-        // this client, so the server's response is the only source of truth
-        // for scoring — there is nothing correct to compute locally.
+      if (state.hiddenPanorama) {
+        // An official (or resumed) round: the answer was never sent to this
+        // client, so the server's response is the only source of truth for
+        // scoring — there is nothing correct to compute locally.
+        //
+        // A failure here must surface. Swallowing it would leave the player on a
+        // panorama with a submitted guess and no result, and the submit RPC is
+        // idempotent, so retrying is safe and is the right advice.
         void (async () => {
-          const server = await onGuessSubmitted?.(state.roundIndex, effectiveGuess);
+          let server: Awaited<ReturnType<NonNullable<typeof onGuessSubmitted>>> = null;
+          try {
+            server = (await onGuessSubmitted?.(state.roundIndex, effectiveGuess)) ?? null;
+          } catch {
+            server = null;
+          }
           if (!server) {
             dispatch({
               type: 'SET_ERROR',
@@ -135,10 +144,10 @@ export function GameScreen({
         type: 'SUBMIT_GUESS',
         result: { location: loc, guess: effectiveGuess, distanceKm, score },
       });
-      // Mirror the guess to the server-authoritative solo run (if any). The
-      // server re-scores it from the same coordinates; the client score is only
-      // for display, fire-and-forget here since it doesn't block the UI.
-      void onGuessSubmitted?.(state.roundIndex, effectiveGuess);
+      // Local game: the client legitimately knows the answer and has already
+      // scored it. There is no server run to mirror to, but keep the call (a
+      // no-op when unofficial) and never let it reject unhandled.
+      void onGuessSubmitted?.(state.roundIndex, effectiveGuess)?.catch(() => {});
     },
     [dispatch, state, onGuessSubmitted, difficulty],
   );
@@ -179,11 +188,11 @@ export function GameScreen({
   useEffect(() => {
     if (state.status !== 'exploring' || ROUND_SECONDS === null) return;
     setSecondsLeft(
-      state.resumePanorama && resumeRemainingSeconds !== undefined
+      state.hiddenPanorama && resumeRemainingSeconds !== undefined
         ? resumeRemainingSeconds
         : ROUND_SECONDS,
     );
-  }, [state.roundIndex, state.status, ROUND_SECONDS, state.resumePanorama, resumeRemainingSeconds]);
+  }, [state.roundIndex, state.status, ROUND_SECONDS, state.hiddenPanorama, resumeRemainingSeconds]);
 
   const timerActive =
     ROUND_SECONDS !== null &&
@@ -225,7 +234,7 @@ export function GameScreen({
     <div className="noselect" style={{ position: 'absolute', inset: 0 }}>
       <StreetView
         location={location}
-        panorama={state.resumePanorama ?? undefined}
+        panorama={state.hiddenPanorama ?? undefined}
         onReady={handleReady}
         onNoPanorama={handleNoPanorama}
         onLoadError={handleLoadError}

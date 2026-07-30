@@ -3,25 +3,16 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { hasGoogleMapsKey, hasSupabaseConfig } from '../config/env';
 import type { Difficulty } from '../config/difficulty';
 import { locationProvider } from '../providers/LocationProvider';
-import { selectRounds } from '../diversity/engine';
-import { commitRoundStarted, groupIdOf, readDiversityState } from '../diversity/store';
-import { ensureGoogleMaps } from '../hooks/useGoogleMaps';
+import { commitRoundStarted, groupIdOf } from '../diversity/store';
 import { getSupabase, getSupabaseConfigError } from './supabaseClient';
 import { ensureAnonymousSession } from './auth';
 import * as api from './api';
 import { MultiplayerError } from './api';
 import { deriveRoomView, type RoomView } from './machine';
 import { reconcileSnapshot } from './reconcile';
-import { buildManifest } from './manifest';
 import { isRoundExpired, remainingSeconds, toEpochMs } from './timer';
 import { validatePlayerName } from './playerName';
 import { isValidRoomCode, normalizeRoomCode } from './roomCode';
-import {
-  EMPTY_ROOM_RECENT,
-  buildRoomRecentKeys,
-  parseRoomRecentGroups,
-} from './roomDiversity';
-import { withTimeout } from '../utils/withTimeout';
 import type { MpRoom, MultiplayerStatus, RoomSnapshot } from './types';
 import { toFriendlyErrorMessage } from '../utils/rateLimit';
 
@@ -74,14 +65,6 @@ function errorMessage(e: unknown): string {
 
 // Persist the active room id so a page refresh can resume the same match.
 const SAVED_ROOM_KEY = 'roam-mp-room';
-
-/**
- * How long the host waits for the room-wide novelty aggregate before starting
- * the match without it. Short on purpose: this is a *nice-to-have* ranking
- * input, and nothing about starting a game may sit behind a network call that
- * might never answer.
- */
-const ROOM_DIVERSITY_TIMEOUT_MS = 2500;
 
 function readSavedRoomId(): string | null {
   try {
@@ -452,43 +435,16 @@ export function useMultiplayer(initialCode: string): MultiplayerController {
     setNotice(null);
     setBusy(true);
     try {
-      const google = await ensureGoogleMaps();
-      const all = await locationProvider.getAll();
-
-      // Weight selection by what the whole room has played recently, not just
-      // the host. Strictly best-effort and bounded: a slow or failing lookup
-      // must never delay or block a match start, so on any problem we fall
-      // straight back to the host's own history. The aggregate carries no
-      // identities — see multiplayer/roomDiversity.ts.
-      const { bag, recentGroupIds } = readDiversityState(room.difficulty);
-      let roomRecent = EMPTY_ROOM_RECENT;
-      try {
-        roomRecent = parseRoomRecentGroups(
-          await withTimeout(api.getRoomRecentGroups(supabase, roomId), ROOM_DIVERSITY_TIMEOUT_MS),
-        );
-      } catch {
-        /* host-only history is a perfectly good fallback */
-      }
-
-      // One shared selection path with solo (diversity/engine.ts), so the two
-      // modes cannot drift: same collection filter, same difficulty pool with
-      // adjacent-tier fallback, same canonical grouping and shuffle-bag
-      // cycling. The picks come first and the ranked spares follow, so
-      // buildManifest can skip any candidate whose panorama won't resolve.
-      const selection = selectRounds({
-        all,
-        count: room.totalRounds,
-        difficulty: room.difficulty,
-        bag,
-        recentGroupIds: buildRoomRecentKeys(roomRecent, recentGroupIds),
-        backupCount: all.length,
-      });
-      const manifest = await buildManifest(
-        google,
-        [...selection.locations, ...selection.backups],
-        room.totalRounds,
-      );
-      await api.startMatch(supabase, roomId, manifest);
+      // V5: the server selects the manifest from the protected catalog.
+      //
+      // What used to happen here — load Google Maps, read the whole bundled
+      // catalog, ask for the room's anonymised recent groups, run the diversity
+      // engine, resolve a panorama per candidate, then POST the answers — is all
+      // gone. The host no longer sends (or knows) a single target coordinate,
+      // and starting a match no longer costs a Street View metadata lookup per
+      // round. Difficulty, round count, timers and room-wide novelty are all
+      // still applied; they are just applied where they can be trusted.
+      await api.startMatchServerSelected(supabase, roomId);
       await doRefetch(roomId);
     } catch (e) {
       setNotice(errorMessage(e));

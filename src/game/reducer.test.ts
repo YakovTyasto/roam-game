@@ -234,12 +234,12 @@ describe('gameReducer', () => {
         roundIndex: 1,
         roundCount: 5,
         timerSeconds: 120,
-        resumePanorama: { locationId: 'b', panoId: 'pano-b', heading: 90, pitch: 0, zoom: 0 },
+        hiddenPanoramas: { 1: { locationId: 'b', panoId: 'pano-b', heading: 90, pitch: 0, zoom: 0 } },
       });
       expect(s.status).toBe('loadingRound');
       expect(s.results).toHaveLength(1);
       expect(s.roundIndex).toBe(1);
-      expect(s.resumePanorama).toEqual({
+      expect(s.hiddenPanorama).toEqual({
         locationId: 'b',
         panoId: 'pano-b',
         heading: 90,
@@ -248,7 +248,7 @@ describe('gameReducer', () => {
       });
     });
 
-    it('SUBMIT_GUESS clears resumePanorama and replaces the placeholder with the revealed location', () => {
+    it('SUBMIT_GUESS clears hiddenPanorama and replaces the placeholder with the revealed location', () => {
       let s = gameReducer(initialGameState, {
         type: 'RESUME_GAME',
         locations: [{ id: 'b', lat: NaN, lng: NaN, label: '', country: '', difficulty: 'normal' }],
@@ -256,13 +256,13 @@ describe('gameReducer', () => {
         roundIndex: 0,
         roundCount: 5,
         timerSeconds: 120,
-        resumePanorama: { locationId: 'b', panoId: 'pano-b', heading: 90, pitch: 0, zoom: 0 },
+        hiddenPanoramas: { 0: { locationId: 'b', panoId: 'pano-b', heading: 90, pitch: 0, zoom: 0 } },
       });
       s = gameReducer(s, { type: 'ROUND_READY' });
       s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
       const revealed = result('b');
       s = gameReducer(s, { type: 'SUBMIT_GUESS', result: revealed });
-      expect(s.resumePanorama).toBeNull();
+      expect(s.hiddenPanorama).toBeNull();
       expect(s.locations[0]).toEqual(revealed.location);
       expect(s.results).toEqual([revealed]);
     });
@@ -273,6 +273,88 @@ describe('gameReducer', () => {
       const before = s.locations[0];
       s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('a') });
       expect(s.locations[0]).toEqual(before);
+    });
+  });
+
+  describe('official (server-selected) runs', () => {
+    const hidden = (n: number) => ({
+      locationId: `run-1:${n}`,
+      panoId: `PANO_${n}`,
+      heading: 10 * n,
+      pitch: 0,
+      zoom: 0,
+    });
+
+    const startOfficial = () =>
+      gameReducer(initialGameState, {
+        type: 'START_OFFICIAL_GAME',
+        hiddenPanoramas: { 0: hidden(1), 1: hidden(2), 2: hidden(3) },
+        results: [],
+        roundIndex: 0,
+        roundCount: 3,
+        timerSeconds: 120,
+      });
+
+    it('starts with the first round hidden and no answers on the client', () => {
+      const s = startOfficial();
+      expect(s.status).toBe('loadingRound');
+      expect(s.roundCount).toBe(3);
+      expect(s.hiddenPanorama).toEqual(hidden(1));
+      // Every placeholder must be unusable for local scoring.
+      expect(s.locations).toHaveLength(3);
+      expect(s.locations.every((l) => Number.isNaN(l.lat) && Number.isNaN(l.lng))).toBe(true);
+      expect(s.locations.every((l) => l.label === '' && l.country === '')).toBe(true);
+    });
+
+    it('carries the hidden panorama forward on every round, not just the first', () => {
+      // This is the whole point of the generalization: pre-V5 only a *resumed*
+      // round was hidden, so a server-selected run would have rendered round 2
+      // from a NaN placeholder.
+      let s = gameReducer(startOfficial(), { type: 'ROUND_READY' });
+      s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('a') });
+      s = gameReducer(s, { type: 'NEXT_ROUND' });
+      expect(s.roundIndex).toBe(1);
+      expect(s.hiddenPanorama).toEqual(hidden(2));
+    });
+
+    it('a guessed round stops being hidden', () => {
+      let s = gameReducer(startOfficial(), { type: 'ROUND_READY' });
+      s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+      const revealed = result('a');
+      s = gameReducer(s, { type: 'SUBMIT_GUESS', result: revealed });
+      expect(s.hiddenPanorama).toBeNull();
+      expect(s.hiddenPanoramas[0]).toBeUndefined();
+      expect(s.hiddenPanoramas[1]).toEqual(hidden(2));
+      // …and the revealed location replaces the placeholder.
+      expect(s.locations[0]).toEqual(revealed.location);
+    });
+
+    it('resumes a partially played official run at the right round', () => {
+      const played = result('a');
+      const s = gameReducer(initialGameState, {
+        type: 'START_OFFICIAL_GAME',
+        hiddenPanoramas: { 1: hidden(2), 2: hidden(3) },
+        results: [played],
+        roundIndex: 1,
+        roundCount: 3,
+        timerSeconds: 120,
+      });
+      expect(s.roundIndex).toBe(1);
+      expect(s.results).toEqual([played]);
+      expect(s.locations[0]).toEqual(played.location);
+      expect(s.hiddenPanorama).toEqual(hidden(2));
+    });
+
+    it('finishes after the last round like any fixed-length game', () => {
+      let s = startOfficial();
+      for (let i = 0; i < 3; i++) {
+        s = gameReducer(s, { type: 'ROUND_READY' });
+        s = gameReducer(s, { type: 'PLACE_GUESS', guess: { lat: 1, lng: 1 } });
+        s = gameReducer(s, { type: 'SUBMIT_GUESS', result: result('a') });
+        s = gameReducer(s, { type: 'NEXT_ROUND' });
+      }
+      expect(s.status).toBe('finalResult');
     });
   });
 });
