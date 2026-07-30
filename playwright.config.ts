@@ -30,11 +30,27 @@ export default defineConfig({
 
   // Serve the real production build, not the dev server — the bug lived in
   // built CSS, and dev-only behaviour would not be representative.
+  //
+  // The build is configured as a *fully set up* app: a Google Maps key and a
+  // Supabase URL are baked in so the suite exercises the real configured
+  // screens (official runs, Daily, multiplayer menu) rather than only the
+  // "backend missing" fallbacks. Neither value reaches a real service:
+  //   • the Supabase URL is same-origin (`/__supabase`), so there is no CORS
+  //     preflight and every call is intercepted by e2e/support/supabase.ts;
+  //   • the Maps key is a placeholder and maps.googleapis.com is intercepted by
+  //     e2e/support/googleMaps.ts, so no billable panorama is ever loaded.
+  // A local `.env.local` would take precedence over these (Vite loads env files
+  // after process env), so run the suite without one — CI has none.
   webServer: {
     command: 'npm run build && npx vite preview --port 4173 --strictPort',
     url: 'http://localhost:4173/',
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    env: {
+      VITE_GOOGLE_MAPS_API_KEY: 'e2e-stub-maps-key',
+      VITE_SUPABASE_URL: 'http://localhost:4173/__supabase',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'e2e-stub-publishable-key',
+    },
   },
 
   use: {
