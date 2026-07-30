@@ -1,5 +1,5 @@
 import type { GameAction, GameState } from './state';
-import { initialGameState } from './state';
+import { hiddenLocationPlaceholder, initialGameState } from './state';
 
 /**
  * Pure game state-machine reducer. All non-trivial transitions live here so
@@ -54,12 +54,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       // server-revealed location now that it's been guessed.
       const locations = [...state.locations];
       locations[state.roundIndex] = action.result.location;
+      // Drop this round from the hidden map: its answer is now known, so it
+      // must render like any other completed round (and must never be
+      // re-submitted to the server as if still hidden).
+      const hiddenPanoramas = { ...state.hiddenPanoramas };
+      delete hiddenPanoramas[state.roundIndex];
       return {
         ...state,
         status: 'roundResult',
         locations,
         results: [...state.results, action.result],
-        resumePanorama: null,
+        hiddenPanorama: null,
+        hiddenPanoramas,
       };
     }
 
@@ -71,11 +77,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (isLast) {
         return { ...state, status: 'finalResult' };
       }
+      const nextIndex = state.roundIndex + 1;
       return {
         ...state,
         status: 'loadingRound',
-        roundIndex: state.roundIndex + 1,
+        roundIndex: nextIndex,
         guess: null,
+        // An official run's every round is hidden, so the next one's panorama
+        // becomes current here. Local games have an empty map and get null.
+        hiddenPanorama: state.hiddenPanoramas[nextIndex] ?? null,
       };
     }
 
@@ -101,8 +111,34 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         roundIndex: action.roundIndex,
         roundCount: action.roundCount,
         timerSeconds: action.timerSeconds,
-        resumePanorama: action.resumePanorama,
+        hiddenPanoramas: action.hiddenPanoramas,
+        hiddenPanorama: action.hiddenPanoramas[action.roundIndex] ?? null,
       };
+
+    case 'START_OFFICIAL_GAME': {
+      // The client holds no answers here. `locations` is filled with NaN-coord
+      // placeholders for every un-played round so the rest of the machine (which
+      // indexes locations by round) keeps working, while making a local scoring
+      // attempt fail loudly rather than silently produce a wrong distance.
+      const locations = [...Array(action.roundCount).keys()].map((i) => {
+        const played = action.results[i];
+        if (played) return played.location;
+        const hidden = action.hiddenPanoramas[i];
+        return hiddenLocationPlaceholder(hidden?.locationId ?? `round-${i + 1}`, 'normal');
+      });
+      return {
+        ...initialGameState,
+        status: 'loadingRound',
+        locations,
+        backups: [],
+        results: action.results,
+        roundIndex: action.roundIndex,
+        roundCount: action.roundCount,
+        timerSeconds: action.timerSeconds,
+        hiddenPanoramas: action.hiddenPanoramas,
+        hiddenPanorama: action.hiddenPanoramas[action.roundIndex] ?? null,
+      };
+    }
 
     case 'REPLACE_CURRENT_LOCATION': {
       // Swap in a spare location when the current one has no panorama.

@@ -4,6 +4,12 @@
   bottom: calc(var(--safe-bottom) + 14px);
   transform: translateX(-50%);
   z-index: 1200;
+  /* Purely informational: it has no controls of its own, so it must never
+     intercept a tap meant for a button underneath it. A fixed, bottom-anchored
+     layer over the home screen's actions is precisely the shape of the reported
+     "buttons don't work on iPhone" bug, and e2e/mobileInteraction.spec.ts
+     asserts the actions stay hit-testable while it is showing. */
+  pointer-events: none;
   display: inline-flex;
   align-items: center;
   gap: 10px;

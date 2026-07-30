@@ -1,0 +1,199 @@
+/* Mirrors LeaderboardScreen: a scrollable centred card. `position: fixed` with
+   `overflow-y: auto` is what keeps a tall card reachable on a short phone
+   viewport — the failure mode the mobile regression gate exists for. */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 20px) 16px
+    calc(env(safe-area-inset-bottom) + 20px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: radial-gradient(120% 80% at 50% 0%, #14181300 0%, var(--bg) 60%);
+}
+
+.card {
+  width: min(640px, 100%);
+  background: var(--panel-strong);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--r-lg);
+  padding: clamp(16px, 3vw, 26px);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(var(--blur));
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  margin: 12px 0 6px;
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0 0 18px;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  max-width: 48ch;
+}
+
+.sectionTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+.noticeError {
+  background: var(--danger-dim);
+  border-color: rgba(255, 107, 94, 0.32);
+}
+
+.result {
+  margin-bottom: 18px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.stat {
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+}
+
+.stat dt {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.stat dd {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.countdown {
+  margin: 0 0 20px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.board,
+.previous {
+  margin-top: 22px;
+}
+
+/* The table scrolls inside its own box so a narrow phone never scrolls the
+   whole page sideways. */
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.table th {
+  text-align: left;
+  padding: 6px 10px 6px 0;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 8px 10px 8px 0;
+  border-top: 1px solid var(--panel-border);
+  white-space: nowrap;
+}
+
+.table td:nth-child(2) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* The player's own row is marked by BOTH a tint and the "You" tag, so the
+   meaning never depends on colour alone. */
+.selfRow {
+  background: var(--accent-dim);
+}
+
+.youTag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.footNote {
+  margin: 10px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  line-height: 1.5;
+}

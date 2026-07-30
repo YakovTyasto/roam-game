@@ -1,117 +1,19 @@
-import { expect, test } from '@playwright/test';
-import type { Locator, Page } from '@playwright/test';
+import { bringIntoReach, expect, openHome, tapForReal, test } from './support';
 
 /**
  * Regression cover for the iPhone Safari hotfix: the buttons that pick and
  * start a game mode must be reachable and tappable with a real finger.
  *
- * ── Why these tests are written the way they are ──────────────────────────
- *
- * `locator.tap()` and `locator.click()` scroll the target into view first, and
- * that auto-scroll can move a container a finger cannot. It reported success
- * against the broken build. So every tap below goes through
- * `page.touchscreen.tap(x, y)` at the button's real on-screen coordinates,
- * after checking `document.elementFromPoint()` actually resolves to the button
- * — the same check a fingertip performs.
- *
- * Scrolling is likewise never done with `scrollIntoView()`. The test first
- * asserts a scrollable ancestor exists, which is precisely what the bug
- * removed, and only then scrolls it.
+ * The helpers this leans on live in e2e/support/touch.ts and are shared with
+ * every later suite — see that file (and e2e/README.md) for why they refuse to
+ * use `locator.tap()`, `locator.click()` or `scrollIntoView()` on the control
+ * under test: all three auto-scroll, and all three reported success against the
+ * broken build.
  */
-
-const NAME = 'Tester';
-
-/** First visit asks for a display name before anything else renders. */
-async function completeOnboarding(page: Page): Promise<void> {
-  const nameInput = page.getByLabel('Your display name');
-  if ((await nameInput.count()) === 0) return;
-  await nameInput.fill(NAME);
-  await tapForReal(page, page.getByRole('button', { name: /start exploring/i }));
-  await expect(page.getByRole('button', { name: /solo game/i })).toBeVisible();
-}
-
-/**
- * Scroll the nearest scrollable ancestor until the element is inside the
- * viewport, and fail loudly if no ancestor can scroll. Returns the element's
- * centre in viewport coordinates.
- *
- * A `null` return means the element is off-screen and nothing can bring it
- * back — the exact production failure.
- */
-async function bringIntoReach(
-  locator: Locator,
-): Promise<{ x: number; y: number; scrolledBy: number } | null> {
-  return locator.evaluate((el: HTMLElement) => {
-    const isInside = () => {
-      const r = el.getBoundingClientRect();
-      return r.top >= 0 && r.bottom <= window.innerHeight;
-    };
-    if (isInside()) {
-      const r = el.getBoundingClientRect();
-      return { x: r.left + r.width / 2, y: r.top + r.height / 2, scrolledBy: 0 };
-    }
-
-    // Walk up for a container a finger could actually drag, then scroll it so
-    // the element lands in view. Scrolling straight to the bottom would only
-    // ever prove the *last* control is reachable.
-    let node: HTMLElement | null = el.parentElement;
-    while (node && node !== document.documentElement) {
-      const style = getComputedStyle(node);
-      const scrollable =
-        node.scrollHeight > node.clientHeight + 2 && /auto|scroll/.test(style.overflowY);
-      if (scrollable) {
-        const before = node.scrollTop;
-        const elTop = el.getBoundingClientRect().top;
-        const boxTop = node.getBoundingClientRect().top;
-        // Centre the element in the scroll box where there is room for it.
-        const delta = elTop - boxTop - Math.max(0, (node.clientHeight - el.offsetHeight) / 2);
-        node.scrollTop = Math.max(0, Math.min(before + delta, node.scrollHeight));
-        const r = el.getBoundingClientRect();
-        if (r.top >= 0 && r.bottom <= window.innerHeight) {
-          return {
-            x: r.left + r.width / 2,
-            y: r.top + r.height / 2,
-            scrolledBy: node.scrollTop - before,
-          };
-        }
-      }
-      node = node.parentElement;
-    }
-    return null;
-  });
-}
-
-/**
- * Activate the way a real pointer does: real coordinates, no auto-scroll,
- * hit-test first. Touch contexts get a finger tap, non-touch contexts a mouse
- * click at the same coordinates — both bypass Playwright's scroll-into-view.
- */
-async function tapForReal(page: Page, locator: Locator): Promise<void> {
-  await expect(locator).toBeVisible();
-  const point = await bringIntoReach(locator);
-  expect(
-    point,
-    'button is outside the viewport and no ancestor scrolls — unreachable by touch',
-  ).not.toBeNull();
-
-  const hitsButton = await locator.evaluate((el: HTMLElement, p: { x: number; y: number }) => {
-    const hit = document.elementFromPoint(p.x, p.y);
-    return !!hit && (hit === el || el.contains(hit));
-  }, point!);
-  expect(hitsButton, 'something else is on top of the button at its centre').toBe(true);
-
-  const hasTouch = await page.evaluate(() => 'ontouchstart' in window || navigator.maxTouchPoints > 0);
-  if (hasTouch) {
-    await page.touchscreen.tap(point!.x, point!.y);
-  } else {
-    await page.mouse.click(point!.x, point!.y);
-  }
-}
 
 test.describe('game mode buttons', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await completeOnboarding(page);
+    await openHome(page);
   });
 
   test('every action on the home screen is reachable and responds', async ({ page }) => {
@@ -169,13 +71,12 @@ test.describe('game mode buttons', () => {
     expect(point, '"Start game" is unreachable by touch').not.toBeNull();
 
     await tapForReal(page, start);
-    // Without a Maps key the app routes to the setup instructions screen;
-    // with one it loads a round. Either proves the tap was received.
-    await expect(
-      page.getByRole('heading', { name: /add a google maps key|finding a location/i }).or(
-        page.getByText(/finding a location/i),
-      ),
-    ).toBeVisible();
+    // The e2e build has a (stubbed) Maps key, so the tap must actually start a
+    // round: the in-game HUD is the proof. Its exit control is also the first
+    // thing a player reaches for, so asserting on that covers both.
+    await expect(page.getByRole('button', { name: 'Exit game' })).toBeVisible({
+      timeout: 30_000,
+    });
   });
 });
 
@@ -183,15 +84,13 @@ test.describe('non-touch input still works', () => {
   test.skip(({ isMobile }) => !!isMobile, 'keyboard and mouse paths are desktop-only');
 
   test('mouse click opens solo setup', async ({ page }) => {
-    await page.goto('/');
-    await completeOnboarding(page);
+    await openHome(page);
     await page.getByRole('button', { name: /solo game/i }).click();
     await expect(page.getByRole('heading', { name: /set up your game/i })).toBeVisible();
   });
 
   test('keyboard Enter and Space activate the mode buttons', async ({ page }) => {
-    await page.goto('/');
-    await completeOnboarding(page);
+    await openHome(page);
 
     await page.getByRole('button', { name: /solo game/i }).focus();
     await page.keyboard.press('Enter');
@@ -206,8 +105,7 @@ test.describe('non-touch input still works', () => {
   });
 
   test('focus-visible outline survives the fix', async ({ page }) => {
-    await page.goto('/');
-    await completeOnboarding(page);
+    await openHome(page);
     const button = page.getByRole('button', { name: /solo game/i });
     await page.keyboard.press('Tab');
     await button.focus();

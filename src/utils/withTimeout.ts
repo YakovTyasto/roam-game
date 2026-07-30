@@ -14,7 +14,13 @@ export class TimeoutError extends Error {
   }
 }
 
-export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+/**
+ * `PromiseLike` rather than `Promise` on purpose: a Supabase query builder is a
+ * thenable, not a real promise, and the whole point of this helper is to bound
+ * exactly those calls. Requiring `Promise` forced call sites to wrap every RPC
+ * in `Promise.resolve(...)`, which is noise that hides the intent.
+ */
+export function withTimeout<T>(promise: PromiseLike<T>, ms: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new TimeoutError(`Timed out after ${ms}ms`)), ms);
     promise.then(

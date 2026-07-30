@@ -15,6 +15,12 @@ interface FinalScreenProps {
   difficultyLabel?: string;
   /** Present only for an Endless session — swaps the meter for session stats. */
   endlessStats?: EndlessStats;
+  /**
+   * Why this game was not officially scored, if it wasn't. A local game is a
+   * perfectly good game, but it must never be mistaken for a ranked one, so the
+   * screen says so instead of staying silent.
+   */
+  unranked?: 'endless' | 'offline' | 'unavailable' | 'not-configured';
   onPlayAgain: () => void;
   onHome: () => void;
 }
@@ -25,6 +31,7 @@ export function FinalScreen({
   units,
   difficultyLabel,
   endlessStats,
+  unranked,
   onPlayAgain,
   onHome,
 }: FinalScreenProps) {
@@ -110,6 +117,16 @@ export function FinalScreen({
             </li>
           ))}
         </ol>
+
+        {unranked && (
+          <p className={styles.unranked} role="status">
+            {unranked === 'endless'
+              ? 'Endless sessions are for practice — they aren’t ranked.'
+              : unranked === 'not-configured'
+                ? 'This game was scored on your device. Online scoring isn’t set up for this build.'
+                : 'This game was scored on your device because the server couldn’t be reached, so it isn’t on the leaderboard.'}
+          </p>
+        )}
 
         <div className={styles.actions}>
           <Button variant="primary" size="lg" block onClick={onPlayAgain}>

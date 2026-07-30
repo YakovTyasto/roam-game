@@ -144,3 +144,16 @@
   display: flex;
   gap: 12px;
 }
+
+/* Shown when a game was scored locally instead of by the server. Muted, not
+   alarming: the game still counted for the player, just not for the ranking. */
+.unranked {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+}
