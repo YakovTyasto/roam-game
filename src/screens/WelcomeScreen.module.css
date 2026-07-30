@@ -4,8 +4,12 @@
   z-index: 10;
   display: flex;
   flex-direction: column;
+  /* The extra bottom clearance is for the fixed banners that dock there (the
+     PWA update prompt has its own buttons, so unlike the offline banner it
+     cannot be made click-through). Without it, scrolling to the end of the home
+     screen leaves the last action underneath the banner. */
   padding: calc(var(--safe-top) + 20px) calc(var(--safe-right) + 22px)
-    calc(var(--safe-bottom) + 26px) calc(var(--safe-left) + 22px);
+    calc(var(--safe-bottom) + 92px) calc(var(--safe-left) + 22px);
   /* Scroll vertically rather than clip: on a short phone viewport the last
      action button ("Weekly leaderboard") falls below the fold, and `overflow:
      hidden` here made it permanently unreachable. `overflow-x` stays hidden so

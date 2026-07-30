@@ -50,6 +50,8 @@ import { ResumePromptScreen } from './screens/ResumePromptScreen';
 import { SoloSetupScreen } from './screens/SoloSetupScreen';
 import { LeaderboardScreen } from './screens/LeaderboardScreen';
 import { DailyScreen } from './screens/DailyScreen';
+import { ChallengeScreen } from './screens/ChallengeScreen';
+import { parseChallengeCodeFromUrl } from './challenge/challengeCode';
 import { DailyCard } from './components/daily/DailyCard';
 import { useDaily } from './daily/useDaily';
 import { GameScreen } from './screens/GameScreen';
@@ -72,7 +74,13 @@ const MultiplayerApp = lazy(() =>
   })),
 );
 
-type AppScreen = 'home' | 'solo-setup' | 'leaderboard' | 'multiplayer' | 'daily';
+type AppScreen =
+  | 'home'
+  | 'solo-setup'
+  | 'leaderboard'
+  | 'multiplayer'
+  | 'daily'
+  | 'challenge';
 
 /** The resume check never blocks rendering, but must still fail bounded. */
 const RESUME_CHECK_TIMEOUT_MS = 8000;
@@ -113,6 +121,18 @@ export default function App() {
     [],
   );
 
+  // A challenge deep link (/challenge/CODE, or ?c=CODE on a host without
+  // rewrites). Read once on load; a malformed code resolves to null so a bad
+  // link lands on the home screen rather than an error the player can't explain.
+  const initialChallengeCode = useMemo(
+    () =>
+      typeof window !== 'undefined'
+        ? parseChallengeCodeFromUrl(window.location.pathname + window.location.search)
+        : null,
+    [],
+  );
+  const [challengeCode, setChallengeCode] = useState<string | null>(initialChallengeCode);
+
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
   const [isBest, setIsBest] = useState(false);
@@ -128,9 +148,11 @@ export default function App() {
     quickConfig(toDifficulty(soloDifficulty), APP.roundsPerGame),
   );
   const activeDifficulty = activeConfig.difficulty;
-  const [screen, setScreen] = useState<AppScreen>(
-    initialRoomCode ? 'multiplayer' : 'home',
-  );
+  const [screen, setScreen] = useState<AppScreen>(() => {
+    if (initialRoomCode) return 'multiplayer';
+    if (initialChallengeCode) return 'challenge';
+    return 'home';
+  });
   const [endlessNotice, setEndlessNotice] = useState<number | null>(null);
 
 
@@ -443,6 +465,51 @@ export default function App() {
     [daily, soloRun],
   );
 
+  /** Start or resume a shared challenge attempt. */
+  const startChallengeRun = useCallback(
+    async (code: string) => {
+      setStartingSolo(true);
+      try {
+        const { startChallenge } = await import('./challenge/challengeApi');
+        const outcome = await startChallenge(code);
+        if (outcome.kind === 'already-completed') return;
+        const { run } = outcome;
+        const played = resultsOf(run);
+        const roundIndex = nextRoundIndex(run);
+        soloRun.adopt(run, played.length);
+        setActiveConfig({
+          difficulty: run.difficulty,
+          roundCount: run.roundCount,
+          // A challenge created without a timer must not show one, even though
+          // the run row always carries a duration for round expiry.
+          timerSeconds: outcome.hasTimer ? run.timerSeconds : null,
+          movementRule: 'default',
+        });
+        setOfficialGame(true);
+        setLocalOnlyNotice(null);
+        setIsBest(false);
+        committedRoundsRef.current.clear();
+        clearLocalRunSnapshot();
+        resumeRemainingRef.current = remainingSeconds(run, roundIndex) ?? undefined;
+        dispatch({
+          type: 'START_OFFICIAL_GAME',
+          hiddenPanoramas: hiddenPanoramasOf(run),
+          results: played,
+          roundIndex,
+          roundCount: run.roundCount,
+          timerSeconds: outcome.hasTimer ? run.timerSeconds : null,
+        });
+        setScreen('home');
+      } catch {
+        // The challenge screen keeps its own error surface; leaving the player
+        // on it (rather than dropping them home) is the useful outcome.
+      } finally {
+        setStartingSolo(false);
+      }
+    },
+    [soloRun],
+  );
+
   const recordGuess = useCallback(
     (roundIndex: number, guess: { lat: number; lng: number }) =>
       soloRun.recordGuess(roundIndex, guess),
@@ -702,6 +769,25 @@ export default function App() {
       return <LeaderboardScreen onBack={() => setScreen('home')} />;
     }
 
+    if (screen === 'challenge') {
+      return (
+        <ChallengeScreen
+          locale={locale.locale}
+          units={preferences.units}
+          initialCode={challengeCode}
+          onPlay={(code) => void startChallengeRun(code)}
+          onBack={() => {
+            setChallengeCode(null);
+            // Drop the deep-link path so a refresh doesn't reopen the challenge.
+            if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+              window.history.replaceState(null, '', '/');
+            }
+            setScreen('home');
+          }}
+        />
+      );
+    }
+
     if (screen === 'daily') {
       return (
         <DailyScreen
@@ -728,6 +814,10 @@ export default function App() {
         onStart={() => setScreen('solo-setup')}
         onStartMultiplayer={() => setScreen('multiplayer')}
         onOpenLeaderboard={() => setScreen('leaderboard')}
+        onOpenChallenge={() => {
+          setChallengeCode(null);
+          setScreen('challenge');
+        }}
         onOpenSettings={() => setSettingsOpen(true)}
         dailyCard={
           <DailyCard

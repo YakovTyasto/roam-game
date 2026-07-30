@@ -205,6 +205,23 @@ export type Database = {
         Args: { p_day?: string | null; p_limit?: number };
         Returns: Json;
       };
+      // ── Shared challenges (migration 0017) ───────────────────────────────
+      roam_create_challenge_v2: {
+        Args: {
+          p_difficulty?: string;
+          p_round_count?: number;
+          p_timer_seconds?: number | null;
+          p_title?: string;
+          p_expires_hours?: number;
+        };
+        Returns: Json;
+      };
+      roam_get_challenge_v2: { Args: { p_code: string }; Returns: Json };
+      roam_start_challenge_v2: { Args: { p_code: string }; Returns: Json };
+      roam_challenge_leaderboard: {
+        Args: { p_code: string; p_limit?: number };
+        Returns: Json;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

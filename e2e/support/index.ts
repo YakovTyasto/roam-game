@@ -39,12 +39,10 @@ export const TEST_PLAYER_NAME = 'Tester';
  * against a spinner and reporting nonsense.
  */
 export async function waitForFirstScreen(page: Page): Promise<void> {
-  await expect(
-    page
-      .getByLabel('Your display name')
-      .or(page.getByRole('button', { name: /solo game/i }))
-      .first(),
-  ).toBeVisible({ timeout: 30_000 });
+  // "Any button is on screen" is the right signal here rather than a specific
+  // one: the first screen depends on how the app was opened (home, a challenge
+  // deep link, a room invite), while the loading layer has no buttons at all.
+  await expect(page.getByRole('button').first()).toBeVisible({ timeout: 30_000 });
 }
 
 /**
@@ -57,7 +55,9 @@ export async function completeOnboarding(page: Page, name = TEST_PLAYER_NAME): P
   if ((await nameInput.count()) === 0) return;
   await nameInput.fill(name);
   await tapForReal(page, page.getByRole('button', { name: /start exploring/i }), 'Start exploring');
-  await expect(page.getByRole('button', { name: /solo game/i })).toBeVisible();
+  // Onboarding is done when the name screen is gone. Asserting on the *home*
+  // screen instead would be wrong for a deep link, which opens elsewhere.
+  await expect(nameInput).toBeHidden();
 }
 
 /** Load the app and get past onboarding to the home screen. */

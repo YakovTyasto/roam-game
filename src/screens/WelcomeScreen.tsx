@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Play, Settings, Trophy, AlertTriangle, Users, BarChart3 } from 'lucide-react';
+import { Play, Settings, Trophy, AlertTriangle, Users, BarChart3, Link2 } from 'lucide-react';
 import { APP, MAX_GAME_SCORE } from '../config/app';
 import { Button } from '../components/ui/Button';
 import styles from './WelcomeScreen.module.css';
@@ -11,6 +11,7 @@ interface WelcomeScreenProps {
   onStart: () => void;
   onStartMultiplayer: () => void;
   onOpenLeaderboard: () => void;
+  onOpenChallenge: () => void;
   onOpenSettings: () => void;
   /**
    * Entry point for the Daily Challenge, injected rather than built here so this
@@ -33,6 +34,7 @@ export function WelcomeScreen({
   onStart,
   onStartMultiplayer,
   onOpenLeaderboard,
+  onOpenChallenge,
   onOpenSettings,
   dailyCard,
 }: WelcomeScreenProps) {
@@ -86,6 +88,11 @@ export function WelcomeScreen({
           <Button variant="ghost" size="lg" onClick={onStartMultiplayer}>
             <Users size={20} aria-hidden />
             Private multiplayer
+          </Button>
+
+          <Button variant="ghost" size="lg" onClick={onOpenChallenge}>
+            <Link2 size={20} aria-hidden />
+            Challenge a friend
           </Button>
 
           <Button variant="ghost" size="lg" onClick={onOpenLeaderboard}>

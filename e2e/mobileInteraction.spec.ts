@@ -89,20 +89,29 @@ test.describe('mobile interaction gate — home screen', () => {
     await expectTouchTarget(page.getByRole('button', { name: 'Settings' }), 'Settings');
   });
 
-  test('controls stay inside the safe area', async ({ page }) => {
+  test('controls clear the viewport edges once scrolled to', async ({ page }) => {
     // A safe-area mistake puts a control under the notch or the home indicator,
     // where iOS Safari's own chrome takes the tap. The emulated viewport has no
-    // real insets, so this asserts the weaker invariant that always holds: no
-    // control may sit flush against a viewport edge.
+    // real insets, so this asserts the invariant that always holds: once a
+    // control has been brought into reach, it is fully inside the viewport and
+    // not flush against either edge.
+    //
+    // Note it scrolls first. A control below the fold is not a bug on a screen
+    // that scrolls — being unreachable is, and that is covered separately.
     for (const name of HOME_ACTIONS) {
-      const box = await page.getByRole('button', { name }).boundingBox();
+      const button = page.getByRole('button', { name });
+      await expectReachable(button, `home action ${name}`);
+      const box = await button.boundingBox();
       expect(box, `${name} has no box`).not.toBeNull();
-      expect(box!.y, `${name} is flush with the top edge`).toBeGreaterThan(0);
-      const bottomGap = await page.evaluate(
-        (b: number) => window.innerHeight - b,
-        box!.y + box!.height,
+      const gaps = await page.evaluate(
+        (b: { top: number; bottom: number }) => ({
+          top: b.top,
+          bottom: window.innerHeight - b.bottom,
+        }),
+        { top: box!.y, bottom: box!.y + box!.height },
       );
-      expect(bottomGap, `${name} is flush with the bottom edge`).toBeGreaterThanOrEqual(0);
+      expect(gaps.top, `${name} is flush with the top edge`).toBeGreaterThan(0);
+      expect(gaps.bottom, `${name} is flush with the bottom edge`).toBeGreaterThan(0);
     }
   });
 
