@@ -4,14 +4,17 @@ Guidance for working in this repository.
 
 ## What this is
 
-**Roam** — a single-player geography guessing PWA. Street View panorama →
-guess on a Leaflet map → distance-based score, five rounds. React + TypeScript
-(strict) + Vite. No backend.
+**Roam** — a geography guessing PWA. Street View panorama → guess on a Leaflet
+map → distance-based score. React + TypeScript (strict) + Vite, with Supabase as
+the backend for everything official: profiles, private/party multiplayer, the
+weekly leaderboard, the Daily Challenge and shared challenges. Solo play still
+works with no backend at all (clearly marked as unranked).
 
 ## Key commands
 
 ```bash
 npm run dev        # dev server
+npm run test:e2e   # Playwright (production build; needs `npx playwright install`)
 npm run build      # tsc -b && vite build (must pass before shipping)
 npm run test       # Vitest unit tests
 npm run lint       # ESLint (flat config)
@@ -27,15 +30,20 @@ Run **lint + typecheck + test + build** before considering a change done.
 src/
   config/        app.ts (product name + tuning), env.ts (API key access)
   types/         shared TypeScript types
-  data/          locations.ts (curated dataset)
+  data/          locations.ts (curated dataset — dev/tooling/offline; the
+                 SERVER catalog in game_catalog is authoritative for official play)
   providers/     LocationProvider interface + static implementation
+  official/      officialRun.ts (the answer-secrecy parser) + officialRunApi.ts
+  daily/         daily.ts (UTC day, countdown, tie rules) + dailyApi + useDaily
+  challenge/     challengeCode.ts (codes + deep links) + challengeApi
+  share/         share.ts (Web Share → clipboard → execCommand fallbacks)
   game/          state.ts (state machine types) + reducer.ts (pure) + tests
   utils/         distance.ts, score.ts, selectRounds.ts (+ tests)
   hooks/         useGoogleMaps (singleton loader), useLocalStorage,
                  useMediaQuery, useOnlineStatus
   components/    street/ (StreetView), map/ (WorldMap, MapPanel),
                  hud/, settings/, ui/ (Button, Modal, StatusScreen, …)
-  screens/       Welcome, Game, Final, Setup, Error
+  screens/       Welcome, Game, Final, Setup, Error, Daily, Challenge
   styles/        variables.css (design tokens), global.css
   App.tsx        top-level wiring; main.tsx entry
 ```
@@ -44,6 +52,20 @@ State is an explicit reducer state machine (`welcome → loadingRound →
 exploring → selectingGuess → roundResult → finalResult`, plus `error`). Keep the
 reducer pure and unit-tested; compute distance/score with the tested utils and
 pass results into `SUBMIT_GUESS`.
+
+## Server authority (V5)
+
+Official online play — solo runs, the Daily Challenge, shared challenges — gets
+its rounds from `public.game_catalog` through `SECURITY DEFINER` RPCs. The client
+never sees a round's answer until it has guessed that round, never computes a
+score for an official round, and never sends a location manifest. See
+`docs/ENGAGEMENT_CORE_V5.md`; the guarantees are asserted in
+`supabase/tests/09`–`11_*_verify.sql`, runnable with
+`supabase/tests/run-local.sh`.
+
+The bundled catalog remains the source for development, the audit tooling, the
+seed generator, unit tests, and **offline Classic Solo**, which is always marked
+local/non-official.
 
 ## Non-negotiable rules
 
@@ -59,6 +81,13 @@ pass results into `SUBMIT_GUESS`.
 4. **Product name in one place.** Only `src/config/app.ts` hard-codes "Roam".
 5. **Provider boundary.** Game logic depends on `LocationProvider`, not on the
    dataset directly, so locations can later move to a backend.
+6. **Never widen what a client learns about an un-played round.** One function
+   server-side (`roam_run_payload`) and one parser client-side
+   (`src/official/officialRun.ts`) form the whole reveal boundary — change either
+   only with a matching SQL assertion.
+7. **Migrations are additive and never edited after deploy.** New behaviour goes
+   in a `*_v2` function so the previously deployed frontend keeps working while
+   the database is ahead of it.
 
 ## Design rules
 

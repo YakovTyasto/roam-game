@@ -21,6 +21,24 @@ apply once, in order, per environment.
 | 10 | `0010_rate_limiting.sql` | Server-side rate limiting (generic counter + 4 wired RPCs) |
 | 11 | `0011_location_history.sql` | Durable per-player location history (Diversity Engine V2) |
 | 12 | `0012_room_diversity.sql` | Anonymised room-wide recent locations for host-side selection |
+| 13 | `0013_catalog_schema.sql` | Server-authoritative `game_catalog` (RLS deny-all) + selection helpers |
+| 14 | `0014_catalog_seed.sql` | Deterministic, idempotent seed of the verified catalog (generated) |
+| 15 | `0015_official_runs.sql` | Official catalog-driven runs (`*_v2` RPCs) + server-selected multiplayer start |
+| 16 | `0016_daily_challenge.sql` | Daily Challenge tables, generation, attempts, leaderboard |
+| 17 | `0017_shared_challenges.sql` | Unlisted shareable challenges, attempts, leaderboard |
+
+**13-17 (Engagement Core V5) are additive and non-destructive.** No pre-V5
+function is dropped or revoked: new behaviour lives in `*_v2` functions so a
+frontend running the *previous* release keeps working after the migrations are
+applied. `09_catalog_verify.sql` asserts that explicitly. The cleanup release
+that removes the legacy manifest RPCs is described in
+`docs/ENGAGEMENT_CORE_V5.md` and is deliberately NOT part of this rollout.
+
+`0014` is generated from `src/data/locations.ts` by
+`scripts/generate-catalog-seed.ts`. Run it with `--check` in CI to prove the
+migration has not drifted from the TypeScript catalog. Re-applying `0014` is a
+true no-op: the upsert is guarded by a column-by-column comparison, so an
+unchanged row is not rewritten and `updated_at` does not move.
 
 All of 6-12 are additive/backward-compatible: new nullable columns, widened
 check constraints, one new table, and new or same-signature functions —
@@ -78,6 +96,23 @@ security-critical guarantees directly in the database:
   nothing.
 - **No direct writes** — `authenticated` cannot modify a score, room status, or
   insert a guess directly; `anon` cannot call the RPCs at all.
+
+## Running every suite in one command
+
+```bash
+supabase/tests/run-local.sh                      # clean install, all suites
+supabase/tests/run-local.sh --upgrade-from 0012  # upgrade from the deployed schema
+supabase/tests/run-local.sh --only 09            # one suite
+```
+
+It recreates the database, applies the stubs and every migration in order, then
+runs each `NN_*_verify.sql`. The `--upgrade-from` mode applies migrations up to
+that number, seeds production-shaped rows, applies the rest on top, and asserts
+the pre-existing rows survived — which is the path most likely to break in
+production and used to be the least exercised.
+
+Standard libpq variables select the server (`PGHOST`, `PGPORT`, `PGUSER`);
+`ROAM_TEST_DB` names the throwaway database (default `roam_sql_test`).
 
 ## Running locally
 
@@ -268,3 +303,59 @@ psql -d roam_mp_test -f supabase/tests/08_room_diversity_verify.sql
 ```
 
 Ends with `=== 08_room_diversity_verify.sql: ALL ASSERTIONS PASSED ===`.
+
+## Engagement Core V5 verification
+
+### `09_catalog_verify.sql` (migrations 0013-0015)
+
+- **Catalog integrity** — 325 locations seeded; no duplicate location id, pano id
+  or canonical group; existing stable ids and verified pano ids preserved exactly.
+- **No client access** — RLS on with no policy; `select`/`insert`/`update`/`delete`
+  all revoked from `anon` and `authenticated`; the round selector and the raw run
+  payload are ungranted; the *only* client-callable catalog function is the
+  counts-only summary.
+- **Answer secrecy** — an active or pending round exposes a panorama and nothing
+  else, not even its catalog id, and not even to the run's own owner.
+- **Server scoring** — the stored score equals `mp_score(mp_haversine_km(…))`.
+- **Submission semantics** — duplicate submit is idempotent and cannot re-score;
+  a guess for a not-yet-started round is rejected; a guess after the server
+  deadline scores zero; invalid/NaN/null coordinates are rejected.
+- **Isolation** — another player cannot read, submit into, or finalize a run, and
+  a guessed run id is indistinguishable from someone else's.
+- **Finalization** — requires every round, happens exactly once, and a replay
+  changes nothing.
+- **Selection quality** — no canonical group repeats in a run; a five-round game
+  spans five continents; difficulty scopes the pool.
+- **Multiplayer** — host-only start, five unique server-selected rounds, only
+  round 1 active, and the host learns no coordinate from starting.
+- **Rollout compatibility** — the pre-V5 manifest RPCs still work and are still
+  granted, so a client running the previous release is unaffected.
+
+### `10_daily_verify.sql` (migration 0016)
+
+- **Generation** — a future day cannot be generated or read; the status read has
+  no write side effect; generation is idempotent and race-safe.
+- **Sharing** — every player of a day gets the same locations in the same order.
+- **One official attempt** — enforced by a partial unique index; a completed day
+  cannot be replayed; a partial attempt resumes without creating a second one.
+- **Practice** — refused until the official attempt is complete, recorded
+  separately, never overwrites the official result, never leaderboard-eligible.
+- **Finalization** — server-summed totals and a server-measured duration, stamped
+  exactly once.
+- **Leaderboard** — documented tie order (score → distance → duration →
+  completion time), stable across calls, no user ids, caller's own rank returned
+  even outside the top slice, unfinished attempts excluded, future days refused.
+
+### `11_challenge_verify.sql` (migration 0017)
+
+- **Creation** — 10-character unambiguous code; title sanitized and clamped;
+  every option bounded; expiry always set; server-chosen rounds with no repeated
+  canonical place; the creator learns no answer; creation is rate limited.
+- **Playing** — same locations and order for everyone; answers hidden until
+  played; resume; one official attempt per player (constraint); finalized once;
+  the creator has no advantage in their own challenge.
+- **Unlisted** — the tables are unreadable, there is no listing function, and
+  unknown / malformed / out-of-alphabet / expired codes are indistinguishable;
+  lookups are rate limited against enumeration.
+- **Leaderboard** — same tie rules and privacy as the Daily; an empty board and
+  an unknown code look identical.
