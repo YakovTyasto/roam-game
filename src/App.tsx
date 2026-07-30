@@ -49,6 +49,9 @@ import { NameScreen } from './screens/NameScreen';
 import { ResumePromptScreen } from './screens/ResumePromptScreen';
 import { SoloSetupScreen } from './screens/SoloSetupScreen';
 import { LeaderboardScreen } from './screens/LeaderboardScreen';
+import { DailyScreen } from './screens/DailyScreen';
+import { DailyCard } from './components/daily/DailyCard';
+import { useDaily } from './daily/useDaily';
 import { GameScreen } from './screens/GameScreen';
 import { FinalScreen } from './screens/FinalScreen';
 import { SetupScreen } from './screens/SetupScreen';
@@ -69,7 +72,7 @@ const MultiplayerApp = lazy(() =>
   })),
 );
 
-type AppScreen = 'home' | 'solo-setup' | 'leaderboard' | 'multiplayer';
+type AppScreen = 'home' | 'solo-setup' | 'leaderboard' | 'multiplayer' | 'daily';
 
 /** The resume check never blocks rendering, but must still fail bounded. */
 const RESUME_CHECK_TIMEOUT_MS = 8000;
@@ -129,6 +132,7 @@ export default function App() {
     initialRoomCode ? 'multiplayer' : 'home',
   );
   const [endlessNotice, setEndlessNotice] = useState<number | null>(null);
+
 
   const online = useOnlineStatus();
   const swUpdate = useServiceWorkerUpdate();
@@ -196,6 +200,12 @@ export default function App() {
   }, []);
 
   const hasKey = hasGoogleMapsKey();
+  // ── Daily Challenge ────────────────────────────────────────────────────
+  // Loaded only once the player has a name (so it never competes with the
+  // profile bootstrap) and never awaited by anything that renders a button.
+  const daily = useDaily(profile.status === 'ready' && hasKey);
+  const [dailyBusy, setDailyBusy] = useState(false);
+  const [dailyError, setDailyError] = useState<string | null>(null);
 
   // ── Official run resume ────────────────────────────────────────────────
   // Works for any active run in the table, including one started by a
@@ -381,6 +391,58 @@ export default function App() {
     [hasKey, soloRun, setSoloDifficulty],
   );
 
+  /**
+   * Start, resume or practise today's Daily Challenge. The server decides which
+   * of those it is — the client cannot talk itself into a second official
+   * attempt, and a practice request before completion is refused server-side.
+   */
+  const startDaily = useCallback(
+    async (practice: boolean) => {
+      setDailyError(null);
+      setDailyBusy(true);
+      try {
+        const { startDaily: start } = await import('./daily/dailyApi');
+        const outcome = await start(practice);
+        if (outcome.kind === 'already-completed') {
+          daily.refresh();
+          return;
+        }
+        const { run } = outcome;
+        const played = resultsOf(run);
+        const roundIndex = nextRoundIndex(run);
+        soloRun.adopt(run, played.length);
+        setActiveConfig({
+          difficulty: run.difficulty,
+          roundCount: run.roundCount,
+          timerSeconds: run.timerSeconds,
+          movementRule: 'default',
+        });
+        setOfficialGame(!outcome.practice);
+        setLocalOnlyNotice(null);
+        setIsBest(false);
+        committedRoundsRef.current.clear();
+        clearLocalRunSnapshot();
+        resumeRemainingRef.current = remainingSeconds(run, roundIndex) ?? undefined;
+        dispatch({
+          type: 'START_OFFICIAL_GAME',
+          hiddenPanoramas: hiddenPanoramasOf(run),
+          results: played,
+          roundIndex,
+          roundCount: run.roundCount,
+          timerSeconds: run.timerSeconds,
+        });
+        setScreen('home');
+      } catch (err) {
+        setDailyError(
+          err instanceof Error ? err.message : 'The Daily Challenge could not be started.',
+        );
+      } finally {
+        setDailyBusy(false);
+      }
+    },
+    [daily, soloRun],
+  );
+
   const recordGuess = useCallback(
     (roundIndex: number, guess: { lat: number; lng: number }) =>
       soloRun.recordGuess(roundIndex, guess),
@@ -478,8 +540,11 @@ export default function App() {
       setBestScore(total);
       setIsBest(true);
     }
-    // Server-authoritative leaderboard finalization (no-op when not tracked).
-    void soloRun.finalize();
+    // Server-authoritative finalization (no-op for a local game). The Daily
+    // card's state is derived from the server, so refresh it once the run has
+    // actually been finalized rather than optimistically.
+    void soloRun.finalize().then(() => daily.refresh());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.status, state.results, state.roundCount, bestScore, setBestScore, soloRun]);
 
   const updatePreferences = useCallback(
@@ -637,6 +702,24 @@ export default function App() {
       return <LeaderboardScreen onBack={() => setScreen('home')} />;
     }
 
+    if (screen === 'daily') {
+      return (
+        <DailyScreen
+          locale={locale.locale}
+          units={preferences.units}
+          state={daily.state}
+          status={daily.status}
+          secondsUntilNext={daily.secondsUntilNext}
+          busy={dailyBusy}
+          error={dailyError}
+          onPlay={() => void startDaily(false)}
+          onPractice={() => void startDaily(true)}
+          onRefresh={daily.refresh}
+          onBack={() => setScreen('home')}
+        />
+      );
+    }
+
     return (
       <WelcomeScreen
         bestScore={bestScore}
@@ -646,6 +729,15 @@ export default function App() {
         onStartMultiplayer={() => setScreen('multiplayer')}
         onOpenLeaderboard={() => setScreen('leaderboard')}
         onOpenSettings={() => setSettingsOpen(true)}
+        dailyCard={
+          <DailyCard
+            locale={locale.locale}
+            state={daily.state}
+            status={daily.status}
+            secondsUntilNext={daily.secondsUntilNext}
+            onOpen={() => setScreen('daily')}
+          />
+        }
       />
     );
   };

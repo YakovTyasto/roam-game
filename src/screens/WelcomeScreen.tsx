@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Play, Settings, Trophy, AlertTriangle, Users, BarChart3 } from 'lucide-react';
 import { APP, MAX_GAME_SCORE } from '../config/app';
 import { Button } from '../components/ui/Button';
@@ -11,6 +12,12 @@ interface WelcomeScreenProps {
   onStartMultiplayer: () => void;
   onOpenLeaderboard: () => void;
   onOpenSettings: () => void;
+  /**
+   * Entry point for the Daily Challenge, injected rather than built here so this
+   * screen stays free of backend state — a Daily outage must not be able to
+   * affect the rest of the home screen.
+   */
+  dailyCard?: ReactNode;
 }
 
 const STEPS = [
@@ -27,6 +34,7 @@ export function WelcomeScreen({
   onStartMultiplayer,
   onOpenLeaderboard,
   onOpenSettings,
+  dailyCard,
 }: WelcomeScreenProps) {
   return (
     <div className={styles.screen}>
@@ -66,6 +74,8 @@ export function WelcomeScreen({
             </span>
           </div>
         )}
+
+        {dailyCard && <div className={styles.daily}>{dailyCard}</div>}
 
         <div className={styles.actions}>
           <Button variant="primary" size="lg" onClick={onStart}>

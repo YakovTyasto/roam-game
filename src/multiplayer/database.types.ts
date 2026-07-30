@@ -197,6 +197,14 @@ export type Database = {
       };
       roam_finalize_official_run_v2: { Args: { p_run_id: string }; Returns: Json };
       mp_start_match_v2: { Args: { p_room_id: string }; Returns: Json };
+      // ── Daily Challenge (migration 0016) ─────────────────────────────────
+      roam_utc_day: { Args: { p_at?: string }; Returns: string };
+      roam_daily_status: { Args: Record<PropertyKey, never>; Returns: Json };
+      roam_start_daily_v2: { Args: { p_practice?: boolean }; Returns: Json };
+      roam_daily_leaderboard: {
+        Args: { p_day?: string | null; p_limit?: number };
+        Returns: Json;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

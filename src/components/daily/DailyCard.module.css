@@ -1,0 +1,103 @@
+/* One button, full width. The whole card is the tap target — no nested
+   interactive elements to compete for a tap (see DailyCard.tsx). */
+.card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  /* Comfortably past the 44px iOS floor even with a single line of text. */
+  min-height: 72px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease);
+  /* Never let a swipe on the card be swallowed as a pan gesture. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card:hover:not(:disabled) {
+  border-color: var(--panel-border-strong);
+  background: var(--surface-2);
+}
+
+.card:active:not(:disabled) {
+  transform: scale(0.995);
+}
+
+.card:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.card:disabled {
+  cursor: default;
+  /* Deliberately still legible: the disabled card explains itself. */
+  opacity: 0.72;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.card:disabled .icon {
+  background: var(--hover-overlay);
+  color: var(--text-faint);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+}
+
+.headline {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  /* Long localized strings (Russian runs noticeably longer) must wrap, never
+     push the card sideways. */
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  background: var(--hover-overlay);
+  font-variant-numeric: tabular-nums;
+}

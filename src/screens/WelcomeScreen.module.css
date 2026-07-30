@@ -114,6 +114,14 @@
   margin-bottom: 26px;
 }
 
+/* The Daily card sits above the mode buttons: it is the one thing that changes
+   every day, and it must not push the primary actions off a short viewport —
+   the screen scrolls (see .screen) precisely so adding this stays safe. */
+.daily {
+  max-width: 460px;
+  margin-bottom: 16px;
+}
+
 .actions {
   display: flex;
   align-items: center;

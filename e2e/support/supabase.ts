@@ -101,7 +101,18 @@ export async function installSupabaseStub(
         404,
       );
     }
-    return json(route, (await handler(params, stub)) ?? null);
+    // A handler that throws means "this RPC fails" — answer with an error
+    // payload rather than leaving the request unfulfilled, which would surface as
+    // a Playwright routing error instead of the failure the test is describing.
+    try {
+      return json(route, (await handler(params, stub)) ?? null);
+    } catch (err) {
+      return json(
+        route,
+        { message: err instanceof Error ? err.message : 'stub handler failed', code: 'P0001' },
+        500,
+      );
+    }
   });
 
   // Realtime is not stubbed. Aborting the socket is honest: the app must stay
@@ -316,6 +327,44 @@ function defaultHandlers(): Record<string, RpcHandler> {
         already: false,
       };
     },
+    // ── Daily Challenge (migration 0016) ─────────────────────────────────
+    roam_daily_status: () => {
+      const now = new Date();
+      const next = new Date(now);
+      next.setUTCHours(0, 0, 0, 0);
+      next.setUTCDate(next.getUTCDate() + 1);
+      return {
+        utc_day: now.toISOString().slice(0, 10),
+        server_now: now.toISOString(),
+        next_day_at: next.toISOString(),
+        round_count: 5,
+        difficulty: 'normal',
+        timer_seconds: 120,
+        players_completed: 0,
+        attempt: null,
+        previous: null,
+      };
+    },
+    roam_start_daily_v2: (p, stub) => {
+      const started = defaultHandlers().roam_start_official_run_v2(
+        { p_difficulty: 'normal', p_total_rounds: 5, p_timer_seconds: 120 },
+        stub,
+      );
+      return {
+        started: true,
+        resumed: false,
+        practice: p.p_practice === true,
+        utc_day: new Date().toISOString().slice(0, 10),
+        run: started,
+      };
+    },
+    roam_daily_leaderboard: () => ({
+      utc_day: new Date().toISOString().slice(0, 10),
+      entries: [],
+      self: null,
+      server_now: new Date().toISOString(),
+    }),
+
     mp_start_match_v2: () => ({
       room_id: '77777777-6666-4555-8444-333333333333',
       code: 'ABC234',
