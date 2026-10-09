@@ -26,6 +26,7 @@ apply once, in order, per environment.
 | 15 | `0015_official_runs.sql` | Official catalog-driven runs (`*_v2` RPCs) + server-selected multiplayer start |
 | 16 | `0016_daily_challenge.sql` | Daily Challenge tables, generation, attempts, leaderboard |
 | 17 | `0017_shared_challenges.sql` | Unlisted shareable challenges, attempts, leaderboard |
+| 18 | `0018_safeupdate_catalog_fix.sql` | Hotfix: catalog selection no longer issues a bare DELETE (Supabase's API rejects it via `pg_safeupdate`) |
 
 **13-17 (Engagement Core V5) are additive and non-destructive.** No pre-V5
 function is dropped or revoked: new behaviour lives in `*_v2` functions so a
@@ -359,3 +360,13 @@ Ends with `=== 08_room_diversity_verify.sql: ALL ASSERTIONS PASSED ===`.
   lookups are rate limited against enumeration.
 - **Leaderboard** — same tie rules and privacy as the Daily; an empty board and
   an unknown code look identical.
+
+### `12_safeupdate_verify.sql` (migration 0018)
+
+- **Static guard** — no public function's final definition contains an `UPDATE`
+  or `DELETE` without a `WHERE` clause. Supabase's Data API loads `pg_safeupdate`,
+  which raises on those statements; plain local Postgres does not, so the
+  behavioural suites above cannot catch it. This is what broke the Daily
+  Challenge in production.
+- **Self-test** — deliberately unguarded probe functions are detected, and
+  guarded / upsert statements are not flagged.

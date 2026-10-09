@@ -107,3 +107,7 @@ local/non-official.
 - PWA caches only the app shell. Never precache Street View or map tiles, and
   don't imply they work offline.
 - CSS Modules everywhere for components; keep global CSS to tokens + resets.
+- Supabase's API runs every request with `pg_safeupdate`: any `UPDATE`/`DELETE`
+  without a `WHERE` (even inside a `SECURITY DEFINER` function) fails in
+  production but passes locally. Always add one (`where true` to clear a scratch
+  table); `supabase/tests/12_safeupdate_verify.sql` enforces it.

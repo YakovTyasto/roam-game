@@ -107,9 +107,10 @@ Latest deployed migration is `0012_room_diversity.sql`. V5 adds migrations from
 | 0015 | `official_runs` | versioned official-run RPCs (`*_v2`) reading rounds from the catalog |
 | 0016 | `daily_challenge` | daily selection, attempts, guesses, finalization, leaderboard |
 | 0017 | `shared_challenges` | unlisted challenge codes, attempts, results |
-| 0018 | `country_streak` | streak runs, rounds, best-streak records (**not written — see Continuation point**) |
-| 0019 | `stats` | aggregate statistics RPCs (**not written**) |
-| 0020 | `achievements` | achievement definitions, unlocks, server-side evaluation (**not written**) |
+| 0018 | `safeupdate_catalog_fix` | hotfix: catalog selection compatible with `pg_safeupdate` (see "Production incident: pg_safeupdate") |
+| 0019 | `country_streak` | streak runs, rounds, best-streak records (**not written — see Continuation point**) |
+| 0020 | `stats` | aggregate statistics RPCs (**not written**) |
+| 0021 | `achievements` | achievement definitions, unlocks, server-side evaluation (**not written**) |
 
 Rules that hold for every one of them:
 
@@ -509,13 +510,36 @@ without a deploy, revoke its entry point — e.g.
 
 ---
 
+## Production incident: pg_safeupdate (fixed in 0018)
+
+**Symptom.** The Daily Challenge card loaded, but pressing Play failed. The API
+returned HTTP 400 for `roam_start_daily_v2`, and the Postgres log showed
+`DELETE requires a WHERE clause`. No Daily had ever been generated in
+production (`daily_challenges` was empty).
+
+**Cause.** Supabase's Data API runs every request with the `pg_safeupdate`
+extension, which rejects an `UPDATE`/`DELETE` without a `WHERE` clause — also
+inside `SECURITY DEFINER` functions. `roam_select_catalog_rounds` (0013) cleared
+its scratch table with a bare `delete from roam_sel_candidates;`. That function
+backs `roam_start_daily_v2`, `roam_start_official_run_v2`,
+`roam_create_challenge_v2` and `mp_start_match_v2`, so all four failed the same
+way. Calls made from the SQL editor (no `pg_safeupdate`) and the local suites
+(plain Postgres) both succeeded, which is why it was never caught.
+
+**Fix.** `0018_safeupdate_catalog_fix.sql` re-creates the function with
+`delete from roam_sel_candidates where true;` and nothing else changed.
+`supabase/tests/12_safeupdate_verify.sql` statically checks the final definition
+of every public function and fails on any unguarded `UPDATE`/`DELETE`, so this
+class of bug is now caught locally. **Rule for future migrations:** always give
+an `UPDATE`/`DELETE` a `WHERE` (use `where true` to clear a scratch table).
+
 ## Continuation point
 
 Everything below is unstarted or partial. Resume in this order.
 
 ### Section 4 — Country Streak (next)
 
-Create **`supabase/migrations/0018_country_streak.sql`**:
+Create **`supabase/migrations/0019_country_streak.sql`**:
 
 - `streak_runs (id, user_id, difficulty, status, current_streak, best_streak,
   total_attempts, started_at, ended_at)` and
@@ -544,7 +568,7 @@ never submit an empty selection, and show flags as decoration only.
 
 ### Section 5 — Player statistics
 
-`0019_stats.sql`: aggregate RPCs over `game_results`, `daily_attempts`,
+`0020_stats.sql`: aggregate RPCs over `game_results`, `daily_attempts`,
 `shared_challenge_attempts`, `streak_runs` and `location_history` — not raw event
 dumps. `roam_player_stats()` returning overall / by-mode / by-difficulty /
 multiplayer / activity blocks, plus `roam_daily_streak()` for participation
@@ -553,7 +577,7 @@ a clearly-labelled local fallback.
 
 ### Section 6 — Achievements
 
-`0020_achievements.sql`: `achievements` definition table (or a typed registry
+`0021_achievements.sql`: `achievements` definition table (or a typed registry
 mirrored in SQL), `player_achievements (user_id, achievement_id, unlocked_at,
 progress)` with `unique (user_id, achievement_id)`; evaluation inside
 `roam_on_run_finalized` and the streak finalizer — **no** client-callable unlock
