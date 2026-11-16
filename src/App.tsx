@@ -86,7 +86,7 @@ type AppScreen =
 const RESUME_CHECK_TIMEOUT_MS = 8000;
 
 const DEFAULT_PREFERENCES: Preferences = {
-  timer: false,
+  timer: true,
   units: 'metric',
   reduceMotion: false,
 };
@@ -749,6 +749,7 @@ export default function App() {
           onSaveAndExit={saveAndExit}
           onAbandon={abandonGame}
           resumeRemainingSeconds={resumeRemainingRef.current}
+          serverTimed={soloRun.isOfficial()}
           locale={locale.locale}
         />
       );

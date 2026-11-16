@@ -28,7 +28,7 @@ export const en = {
     },
     round_timer: {
       label: 'Round timer',
-      hint: 'Show a countdown while you explore.',
+      hint: 'Show a countdown while you explore. Ranked games always show it.',
     },
     units: {
       label: 'Distance units',
