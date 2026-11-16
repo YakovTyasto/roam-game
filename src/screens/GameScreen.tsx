@@ -42,6 +42,12 @@ interface GameScreenProps {
    * state.hiddenPanorama is set for the current round.
    */
   resumeRemainingSeconds?: number;
+  /**
+   * The run is server-scored (solo, daily, challenge or practice). The server
+   * enforces each round's deadline whatever the client shows, so the countdown
+   * is always on here — hiding it would let a guess silently score 0.
+   */
+  serverTimed?: boolean;
   locale?: Locale;
 }
 
@@ -55,11 +61,15 @@ export function GameScreen({
   onSaveAndExit,
   onAbandon,
   resumeRemainingSeconds,
+  serverTimed = false,
   locale,
 }: GameScreenProps) {
   // null means the configured game has No Timer — the round-timer feature is
   // entirely inactive regardless of the "show timer" display preference.
   const ROUND_SECONDS = state.timerSeconds;
+  // The "Round timer" preference only applies to local games; server-scored
+  // runs always show (and act on) the countdown.
+  const timerOn = preferences.timer || serverTimed;
   const isEndless = state.roundCount === null;
   const isDesktop = useIsDesktop();
   const isTablet = useIsTablet();
@@ -196,7 +206,7 @@ export function GameScreen({
 
   const timerActive =
     ROUND_SECONDS !== null &&
-    preferences.timer &&
+    timerOn &&
     (state.status === 'exploring' || state.status === 'selectingGuess');
 
   useEffect(() => {
@@ -244,8 +254,8 @@ export function GameScreen({
         round={state.roundIndex + 1}
         totalRounds={state.roundCount}
         score={totalScore}
-        showTimer={preferences.timer && ROUND_SECONDS !== null}
-        secondsLeft={ROUND_SECONDS !== null && preferences.timer ? secondsLeft : null}
+        showTimer={timerOn && ROUND_SECONDS !== null}
+        secondsLeft={ROUND_SECONDS !== null && timerOn ? secondsLeft : null}
         difficultyLabel={difficultyLabel(difficulty)}
         onOpenSettings={onOpenSettings}
         onFinishEndless={isEndless ? () => dispatch({ type: 'FINISH_ENDLESS' }) : undefined}
